@@ -1,0 +1,19 @@
+@keyframes opacityCycle {
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.banner-title {
+    font-size: clamp(20px, 2.5vw, 30px);
+    font-weight: 1000;
+    color: black;
+    white-space: nowrap;
+    opacity: 0.7;
+    animation: opacityCycle 5s infinite;
+}
