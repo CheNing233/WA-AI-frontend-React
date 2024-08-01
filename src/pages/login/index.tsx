@@ -1,7 +1,7 @@
 import {Space, Card, Tabs} from '@arco-design/web-react';
 import "@arco-design/web-react/dist/css/arco.css";
 
-import Background from "@/components/background/background"
+import Index from "@/components/background"
 import Login from "./login"
 import Register from "./register"
 
@@ -16,7 +16,7 @@ const LoginIndex = () => {
             display: "flex",
             flexDirection: "column"
         }}>
-            <Background/>
+            <Index/>
             <Space
                 align={"center"}
                 direction={"vertical"}
@@ -36,6 +36,10 @@ const LoginIndex = () => {
                 <Card style={{width: "45vw", minWidth: "300px", maxWidth: "550px", marginTop: "48px"}}
                       title={false}
                       bordered={true}
+                      loading={false}
+                      // cover={
+                      //     <div>123</div>
+                      // }
                 >
                     <Tabs defaultActiveTab='1'>
                         <Tabs.TabPane key='1' title='登录'>

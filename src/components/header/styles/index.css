@@ -1,0 +1,7 @@
+.header-container {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    box-shadow: 0px 8px 8px rgba(204, 204, 204, 0.2);
+}

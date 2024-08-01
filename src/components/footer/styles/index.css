@@ -1,0 +1,14 @@
+.footer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* padding-left: 16px; */
+}
+
+.footer-text {
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}

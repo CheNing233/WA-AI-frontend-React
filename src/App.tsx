@@ -13,6 +13,8 @@ import useStorage from './utils/useStorage';
 import {GlobalContext} from "./context";
 
 import LoginIndex from "@/pages/login";
+import Footer from "@/components/footer";
+import Header from "@/components/header";
 
 
 const store = createStore(rootReducer);
@@ -57,9 +59,11 @@ function App() {
             >
                 <Provider store={store}>
                     <GlobalContext.Provider value={contextValue}>
+                        <Header />
                         <Switch>
                             <Route path="/login" component={LoginIndex}/>
                         </Switch>
+                        <Footer />
                     </GlobalContext.Provider>
                 </Provider>
             </ConfigProvider>
