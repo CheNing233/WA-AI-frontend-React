@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 import {ConfigProvider} from '@arco-design/web-react';
@@ -15,6 +15,7 @@ import {GlobalContext} from "./context";
 import LoginIndex from "@/pages/login";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import Background from "@/components/background";
 
 
 const store = createStore(rootReducer);
@@ -33,6 +34,17 @@ function App() {
                 return zhCN;
         }
     }
+
+    const setArcoTheme = (theme: string) => {
+        if (theme === 'dark') {
+            document.body.setAttribute('arco-theme', 'dark');
+        } else {
+            document.body.removeAttribute('arco-theme');
+        }
+    }
+    useEffect(() => {
+        setArcoTheme(theme);
+    }, [theme])
 
     const contextValue = {
         lang,
@@ -59,11 +71,12 @@ function App() {
             >
                 <Provider store={store}>
                     <GlobalContext.Provider value={contextValue}>
-                        <Header />
+                        <Background/>
+                        <Header/>
                         <Switch>
                             <Route path="/login" component={LoginIndex}/>
                         </Switch>
-                        <Footer />
+                        <Footer/>
                     </GlobalContext.Provider>
                 </Provider>
             </ConfigProvider>

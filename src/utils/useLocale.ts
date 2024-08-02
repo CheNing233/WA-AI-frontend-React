@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { GlobalContext } from '../context';
+import { GlobalContext } from '@/context';
 import defaultLocale from '../locale';
 
 function useLocale(locale = null) {

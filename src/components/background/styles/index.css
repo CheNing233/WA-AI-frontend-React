@@ -40,3 +40,7 @@
     background-image: radial-gradient(var(--color-fill-3) 1px, rgba(0, 0, 0, 0) 1px);
     background-size: 16px 16px;
 }
+
+.background-dots-plus.dark {
+    background-color: #323232;
+}
