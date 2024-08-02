@@ -21,6 +21,7 @@ import {useContext} from "react";
 import {GlobalContext} from '@/context';
 import locate from './locate'
 import useLocale from "@/utils/useLocale";
+import clipboard from "@/utils/clipboard";
 
 const Header = () => {
     const {lang, setLang, theme, setTheme} = useContext(GlobalContext);
@@ -112,7 +113,7 @@ const Header = () => {
                             unmountOnExit={true}
                             droplist={
                                 <Menu
-                                    style={{maxHeight:'900px'}}
+                                    style={{maxHeight: '900px'}}
                                 >
                                     <Menu.Item style={{height: '48px', margin: '6px 0 8px 0'}} key='0'>
                                         <Space align={'center'} style={{marginTop: '4px'}}>
@@ -146,7 +147,20 @@ const Header = () => {
                                                 />
                                             </Space>
                                             <Button.Group>
-                                                <Button icon={<IconShareExternal/>} type={'primary'} shape={'round'}>
+                                                <Button
+                                                    icon={<IconShareExternal/>}
+                                                    type={'primary'}
+                                                    shape={'round'}
+                                                    onClick={() => {
+                                                        clipboard('https://wa.glcn.top/')
+                                                            .then(() => {
+                                                                Message.success('本站链接已复制到剪贴板');
+                                                            })
+                                                            .catch((err) => {
+                                                                Message.error('本站链接复制失败，原因：' + err);
+                                                            })
+                                                    }}
+                                                >
                                                     分享
                                                 </Button>
                                                 <Button icon={<WalletIcon/>} type={'primary'} shape={'round'}>
