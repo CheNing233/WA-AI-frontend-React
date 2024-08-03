@@ -5,6 +5,7 @@
   "dependencies": {
     "@arco-design/web-react": "^2.63.1",
     "@babel/core": "^7.16.0",
+    "@loadable/component": "^5.16.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^5.5.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -92,6 +93,8 @@
     ]
   },
   "devDependencies": {
+    "@types/loadable__component": "^5.13.9",
+    "@types/react-router-dom": "^5.3.3",
     "customize-cra": "^1.0.0",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",

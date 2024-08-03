@@ -112,6 +112,7 @@ const Register = () => {
                         prefix={<IconLock/>}
                         placeholder={loc['register.form.password.placeholder']}
                         allowClear
+                        autoComplete={'off'}
                     />
                 </Form.Item>
                 <Form.Item
@@ -126,6 +127,7 @@ const Register = () => {
                         prefix={<IconLock/>}
                         placeholder={loc['register.form.passwordConfirm.placeholder']}
                         allowClear
+                        autoComplete={'off'}
                     />
                 </Form.Item>
 

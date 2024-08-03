@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import React, {useEffect, useMemo} from 'react';
+import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom';
 
 import {ConfigProvider} from '@arco-design/web-react';
 
@@ -11,18 +11,22 @@ import {createStore} from 'redux';
 import rootReducer from './store';
 import useStorage from './utils/useStorage';
 import {GlobalContext} from "./context";
-
-import LoginIndex from "@/pages/login";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Background from "@/components/background";
+import useRoute, {getFlattenRoutes} from "@/routes";
 
 
 const store = createStore(rootReducer);
 
+
 function App() {
     const [lang, setLang] = useStorage('arco-lang', 'zh-CN');
     const [theme, setTheme] = useStorage('arco-theme', 'light');
+
+    const [routes, defaultRoute] = useRoute();
+    const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
+
 
     const getArcoLocale = () => {
         switch (lang) {
@@ -74,7 +78,20 @@ function App() {
                         <Background/>
                         <Header/>
                         <Switch>
-                            <Route path="/login" component={LoginIndex}/>
+                            {
+                                flattenRoutes.map((route) => {
+                                    return (
+                                        <Route
+                                            key={route.key}
+                                            path={'/' + route.key}
+                                            component={route.component}
+                                        />
+                                    )
+                                })
+                            }
+                            <Route path="/">
+                                <Redirect to={`/${defaultRoute}`}/>
+                            </Route>
                         </Switch>
                         <Footer/>
                     </GlobalContext.Provider>

@@ -67,6 +67,7 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
                             prefix={<IconLock/>}
                             placeholder={loc['forgetPassword.form.newPassword.placeholder']}
                             allowClear
+                            autoComplete={'off'}
                         />
                     </Form.Item>
                     <Form.Item style={{width: "100%", marginBottom: "0"}}>
@@ -75,6 +76,7 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
                             prefix={<IconLock/>}
                             placeholder={loc['forgetPassword.form.newPasswordConfirm.placeholder']}
                             allowClear
+                            autoComplete={'off'}
                         />
                     </Form.Item>
                 </Space>

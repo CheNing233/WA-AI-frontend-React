@@ -1,57 +1,61 @@
-import {
-    Avatar,
-    Button,
-    Card,
-    Divider,
-    Dropdown,
-    Grid,
-    Menu,
-    Message,
-    Select,
-    Space,
-    Statistic,
-    Tooltip,
-} from "@arco-design/web-react";
+import {Avatar, Button, Divider, Dropdown, Grid, Menu, Message, Select, Space, Tooltip,} from "@arco-design/web-react";
 
 import './styles/index.css'
-import {IconLanguage, IconMoonFill, IconShareExternal, IconSunFill} from "@arco-design/web-react/icon";
-import {ControlPlatformIcon, ThunderIcon, WalletIcon} from "tdesign-icons-react";
+import {IconLanguage, IconMoonFill, IconSunFill} from "@arco-design/web-react/icon";
+import {ControlPlatformIcon} from "tdesign-icons-react";
 
-import {useContext} from "react";
+import {useContext, useMemo} from "react";
 import {GlobalContext} from '@/context';
 import locate from './locate'
 import useLocale from "@/utils/useLocale";
-import clipboard from "@/utils/clipboard";
+import Logo from "@/components/header/logo";
+import UserDropList from "@/components/header/user-drop-list";
+
+import useRoute, {getFlattenRoutes} from "@/routes";
+import {useLocation, useHistory} from 'react-router-dom'
 
 const Header = () => {
     const {lang, setLang, theme, setTheme} = useContext(GlobalContext);
     const loc = useLocale(locate)
 
-    const IconButton = (props: { icon: any, onClick: () => void }) => {
-        return (
-            <Button shape={'circle'} icon={props.icon} onClick={props.onClick}/>
-        )
+    const location = useLocation()
+    const history = useHistory()
+
+    const [routes] = useRoute();
+    const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
+
+    /**
+     * 获取当前选中的路由键
+     *
+     * 此函数用于从预定义的路由数组中查找与当前URL匹配的路由键
+     * 它通过比较路由对象的key属性与当前location的pathname来实现匹配
+     * 如果找到匹配项，则返回该路由的键值，否则返回undefined
+     */
+    const getSelectedKey = () => {
+        return flattenRoutes.find(
+            (route) => `/${route.key}` === location.pathname
+        )?.key;
     }
 
+    const handleClickMenuItem = (key: string) => {
+        history.push(`/${key}`)
+    }
 
     return (
-        <Menu mode={"horizontal"} className={'header-container'} ellipsis={false}>
-            <Grid.Row align={'center'} style={{width: '100%'}} gutter={[0, 8]}>
+        <Menu
+            mode={"horizontal"}
+            className={'header-container'}
+            ellipsis={false}
+            selectedKeys={getSelectedKey()}
+            onClickMenuItem={handleClickMenuItem}
+        >
+            <Grid.Row
+                align={'center'}
+                className={'header-row-container'}
+                gutter={[0, 24]}
+            >
                 <Grid.Col flex={"shrink"}>
-                    <Space style={{cursor: 'pointer', transform: 'translate(0, -1px)', marginLeft: '12px'}}>
-                        <img
-                            src={require('@/assets/logo.gif')}
-                            alt={"logo"}
-                            width={'36px'}
-                            height={'36px'}
-                            style={{position: 'absolute', transform: 'translate(0, -18px)'}}
-                        />
-                        <div style={{marginLeft: '38px', marginRight: '12px'}}>
-                            <span style={{fontSize: '18px', fontWeight: 1000, color: 'var(--color-text-2)'}}>
-                                Ai Platform
-                            </span>
-                        </div>
-                    </Space>
+                    <Logo/>
                 </Grid.Col>
 
                 <Grid.Col flex={"shrink"}>
@@ -59,14 +63,23 @@ const Header = () => {
                 </Grid.Col>
 
                 <Grid.Col flex={"shrink"}>
-                    <Menu.Item key='1'>首页</Menu.Item>
-                    <Menu.Item key='2'>模型</Menu.Item>
-                    <Menu.Item key='3'>提示词</Menu.Item>
-                    <Menu.Item key='4'>关于</Menu.Item>
+                    {
+                        flattenRoutes.map((route) => {
+                            if (route.ignore) {
+                                return null;
+                            }
+                            return (
+                                <Menu.Item
+                                    key={route.key}
+                                >
+                                    {loc[route.name]}
+                                </Menu.Item>
+                            )
+                        })
+                    }
                 </Grid.Col>
 
-                <Grid.Col flex={"1"}>
-                </Grid.Col>
+                <Grid.Col flex={"1"}/>
 
                 <Grid.Col flex={"shrink"}>
                     <Space size={12} style={{float: 'right', marginLeft: '12px'}}>
@@ -95,7 +108,8 @@ const Header = () => {
                                     : loc['settings.navbar.theme.toLight']
                             }
                         >
-                            <IconButton
+                            <Button
+                                shape={'circle'}
                                 icon={theme !== 'dark' ? <IconMoonFill/> : <IconSunFill/>}
                                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                             />
@@ -111,79 +125,7 @@ const Header = () => {
                         <Dropdown
                             position={'br'}
                             unmountOnExit={true}
-                            droplist={
-                                <Menu
-                                    style={{maxHeight: '900px'}}
-                                >
-                                    <Menu.Item style={{height: '48px', margin: '6px 0 8px 0'}} key='0'>
-                                        <Space align={'center'} style={{marginTop: '4px'}}>
-                                            <Avatar
-                                                shape={'circle'}
-                                            >
-                                                WA
-                                            </Avatar>
-                                            <Divider style={{margin: '0 0 0 0'}} type='vertical'/>
-                                            <h3
-                                                style={{margin: '0 0 0 0'}}
-                                            >
-                                                请先登录 {'>'}
-                                            </h3>
-                                        </Space>
-                                    </Menu.Item>
-                                    <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
-                                    <Card>
-                                        <Space style={{width: '100%'}} direction={'vertical'} align={'center'}>
-                                            <Space size={16}>
-                                                <Statistic
-                                                    title={"已购算力"}
-                                                    prefix={<ThunderIcon/>}
-                                                    value={0}
-                                                />
-                                                <Divider style={{margin: '0 0 0 0'}} type='vertical'/>
-                                                <Statistic
-                                                    title={"每日赠送"}
-                                                    prefix={<ThunderIcon/>}
-                                                    value={0}
-                                                />
-                                            </Space>
-                                            <Button.Group>
-                                                <Button
-                                                    icon={<IconShareExternal/>}
-                                                    type={'primary'}
-                                                    shape={'round'}
-                                                    onClick={() => {
-                                                        clipboard('https://wa.glcn.top/')
-                                                            .then(() => {
-                                                                Message.success('本站链接已复制到剪贴板');
-                                                            })
-                                                            .catch((err) => {
-                                                                Message.error('本站链接复制失败，原因：' + err);
-                                                            })
-                                                    }}
-                                                >
-                                                    分享
-                                                </Button>
-                                                <Button icon={<WalletIcon/>} type={'primary'} shape={'round'}>
-                                                    充值
-                                                </Button>
-                                            </Button.Group>
-                                        </Space>
-                                    </Card>
-
-                                    <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
-
-                                    <Menu.Item key='1'>个人资料</Menu.Item>
-                                    <Menu.Item key='2'>我的收藏</Menu.Item>
-                                    <Menu.Item key='3'>我的图片</Menu.Item>
-                                    <Menu.Item key='4'>我的帖子</Menu.Item>
-
-                                    <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
-
-                                    <Menu.Item key='log'>登录</Menu.Item>
-
-
-                                </Menu>
-                            }
+                            droplist={UserDropList()}
                         >
                             <Avatar
                                 size={36}
@@ -198,7 +140,7 @@ const Header = () => {
 
             </Grid.Row>
 
-            <Divider style={{position: 'absolute', transform: 'translate(-20px, 29px)'}} type='horizontal'/>
+            <Divider style={{position: 'absolute', left: '0', bottom: '0', margin: '0 0 0 0'}} type='horizontal'/>
         </Menu>
     )
 }

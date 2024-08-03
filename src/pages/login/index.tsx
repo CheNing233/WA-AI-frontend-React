@@ -1,5 +1,4 @@
 import {Card, Space, Tabs} from '@arco-design/web-react';
-import "@arco-design/web-react/dist/css/arco.css";
 
 import Login from "./login"
 import Register from "./register"

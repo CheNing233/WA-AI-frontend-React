@@ -80,6 +80,7 @@ const Login = () => {
                         prefix={<IconLock/>}
                         placeholder={loc['login.form.password.placeholder']}
                         allowClear
+                        autoComplete={'off'}
                     />
                 </Form.Item>
                 <Grid.Row style={{width: "100%"}} align={"center"}>
