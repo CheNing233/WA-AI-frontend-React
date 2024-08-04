@@ -23,6 +23,11 @@ export const routes: IRoute[] = [
         key: 'home',
     },
     {
+        name: 'menu.dashboard',
+        key: 'dashboard',
+        ignore: true
+    },
+    {
         name: 'menu.models',
         key: 'models',
     },
