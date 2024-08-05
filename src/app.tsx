@@ -1,7 +1,7 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom';
 
-import {ConfigProvider} from '@arco-design/web-react';
+import {ConfigProvider, ResizeBox} from '@arco-design/web-react';
 
 import zhCN from '@arco-design/web-react/es/locale/zh-CN';
 import enUS from '@arco-design/web-react/es/locale/en-US';
@@ -15,6 +15,7 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Background from "@/components/background";
 import useRoute, {getFlattenRoutes} from "@/routes";
+import Workbench from "@/components/workbench";
 
 
 const store = createStore(rootReducer);
@@ -23,6 +24,8 @@ const store = createStore(rootReducer);
 function App() {
     const [lang, setLang] = useStorage('arco-lang', 'zh-CN');
     const [theme, setTheme] = useStorage('arco-theme', 'light');
+
+    const [workbenchVisible, setWorkbenchVisible] = useState(false);
 
     const [routes, defaultRoute] = useRoute();
     const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
@@ -55,6 +58,8 @@ function App() {
         setLang,
         theme,
         setTheme,
+        workbenchVisible,
+        setWorkbenchVisible,
     };
 
     return (
@@ -76,24 +81,41 @@ function App() {
                 <Provider store={store}>
                     <GlobalContext.Provider value={contextValue}>
                         <Background/>
-                        <Header/>
-                        <Switch>
-                            {
-                                flattenRoutes.map((route) => {
-                                    return (
-                                        <Route
-                                            key={route.key}
-                                            path={'/' + route.key}
-                                            component={route.component}
-                                        />
-                                    )
-                                })
-                            }
-                            <Route path="/">
-                                <Redirect to={`/${defaultRoute}`}/>
-                            </Route>
-                        </Switch>
-                        <Footer/>
+                        <Workbench/>
+
+                        <ResizeBox.Split
+                            panes={[
+                                <>
+                                    <Header/>
+                                    <Switch>
+                                        {
+                                            flattenRoutes.map((route) => {
+                                                return (
+                                                    <Route
+                                                        key={route.key}
+                                                        path={'/' + route.key}
+                                                        component={route.component}
+                                                    />
+                                                )
+                                            })
+                                        }
+                                        <Route path="/">
+                                            <Redirect to={`/${defaultRoute}`}/>
+                                        </Route>
+                                    </Switch>
+                                    <Footer/>
+                                </>,
+                                <>
+                                    123
+                                </>
+                            ]}
+                            style={{height: '100vh'}}
+                            onMoving={(e, size) => {
+                                // console.log(size);
+                            }}
+                            disabled={true}
+                            size={1}
+                        />
                     </GlobalContext.Provider>
                 </Provider>
             </ConfigProvider>

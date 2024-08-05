@@ -5,4 +5,6 @@ export const GlobalContext = createContext<{
   setLang?: (value: string) => void;
   theme?: string;
   setTheme?: (value: string) => void;
+  workbenchVisible?: boolean;
+  setWorkbenchVisible?: (value: boolean) => void;
 }>({});
