@@ -59,7 +59,7 @@ const ImageCard = (props: any) => {
                 >
 
                     {/*author*/}
-                    <Space>
+                    <Space align={'center'}>
                         <Avatar
                             shape={'square'}
                             size={40}
