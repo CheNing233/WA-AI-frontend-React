@@ -16,6 +16,8 @@ import Header from "@/components/header";
 import Background from "@/components/background";
 import useRoute, {getFlattenRoutes} from "@/routes";
 import Workbench from "@/components/workbench";
+import useDragSelect from "@/utils/useDragSelect";
+import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
 
 
 const store = createStore(rootReducer);
@@ -24,8 +26,12 @@ const store = createStore(rootReducer);
 function App() {
     const [lang, setLang] = useStorage('arco-lang', 'zh-CN');
     const [theme, setTheme] = useStorage('arco-theme', 'light');
-
+    const [bodyDragSelect, setBodyDragSelect] = useState(false)
     const [workbenchVisible, setWorkbenchVisible] = useState(false);
+
+    const workbenchWrapperInDrawer = useWorkbenchSetting(
+        (state: IWorkbenchSetting) => state.wrapperInDrawer
+    )
 
     const [routes, defaultRoute] = useRoute();
     const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
@@ -53,14 +59,19 @@ function App() {
         setArcoTheme(theme);
     }, [theme])
 
+
     const contextValue = {
         lang,
         setLang,
         theme,
         setTheme,
+        bodyDragSelect,
+        setBodyDragSelect,
         workbenchVisible,
         setWorkbenchVisible,
     };
+
+    const {setElDragSelect} = useDragSelect(document.body)
 
     return (
         <BrowserRouter>
@@ -81,7 +92,6 @@ function App() {
                 <Provider store={store}>
                     <GlobalContext.Provider value={contextValue}>
                         <Background/>
-                        <Workbench/>
 
                         <ResizeBox.Split
                             panes={[
@@ -106,15 +116,18 @@ function App() {
                                     <Footer/>
                                 </>,
                                 <>
-                                    123
+                                    <Workbench/>
                                 </>
                             ]}
-                            style={{height: '100vh'}}
-                            onMoving={(e, size) => {
-                                // console.log(size);
+                            style={{height: '100vh', overflowX: 'hidden'}}
+                            onMovingStart={() => {
+                                setElDragSelect(false)
                             }}
-                            disabled={true}
-                            size={1}
+                            onMovingEnd={() => {
+                                setElDragSelect(true)
+                            }}
+                            disabled={!(workbenchVisible && !workbenchWrapperInDrawer)}
+                            size={workbenchVisible ? 0.7 : 1.01}
                         />
                     </GlobalContext.Provider>
                 </Provider>
