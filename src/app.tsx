@@ -119,7 +119,7 @@ function App() {
                                     <Workbench/>
                                 </>
                             ]}
-                            style={{height: '100vh', overflowX: 'hidden'}}
+                            style={{height: '100vh', overflow: 'hidden'}}
                             onMovingStart={() => {
                                 setElDragSelect(false)
                             }}
