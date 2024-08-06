@@ -25,7 +25,7 @@ const Header = () => {
     const [routes] = useRoute();
     const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
 
-    const [_,setWorkbenchShow] = useWorkbench();
+    const [workbenchShow,setWorkbenchShow] = useWorkbench();
 
     /**
      * 获取当前选中的路由键
@@ -121,7 +121,7 @@ const Header = () => {
                             icon={<ControlPlatformIcon/>}
                             type={'primary'}
                             shape={'round'}
-                            onClick={() => setWorkbenchShow(true)}
+                            onClick={() => setWorkbenchShow(!workbenchShow)}
                         >
                             在线画图
                         </Button>
