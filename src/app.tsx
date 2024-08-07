@@ -3,6 +3,8 @@ import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom';
 
 import {ConfigProvider, ResizeBox} from '@arco-design/web-react';
 
+import './styles/index.css'
+
 import zhCN from '@arco-design/web-react/es/locale/zh-CN';
 import enUS from '@arco-design/web-react/es/locale/en-US';
 

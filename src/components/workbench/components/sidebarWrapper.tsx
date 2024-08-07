@@ -35,7 +35,9 @@ const SidebarWrapper = (props: {
     }
 
     return (
-        <Grid.Row>
+        <Grid.Row
+            style={{flexWrap: 'nowrap'}}
+        >
             <Grid.Col flex={'shrink'}>
                 <Menu
                     collapse={true}
@@ -52,7 +54,7 @@ const SidebarWrapper = (props: {
                     }
                 </Menu>
             </Grid.Col>
-            <Divider style={{height: 'calc(100vh - 208px)'}} type={'vertical'}/>
+            <Divider style={{height: 'calc(100vh - 208px)', margin: '0'}} type={'vertical'}/>
             <Grid.Col flex={'1'}>
                 <ScrollTracker
                     onContainerOK={handleContainerOK}

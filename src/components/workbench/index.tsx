@@ -121,18 +121,16 @@ const Workbench = () => {
                 onCancel={() => {
                     setWorkbenchShow(false)
                 }}
-                // style={{padding: '4px 0 4px 0'}}
+                style={{padding: '4px 0 4px 0'}}
             >
                 {content()}
             </Drawer>
         )
     } else {
         return (
-            // <div style={{position: "relative", width: '100%'}}>
             <Card style={{width: '100%', overflow: 'hidden'}}>
                 {content()}
             </Card>
-            // </div>
         )
     }
 }
