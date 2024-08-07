@@ -1,37 +1,43 @@
-import {Button, Card, Grid, InputNumber, Space, Tabs} from "@arco-design/web-react";
-import {ControlPlatformIcon} from "tdesign-icons-react";
-import {IconToTop} from "@arco-design/web-react/icon";
+import {Button, Card, Collapse, Grid, InputNumber, Space, Tabs} from "@arco-design/web-react";
+import {ControlPlatformIcon, TranslateIcon} from "tdesign-icons-react";
+import {IconMoreVertical, IconToTop} from "@arco-design/web-react/icon";
 import SidebarWrapper from "@/components/workbench/components/sidebarWrapper";
+import ModelPanel from "@/components/workbench/components/modelPanel";
+import PromptPanel from "@/components/workbench/components/promptPanel";
 
 const Work = () => {
     return (
         <Space style={{top: '0', width: '100%'}} direction={'vertical'}>
             <Tabs>
                 <Tabs.TabPane title={'Work'}>
-                    <SidebarWrapper
-                        menu={[
-                            {
-                                key: '123',
-                                title: '123',
-                                icon: <ControlPlatformIcon/>
-                            },
-                            {
-                                key: '456',
-                                title: '456',
-                                icon: <ControlPlatformIcon/>
-                            },
-                            {
-                                key: '789',
-                                title: '789',
-                                icon: <ControlPlatformIcon/>
-                            },
-                        ]}
+                    <Collapse
+                        style={{width: 'calc(100% - 2px)', overflow: 'visible'}}
+                        bordered={true}
+                        destroyOnHide={false}
                     >
-                        <div key={'123'} style={{backgroundColor: 'arcoblue', height: '600px'}}>123</div>
-                        <div key={'456'} style={{backgroundColor: 'arcoblue', height: '600px'}}>456</div>
-                        <div key={'789'} style={{backgroundColor: 'arcoblue', height: '600px'}}>789</div>
-                    </SidebarWrapper>
-
+                        <SidebarWrapper
+                            menu={[
+                                {
+                                    key: 'model',
+                                    title: '模型',
+                                    icon: <ControlPlatformIcon/>
+                                },
+                                {
+                                    key: 'prompt',
+                                    title: '提示词',
+                                    icon: <TranslateIcon />
+                                },
+                            ]}
+                            style={{width: '100%', padding: '12px 0 12px 0'}}
+                        >
+                            <div key={'model'}>
+                                <ModelPanel />
+                            </div>
+                            <div key={'prompt'}>
+                                <PromptPanel />
+                            </div>
+                        </SidebarWrapper>
+                    </Collapse>
                 </Tabs.TabPane>
             </Tabs>
             <Card

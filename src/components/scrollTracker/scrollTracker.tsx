@@ -15,28 +15,47 @@ const ScrollTracker = (props: {
 
     const [currentVisibleItem, setCurrentVisibleItem] = useState('');
 
-
     /**
-     * 处理滚动事件，确定当前可见的子元素
-     *
-     * 遍历所有子元素的引用，通过判断元素的top位置是否大于0来确定当前可见的子元素
-     * 当找到第一个可见的子元素时，调用回调函数通知父组件，并更新当前可见子元素的状态
+     * 处理滚动事件，以确定当前可见的子元素
+     * 通过比较子元素和容器的滚动位置，判断哪个子元素在容器中最为可见
+     * 如果有子元素部分可见，则更新当前可见子元素的状态，并通知父组件
      */
     const handleScroll = () => {
+        // 获取容器的滚动顶部和底部位置
+        const containerScrollTop = containerRef.current.getBoundingClientRect().top
+        const containerScrollBottom = containerRef.current.getBoundingClientRect().bottom
+        // 初始化当前项的顶部位置为无穷大，当前项的key为空
+        let currentItemTop = Infinity;
+        let currentItemKey = '';
+        // 初始化前一项的顶部位置为负无穷小，前一项的key为空
+        let prevItemTop = -Infinity;
+        let prevItemKey = '';
         // 遍历当前所有子元素的引用
         for (const key in childRefs.current) {
-            // 使用console.log输出元素的key和top位置
-            // console.log(`${key} ${Math.round(childRefs.current[key].getBoundingClientRect().top)}`);
-
-            // 如果元素的top位置大于0，则认为该元素是当前可见的
-            if (childRefs.current[key].getBoundingClientRect().top > 0) {
-                // 调用回调函数，通知父组件当前可见的子元素的key
-                onVisibleItemChange && onVisibleItemChange(key);
-                // 更新当前可见子元素的状态
-                setCurrentVisibleItem(key);
-                // 终止遍历，只处理第一个可见的子元素
-                break;
+            // 计算子元素顶部距离容器顶部的距离
+            const childTop = childRefs.current[key].getBoundingClientRect().top - containerScrollTop
+            // 如果子元素的顶部位置在前一项和容器顶部之间，则更新前一项
+            if (childTop > prevItemTop && childTop < 0) {
+                prevItemTop = childTop
+                prevItemKey = key
             }
+            // 如果子元素的顶部位置在容器顶部和底部之间，则更新当前项
+            if (childTop < currentItemTop && childTop >= 0) {
+                currentItemTop = childTop - containerScrollTop
+                currentItemKey = key
+            }
+        }
+        // 如果当前项的顶部位置小于容器可视区域的一半，则认为当前项是可见的
+        if (currentItemTop < (containerScrollBottom - containerScrollTop) / 2) {
+            // 调用回调函数，通知父组件当前可见的子元素的key
+            onVisibleItemChange && onVisibleItemChange(currentItemKey);
+            // 更新当前可见子元素的状态
+            setCurrentVisibleItem(currentItemKey);
+        } else {
+            // 调用回调函数，通知父组件当前可见的子元素的key
+            onVisibleItemChange && onVisibleItemChange(prevItemKey);
+            // 更新当前可见子元素的状态
+            setCurrentVisibleItem(prevItemKey);
         }
     }
 
@@ -82,9 +101,10 @@ const ScrollTracker = (props: {
 
     // 收集子组件的 ref 函数
     const collectChildRefs = (key: string) => (ref) => {
-        if (ref && key) {
+        if (ref && key && !childRefs.current[key]) {
             childRefs.current[key] = ref;
         }
+        // console.log("collect ref")
     };
 
 
@@ -110,6 +130,7 @@ const ScrollTracker = (props: {
                         <>
                             {invisibleDiv}
                             {React.cloneElement(child)}
+                            {/*{invisibleDiv}*/}
                         </>
                     );
                 })
