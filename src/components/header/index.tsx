@@ -12,7 +12,7 @@ import Logo from "@/components/header/logo";
 import UserDropList from "@/components/header/user-drop-list";
 
 import useRoute, {getFlattenRoutes} from "@/routes";
-import {useLocation, useHistory} from 'react-router-dom'
+import {useHistory, useLocation} from 'react-router-dom'
 import useWorkbench from "@/components/workbench/useWorkbench";
 
 const Header = () => {
@@ -25,7 +25,7 @@ const Header = () => {
     const [routes] = useRoute();
     const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
 
-    const [workbenchShow,setWorkbenchShow] = useWorkbench();
+    const {workbenchShow, setWorkbenchShow} = useWorkbench();
 
     /**
      * 获取当前选中的路由键

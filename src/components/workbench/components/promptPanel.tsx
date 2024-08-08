@@ -12,7 +12,7 @@ import 'ace-builds/src-noconflict/mode-plain_text';
 
 import './styles/promptPanel.css'
 
-const PromptPanel = () => {
+const PromptPanel = (props: { name: string }) => {
 
     const {theme} = useContext(GlobalContext);
 
@@ -38,7 +38,7 @@ const PromptPanel = () => {
     return (
         <Collapse.Item
             header={<div style={{userSelect: 'none'}}>提示词</div>}
-            name='PromptPanel'
+            name={props.name}
             extra={<IconMoreVertical/>}
             style={{width: '100%', overflow: 'hidden'}}
         >

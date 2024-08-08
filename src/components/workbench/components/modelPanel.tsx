@@ -3,11 +3,11 @@ import {Button, Collapse, Space} from "@arco-design/web-react";
 import ModelCard from "@/components/workbench/components/modelCard";
 import {AddIcon} from "tdesign-icons-react";
 
-const ModelPanel = () => {
+const ModelPanel = (props: { name: string }) => {
     return (
         <Collapse.Item
             header={<div style={{userSelect: 'none'}}>模型</div>}
-            name='ModelPanel'
+            name={props.name}
             extra={<IconMoreVertical/>}
             style={{width: '100%', overflow: 'hidden'}}
         >

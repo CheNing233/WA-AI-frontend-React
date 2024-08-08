@@ -2,9 +2,10 @@ import {Button, Grid, Space} from "@arco-design/web-react";
 import {ControlPlatformIcon} from "tdesign-icons-react";
 import ImageCard from "@/components/imageCard";
 import GridExt from "@/components/gridExt";
+import useWorkbench from "@/components/workbench/useWorkbench";
 
 const Home = () => {
-
+    const {setWorkbenchShow} = useWorkbench()
     const {GridItem} = Grid;
 
     return (
@@ -42,7 +43,13 @@ const Home = () => {
                                 生成平台。我们在这里提供免费的图片生成服务，包括文生图、图生图、超分放大等。并提供各式各样的附加模型。如果你有更好的想法或是想加入开发，请及时联系我们。</p>
                             <Space>
                                 <Button size={'large'} type={'primary'} shape={'round'}
-                                        icon={<ControlPlatformIcon/>}>打开工作台</Button>
+                                        icon={<ControlPlatformIcon/>}
+                                        onClick={() => {
+                                            setWorkbenchShow(true)
+                                        }}
+                                >
+                                    打开工作台
+                                </Button>
                                 <Button size={'large'} shape={'round'}>探索所有帖子 {' >'}</Button>
                             </Space>
 

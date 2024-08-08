@@ -5,6 +5,8 @@ export type IWorkbenchSetting = {
     setWidth?: (width: string | number) => void,
     wrapperInDrawer?: boolean,
     setWrapperInDrawer?: (wrapperInDrawer: boolean) => void,
+    txt2imgActivePanel?: string[],
+    setTxt2imgActivePanel?: (txt2imgActivePanel: string[]) => void,
 }
 
 
@@ -12,7 +14,9 @@ export const useWorkbenchSetting = create((set) => ({
     width: '100vw',
     setWidth: (width: string | number) => set(() => ({width})),
     wrapperInDrawer: true,
-    setWrapperInDrawer: (wrapperInDrawer: boolean) => set(() => ({wrapperInDrawer}))
+    setWrapperInDrawer: (wrapperInDrawer: boolean) => set(() => ({wrapperInDrawer})),
+    txt2imgActivePanel: ['txt2img-prompt'],
+    setTxt2imgActivePanel: (txt2imgActivePanel: string[]) => set(() => ({txt2imgActivePanel}))
 }))
 
 
@@ -94,7 +98,7 @@ export type IWorkbenchParams = {
     setExtraParams: (extraParams: IExtraParams) => void;
 };
 
-// 创建一个函数 useWorkbenchParams，其初始返回的对象符合 IWorkbenchParams 类型
+
 export const useWorkbenchParams = create((set) => ({
     txt2imgParams: {
         prompt: "",

@@ -10,7 +10,7 @@ import History from "@/components/workbench/history";
 import Work from "@/components/workbench/work";
 
 const Workbench = () => {
-    const [workbenchShow, setWorkbenchShow] = useWorkbench();
+    const {workbenchShow, setWorkbenchShow} = useWorkbench();
     const workbenchSetting: IWorkbenchSetting = useWorkbenchSetting((state) => state);
 
     const [mobileDisplay, setMobileDisplay] = useState(false)
