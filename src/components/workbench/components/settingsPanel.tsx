@@ -3,7 +3,7 @@ import {Collapse, Space} from "@arco-design/web-react";
 import ParamsRender from "@/components/workbench/components/paramsRender";
 import {IWorkbenchParams, useWorkbenchParams} from "@/store/workbench";
 
-const SettingsPanel = () => {
+const SettingsPanel = (props: { name: string }) => {
     const [txt2imgParams, setTxt2imgParams] = useWorkbenchParams(
         (state: IWorkbenchParams) => [state.txt2imgParams, state.setTxt2imgParams]
     )
@@ -11,7 +11,7 @@ const SettingsPanel = () => {
     return (
         <Collapse.Item
             header={<div style={{userSelect: 'none'}}>基本设置</div>}
-            name='SettingsPanel'
+            name={props.name}
             extra={<IconMoreVertical/>}
             style={{width: '100%', overflow: 'hidden'}}
         >
@@ -56,6 +56,7 @@ const SettingsPanel = () => {
                     {
                         name: '宽度',
                         type: 'slider',
+                        subItem: true,
                         settings: {
                             min: 32,
                             max: 4096,
@@ -69,6 +70,7 @@ const SettingsPanel = () => {
                     {
                         name: '高度',
                         type: 'slider',
+                        subItem: true,
                         settings: {
                             min: 32,
                             max: 4096,
@@ -156,7 +158,13 @@ const SettingsPanel = () => {
                             placeholder: '留空和-1均为随机',
                             value: txt2imgParams.seed.toString(),
                             onChange: (value: string) => {
-                                setTxt2imgParams({...txt2imgParams, seed: parseInt(value)})
+                                console.log(value)
+                                let parsedValue: number = parseInt(value);
+                                if (isNaN(parsedValue)) {
+                                    // 如果无法解析为数字，则将 value 设置为 -1
+                                    parsedValue = -1;
+                                }
+                                setTxt2imgParams({...txt2imgParams, seed: parsedValue});
                             }
                         }
                     },
@@ -198,32 +206,6 @@ const SettingsPanel = () => {
                                         eta_noise_seed_delta: parseInt(value)
                                     }
                                 })
-                            }
-                        }
-                    },
-                    {
-                        name: '测试',
-                        type: 'radios',
-                        settings: {
-                            radioOptions: [
-                                {label: '768x768', value: '768x768'},
-                                {label: '1024x768', value: '1024x768'},
-                                {label: '768x1024', value: '768x1024'},
-                                {label: '1024x1024', value: '1024x1024'},
-                            ],
-                            value: '768x768',
-                            onChange: (value: string) => {
-                                console.log(value)
-                            }
-                        }
-                    },
-                    {
-                        name: '测试sw',
-                        type: 'switch',
-                        settings: {
-                            checked: false,
-                            onChange: (checked: boolean) => {
-                                console.log(checked)
                             }
                         }
                     }

@@ -1,52 +1,75 @@
 import {Button, Card, Collapse, Grid, InputNumber, Space, Tabs} from "@arco-design/web-react";
-import {ControlPlatformIcon, TranslateIcon} from "tdesign-icons-react";
-import {IconSettings, IconToTop} from "@arco-design/web-react/icon";
+import {AdjustmentIcon, ControlPlatformIcon, Fullscreen1Icon, LayersIcon, TextboxIcon} from "tdesign-icons-react";
+import {IconToTop} from "@arco-design/web-react/icon";
 import SidebarWrapper from "@/components/workbench/components/sidebarWrapper";
 import ModelPanel from "@/components/workbench/components/modelPanel";
 import PromptPanel from "@/components/workbench/components/promptPanel";
 import SettingsPanel from "@/components/workbench/components/settingsPanel";
+import HiresPanel from "@/components/workbench/components/hiresPanel";
+import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
 
 const Work = () => {
+    const [txt2imgActivePanel, setTxt2imgActivePanel] = useWorkbenchSetting(
+        (state: IWorkbenchSetting) => [state.txt2imgActivePanel, state.setTxt2imgActivePanel]
+    )
+
     return (
         <Space style={{top: '0', width: '100%'}} direction={'vertical'}>
-            <Tabs>
-                <Tabs.TabPane title={'Work'}>
+            <Tabs defaultActiveTab={'txt2img'}>
+                <Tabs.TabPane key={'txt2img'} title={'文生图'}>
                     <Collapse
                         style={{width: 'calc(100% - 2px)', overflow: 'visible'}}
                         bordered={true}
                         destroyOnHide={false}
+                        activeKey={txt2imgActivePanel}
+                        defaultActiveKey={txt2imgActivePanel}
+                        onChange={(activePanel, activePanels) => {
+                            setTxt2imgActivePanel(activePanels)
+                        }}
                     >
                         <SidebarWrapper
                             menu={[
                                 {
                                     key: 'model',
                                     title: '模型',
-                                    icon: <ControlPlatformIcon/>
+                                    icon: <LayersIcon/>
                                 },
                                 {
                                     key: 'prompt',
                                     title: '提示词',
-                                    icon: <TranslateIcon/>
+                                    icon: <TextboxIcon/>
                                 },
                                 {
                                     key: 'settings',
-                                    title: '设置',
-                                    icon: <IconSettings/>
+                                    title: '基本设置',
+                                    icon: <AdjustmentIcon/>
+                                },
+                                {
+                                    key: 'hires',
+                                    title: '高清修复',
+                                    icon: <Fullscreen1Icon/>
                                 }
                             ]}
                             style={{width: '100%', padding: '12px 0 12px 0'}}
                         >
                             <div key={'model'}>
-                                <ModelPanel/>
+                                <ModelPanel name={'txt2img-model'}/>
                             </div>
                             <div key={'prompt'}>
-                                <PromptPanel/>
+                                <PromptPanel name={'txt2img-prompt'}/>
                             </div>
                             <div key={'settings'}>
-                                <SettingsPanel/>
+                                <SettingsPanel name={'txt2img-settings'}/>
+                            </div>
+                            <div key={'hires'}>
+                                <HiresPanel name={'txt2img-hires'}/>
                             </div>
                         </SidebarWrapper>
                     </Collapse>
+                </Tabs.TabPane>
+                <Tabs.TabPane key={'img2img'} title={'图生图'}>
+                </Tabs.TabPane>
+                <Tabs.TabPane key={'extra'} title={'超分放大'}>
                 </Tabs.TabPane>
             </Tabs>
             <Card

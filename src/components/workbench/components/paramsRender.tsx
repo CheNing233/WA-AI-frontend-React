@@ -53,6 +53,7 @@ export type ISwitchSetting = {
 export type IParams = {
     name: string,
     type: 'slider' | 'select' | 'radios' | 'switch' | 'buttons' | 'input',
+    subItem?: boolean,
     visible?: boolean,
     settings?: ISliderSetting | IInputSetting | ISelectSetting | IRadioGroupSetting | IButtonGroupSetting | ISwitchSetting,
     [key: string]: any
@@ -80,7 +81,7 @@ const ParamsRender = (props: IParamsRenderProps) => {
                             <Grid.Row key={`${param.name}-GridComponent`} gutter={[0, 16]} style={{width: '100%'}}
                                       align={'center'}>
                                 <Grid.Col flex={'shrink'}>
-                                    <Tag size={'medium'} color={'arcoblue'}>{param.name}</Tag>
+                                    <Tag size={'medium'} color={param.subItem ? '' : 'arcoblue'}>{param.name}</Tag>
                                 </Grid.Col>
                                 <Grid.Col flex={'1'} style={{marginLeft: '16px'}}>
                                     <Slider
@@ -107,7 +108,7 @@ const ParamsRender = (props: IParamsRenderProps) => {
                             <Grid.Row key={`${param.name}-GridComponent`} gutter={[0, 16]} style={{width: '100%'}}
                                       align={'center'}>
                                 <Grid.Col flex={'shrink'}>
-                                    <Tag size={'medium'} color={'arcoblue'}>{param.name}</Tag>
+                                    <Tag size={'medium'} color={param.subItem ? '' : 'arcoblue'}>{param.name}</Tag>
                                 </Grid.Col>
                                 <Grid.Col flex={'1'} style={{marginLeft: '16px'}}>
                                     <Input
@@ -127,7 +128,7 @@ const ParamsRender = (props: IParamsRenderProps) => {
                             <Grid.Row key={`${param.name}-GridComponent`} gutter={[0, 16]} style={{width: '100%'}}
                                       align={'center'}>
                                 <Grid.Col flex={'shrink'}>
-                                    <Tag size={'medium'} color={'arcoblue'}>{param.name}</Tag>
+                                    <Tag size={'medium'} color={param.subItem ? '' : 'arcoblue'}>{param.name}</Tag>
                                 </Grid.Col>
                                 <Grid.Col flex={'1'} style={{marginLeft: '16px'}}>
                                     <Select
@@ -158,7 +159,7 @@ const ParamsRender = (props: IParamsRenderProps) => {
                         return (
                             /* Render radio buttons with param.settings.options */
                             <Space key={`${param.name}-SpaceComponent`}>
-                                <Tag size={'medium'} color={'arcoblue'}>{param.name}</Tag>
+                                <Tag size={'medium'} color={param.subItem ? '' : 'arcoblue'}>{param.name}</Tag>
                                 <Radio.Group
                                     size={'small'}
                                     value={(param.settings as IRadioGroupSetting).value}
@@ -178,8 +179,8 @@ const ParamsRender = (props: IParamsRenderProps) => {
                     case "buttons":
                         const buttonOptions: IButtonSetting[] = (param.settings as IButtonGroupSetting).buttons;
                         return (
-                            <Space key={`${param.name}-SpaceComponent`}>
-                                <Tag size={'medium'} color={'arcoblue'}>{param.name}</Tag>
+                            <Space key={`${param.name}-SpaceComponent`} size={16}>
+                                <Tag size={'medium'} color={param.subItem ? '' : 'arcoblue'}>{param.name}</Tag>
                                 <Button.Group>
                                     {buttonOptions.map((option) => (
                                         <Button
@@ -199,7 +200,7 @@ const ParamsRender = (props: IParamsRenderProps) => {
                         const switchSettings = (param.settings as ISwitchSetting);
                         return (
                             <Space key={`${param.name}-SpaceComponent`}>
-                                <Tag size={'medium'} color={'arcoblue'}>{param.name}</Tag>
+                                <Tag size={'medium'} color={param.subItem ? '' : 'arcoblue'}>{param.name}</Tag>
                                 <Switch
                                     checked={switchSettings.checked}
                                     onChange={switchSettings.onChange}
