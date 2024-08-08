@@ -1,9 +1,10 @@
 import {Button, Card, Collapse, Grid, InputNumber, Space, Tabs} from "@arco-design/web-react";
 import {ControlPlatformIcon, TranslateIcon} from "tdesign-icons-react";
-import {IconMoreVertical, IconToTop} from "@arco-design/web-react/icon";
+import {IconSettings, IconToTop} from "@arco-design/web-react/icon";
 import SidebarWrapper from "@/components/workbench/components/sidebarWrapper";
 import ModelPanel from "@/components/workbench/components/modelPanel";
 import PromptPanel from "@/components/workbench/components/promptPanel";
+import SettingsPanel from "@/components/workbench/components/settingsPanel";
 
 const Work = () => {
     return (
@@ -25,16 +26,24 @@ const Work = () => {
                                 {
                                     key: 'prompt',
                                     title: '提示词',
-                                    icon: <TranslateIcon />
+                                    icon: <TranslateIcon/>
                                 },
+                                {
+                                    key: 'settings',
+                                    title: '设置',
+                                    icon: <IconSettings/>
+                                }
                             ]}
                             style={{width: '100%', padding: '12px 0 12px 0'}}
                         >
                             <div key={'model'}>
-                                <ModelPanel />
+                                <ModelPanel/>
                             </div>
                             <div key={'prompt'}>
-                                <PromptPanel />
+                                <PromptPanel/>
+                            </div>
+                            <div key={'settings'}>
+                                <SettingsPanel/>
                             </div>
                         </SidebarWrapper>
                     </Collapse>
