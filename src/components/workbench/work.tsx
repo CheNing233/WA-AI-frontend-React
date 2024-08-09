@@ -9,13 +9,26 @@ import HiresPanel from "@/components/workbench/components/hiresPanel";
 import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
 
 const Work = () => {
+    const [activeTab, setActiveTab] = useWorkbenchSetting(
+        (state: IWorkbenchSetting) => [state.activeTab, state.setActiveTab]
+    )
+
     const [txt2imgActivePanel, setTxt2imgActivePanel] = useWorkbenchSetting(
         (state: IWorkbenchSetting) => [state.txt2imgActivePanel, state.setTxt2imgActivePanel]
     )
 
+
+    const handleMenuClick = (key: string) => {
+        const panelName = `${activeTab}-${key}`
+        const panelNameArr = [...txt2imgActivePanel, panelName]
+        setTxt2imgActivePanel(panelNameArr)
+    }
+
     return (
         <Space style={{top: '0', width: '100%'}} direction={'vertical'}>
-            <Tabs defaultActiveTab={'txt2img'}>
+            <Tabs
+                defaultActiveTab={'txt2img'}
+            >
                 <Tabs.TabPane key={'txt2img'} title={'文生图'}>
                     <Collapse
                         style={{width: 'calc(100% - 2px)', overflow: 'visible'}}
@@ -50,6 +63,7 @@ const Work = () => {
                                     icon: <Fullscreen1Icon/>
                                 }
                             ]}
+                            onMenuClick={handleMenuClick}
                             style={{width: '100%', padding: '12px 0 12px 0'}}
                         >
                             <div key={'model'}>

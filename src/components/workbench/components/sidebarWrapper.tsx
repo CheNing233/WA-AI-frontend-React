@@ -14,6 +14,7 @@ interface IMenuProps {
 const SidebarWrapper = (props: {
     children: any,
     menu: IMenuProps[],
+    onMenuClick?: (key: string) => void,
     [key: string]: any
 }) => {
 
@@ -31,6 +32,7 @@ const SidebarWrapper = (props: {
     }
 
     const handleClickMenuItem = (key: string) => {
+        props.onMenuClick?.(key)
         currentScrollTo.scrollTo(key)
     }
 

@@ -7,6 +7,8 @@ export const GlobalContext = createContext<{
   setTheme?: (value: string) => void;
   bodyDragSelect?: boolean;
   setBodyDragSelect?: (value: boolean) => void;
+  imageViewerVisible?: boolean;
+  setImageViewerVisible?: (value: boolean) => void;
   workbenchVisible?: boolean;
   setWorkbenchVisible?: (value: boolean) => void;
 }>({});

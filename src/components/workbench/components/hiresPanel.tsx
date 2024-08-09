@@ -59,8 +59,8 @@ const HiresPanel = (props: { name: string }) => {
                         type: 'slider',
                         subItem: true,
                         settings: {
-                            min: 1,
-                            max: 6,
+                            min: 0,
+                            max: 4,
                             step: 0.1,
                             value: txt2imgParams.hr_scale,
                             onChange: (value: number) => {
