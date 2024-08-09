@@ -5,6 +5,8 @@ export type IWorkbenchSetting = {
     setWidth?: (width: string | number) => void,
     wrapperInDrawer?: boolean,
     setWrapperInDrawer?: (wrapperInDrawer: boolean) => void,
+    activeTab?: string,
+    setActiveTab?: (activeTab: string) => void,
     txt2imgActivePanel?: string[],
     setTxt2imgActivePanel?: (txt2imgActivePanel: string[]) => void,
 }
@@ -15,8 +17,12 @@ export const useWorkbenchSetting = create((set) => ({
     setWidth: (width: string | number) => set(() => ({width})),
     wrapperInDrawer: true,
     setWrapperInDrawer: (wrapperInDrawer: boolean) => set(() => ({wrapperInDrawer})),
+    activeTab: 'txt2img',
+    setActiveTab: (activeTab: string) => set(() => ({activeTab})),
     txt2imgActivePanel: ['txt2img-prompt'],
-    setTxt2imgActivePanel: (txt2imgActivePanel: string[]) => set(() => ({txt2imgActivePanel}))
+    setTxt2imgActivePanel: (txt2imgActivePanel: string[]) => set(() => (
+        {txt2imgActivePanel: Array.from(new Set(txt2imgActivePanel))}
+    ))
 }))
 
 
