@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 
 import './styles/index.css'
-import {Avatar, Button, Space, Typography} from "@arco-design/web-react";
+import {Avatar, Button, Skeleton, Space, Typography} from "@arco-design/web-react";
 import {ChatBubble1Icon, ControlPlatformIcon} from "tdesign-icons-react";
 import {IconHeart, IconStar} from "@arco-design/web-react/icon";
 
 const ImageCard = (props: any) => {
     const [maskMouseOver, setMaskMouseOver] = useState(false);
+
+    const [onLoaded, setOnLoaded] = useState(false)
 
     const handleMaskMouseOver = () => {
         setMaskMouseOver(true)
@@ -16,14 +18,36 @@ const ImageCard = (props: any) => {
         setMaskMouseOver(false)
     }
 
+    const handleImageLoaded = () => {
+        setOnLoaded(true)
+    }
+
     return (
         <div className={'image-container'}>
+            {/*image*/}
             <img
-                src='https://obj.glcn.top/wa-image/1718369431376.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'
-                className={'image-box'}
+                src={props.src}
+                className={'image-box' + (props.fit ? ' fit-cover' : '')}
                 alt={'img'}
+                onLoad={handleImageLoaded}
+                style={{visibility: onLoaded ? 'visible' : 'hidden'}}
             />
 
+            {/*loading*/}
+            {!onLoaded && <Skeleton
+                style={{width: '100%', height: '500px', position: 'absolute', zIndex: 66}}
+                animation={true}
+                image={{
+                    style: {
+                        width: '100vh',
+                        height: '100vh'
+                    },
+                    shape: 'square',
+                }}
+                text={false}
+            />}
+
+            {/*caption*/}
             <div
                 className={'image-box-caption-bar'}
                 onMouseOver={handleMaskMouseOver}
@@ -35,10 +59,10 @@ const ImageCard = (props: any) => {
                 >
 
                     {/*author*/}
-                    <Space>
+                    <Space align={'center'}>
                         <Avatar
                             shape={'square'}
-                            size={36}
+                            size={40}
                         >
                             WA
                         </Avatar>
