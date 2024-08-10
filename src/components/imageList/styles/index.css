@@ -1,0 +1,34 @@
+.image-list {
+    display: flex !important;
+    align-items: flex-start;
+    justify-items: flex-start;
+    align-content: flex-start;
+
+    width: 100%;
+}
+
+.image-list.horizontal {
+    padding: 8px 0 0 0;
+    flex-wrap: nowrap !important;
+    overflow-x: scroll !important;
+    overflow-y: hidden !important;
+    padding-bottom: 8px !important;
+}
+
+.image-list.vertical {
+    padding: 0 8px 0 8px;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+}
+
+.image-list-item {
+    aspect-ratio: 1;
+}
+
+.image-list-item.horizontal {
+    margin-left: 8px;
+}
+
+.image-list-item.vertical {
+    margin-top: 6px;
+}

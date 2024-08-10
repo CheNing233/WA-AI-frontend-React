@@ -20,6 +20,7 @@ import useRoute, {getFlattenRoutes} from "@/routes";
 import Workbench from "@/components/workbench";
 import useDragSelect from "@/utils/useDragSelect";
 import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
+import ImagePreviewer from "@/components/imagePreviewer";
 
 
 const store = createStore(rootReducer);
@@ -29,7 +30,9 @@ function App() {
     const [lang, setLang] = useStorage('arco-lang', 'zh-CN');
     const [theme, setTheme] = useStorage('arco-theme', 'light');
     const [bodyDragSelect, setBodyDragSelect] = useState(false)
+    const [imageViewerVisible, setImageViewerVisible] = useState(false);
     const [workbenchVisible, setWorkbenchVisible] = useState(false);
+
 
     const workbenchWrapperInDrawer = useWorkbenchSetting(
         (state: IWorkbenchSetting) => state.wrapperInDrawer
@@ -69,6 +72,8 @@ function App() {
         setTheme,
         bodyDragSelect,
         setBodyDragSelect,
+        imageViewerVisible,
+        setImageViewerVisible,
         workbenchVisible,
         setWorkbenchVisible,
     };
@@ -116,6 +121,7 @@ function App() {
                                         </Route>
                                     </Switch>
                                     <Footer/>
+                                    <ImagePreviewer />
                                 </>,
                                 <>
                                     <Workbench/>
@@ -129,7 +135,7 @@ function App() {
                                 setElDragSelect(true)
                             }}
                             disabled={!(workbenchVisible && !workbenchWrapperInDrawer)}
-                            size={workbenchVisible ? 0.7 : 1.01}
+                            size={(workbenchVisible && !workbenchWrapperInDrawer) ? 0.7 : 1.01}
                         />
                     </GlobalContext.Provider>
                 </Provider>

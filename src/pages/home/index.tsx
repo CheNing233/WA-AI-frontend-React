@@ -3,9 +3,11 @@ import {ControlPlatformIcon} from "tdesign-icons-react";
 import ImageCard from "@/components/imageCard";
 import GridExt from "@/components/gridExt";
 import useWorkbench from "@/components/workbench/useWorkbench";
+import useImagePreviewer from "@/components/imagePreviewer/useImagePreviewer";
 
 const Home = () => {
     const {setWorkbenchShow} = useWorkbench()
+    const {setImageViewerShow} = useImagePreviewer()
     const {GridItem} = Grid;
 
     return (
@@ -50,7 +52,15 @@ const Home = () => {
                                 >
                                     打开工作台
                                 </Button>
-                                <Button size={'large'} shape={'round'}>探索所有帖子 {' >'}</Button>
+                                <Button
+                                    size={'large'}
+                                    shape={'round'}
+                                    onClick={()=>{
+                                        setImageViewerShow(true)
+                                    }}
+                                >
+                                    探索所有帖子 {' >'}
+                                </Button>
                             </Space>
 
                         </div>
