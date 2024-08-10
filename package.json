@@ -5,6 +5,7 @@
   "dependencies": {
     "@arco-design/web-react": "^2.63.1",
     "@babel/core": "^7.16.0",
+    "@egjs/react-infinitegrid": "^4.12.0",
     "@loadable/component": "^5.16.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^5.5.0",
