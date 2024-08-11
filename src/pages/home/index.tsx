@@ -4,7 +4,6 @@ import ImageCard from "@/components/imageCard";
 import GridExt from "@/components/gridExt";
 import useWorkbench from "@/components/workbench/useWorkbench";
 import useImagePreviewer from "@/components/imagePreviewer/useImagePreviewer";
-import ImageWaterfall from "@/components/imageWaterfall";
 
 const Home = () => {
     const {setWorkbenchShow} = useWorkbench()
@@ -134,10 +133,6 @@ const Home = () => {
                     </div>
                 </GridItem>
             </GridExt>
-
-            <div style={{width: '100%', height: '100px', padding: '24px 0 48px 0'}}>
-                <ImageWaterfall/>
-            </div>
         </div>
     )
 }
