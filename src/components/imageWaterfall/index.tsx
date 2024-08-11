@@ -19,7 +19,7 @@ export type IImageWaterfallProps = {
 const Item = ({num, itemWidth}: any) => (
     <div
         style={{
-            width: itemWidth,
+            width: itemWidth - 1,
         }}
     >
         <ImageCard
@@ -27,7 +27,8 @@ const Item = ({num, itemWidth}: any) => (
             alt="egjs"
         />
         <div>num {num}</div>
-    </div>);
+    </div>
+)
 
 const ImageWaterfall = (props: IImageWaterfallProps) => {
     const masonryRef = useRef(null);
@@ -35,6 +36,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
     const [itemWidth, setItemWidth] = useState(0);
     const [rendering, setRendering] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [status, setStatus] = useState(null);
 
     const handleScroll = () => {
         if (rendering) return;
@@ -47,7 +49,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
     }
 
     const handleRequestAppend = async (e: any) => {
-        if (props.hasNoMore) return;
+        if (props.hasNoMore || itemWidth === 0) return;
         const nextGroupKey = (+e.groupKey! || 0) + 1;
 
         e.wait();
@@ -61,6 +63,18 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
         const handleResize = () => {
             if (referenceBoxRef.current) {
                 const width = Math.floor(referenceBoxRef.current.getBoundingClientRect().width);
+
+                if (masonryRef.current && width > 0) {
+                    setStatus(masonryRef.current.getStatus());
+                }
+
+                if (width > 0 && itemWidth === 0) {
+                    setTimeout(() => {
+                        if (masonryRef.current && status) {
+                            // masonryRef.current.setStatus(status)
+                        }
+                    }, 500)
+                }
                 setItemWidth(width)
             }
         }
@@ -89,7 +103,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
     }, [props.scrollContainer])
 
     return (
-        <div style={{width: "100%", position: 'relative', minWidth: '100px', minHeight: '30vh'}}>
+        <div style={{width: "100%", position: 'relative'}}>
             <GridExt
                 style={{
                     position: 'absolute',
@@ -102,18 +116,19 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                 refContainerWidth={true}
             >
                 <Grid.GridItem span={1}>
-                    <div ref={referenceBoxRef} style={{width: '100%', minWidth: '100px', height: '10px'}}/>
+                    <div ref={referenceBoxRef} style={{width: '100%', height: '10px'}}/>
                 </Grid.GridItem>
             </GridExt>
-            {(itemWidth !== 0) && <MasonryInfiniteGrid
+            <MasonryInfiniteGrid
                 ref={masonryRef}
+                // status={status ? status : undefined}
                 style={{width: "100%"}}
                 gap={{
                     vertical: props.rowGap,
                     horizontal: props.colGap,
                 }}
-                useTransform={false}
-                useResizeObserver={true}
+                useTransform={true}
+                useResizeObserver={false}
                 observeChildren={true}
                 onRequestAppend={handleRequestAppend}
                 onRenderComplete={handleRenderComplete}
@@ -130,7 +145,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                         )
                     })
                 }
-            </MasonryInfiniteGrid>}
+            </MasonryInfiniteGrid>
             {loading && <div
                 style={{width: '100%', height: '128px', position: 'relative'}}
             >

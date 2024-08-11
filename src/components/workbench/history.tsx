@@ -1,4 +1,4 @@
-import {Button, Card, Space} from "@arco-design/web-react";
+import {Card, Link, Space} from "@arco-design/web-react";
 import ImageWaterfall from "@/components/imageWaterfall";
 import {useRef, useState} from "react";
 
@@ -31,7 +31,7 @@ const History = () => {
                 title={<span style={{fontSize: '14px'}}>任务记录</span>}
                 bordered={false}
                 size={'small'}
-                extra={<Button size={'small'} type={'text'}>多选</Button>}
+                extra={<Link>&nbsp;多选&nbsp;</Link>}
                 style={{width: '100%',}}
             >
                 <div
@@ -39,7 +39,7 @@ const History = () => {
                     style={{
                         width: '100%',
                         height: 'calc(100vh - 136px)',
-                        overflowX: 'hidden',
+                        overflowX: 'visible',
                         overflowY: 'auto',
                     }}
                 >
@@ -53,8 +53,8 @@ const History = () => {
                             xxl: 4,
                             xxxl: 5,
                         }}
-                        rowGap={24}
-                        colGap={24}
+                        rowGap={16}
+                        colGap={16}
                         data={data}
                         hasNoMore={false}
                         scrollContainer={containerRef}
