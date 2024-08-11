@@ -1,19 +1,19 @@
-import * as React from "react";
-import {useEffect} from "react";
+import {useEffect, useRef, useState} from "react";
 import {MasonryInfiniteGrid} from "@egjs/react-infinitegrid";
 
 import ImageCard from "@/components/imageCard";
-import {Grid} from "@arco-design/web-react";
+import {Grid, Space, Spin} from "@arco-design/web-react";
 import GridExt from "@/components/gridExt";
 
-function getItems(nextGroupKey: number, count: number) {
-    const nextItems = [];
-    const nextKey = nextGroupKey * count;
 
-    for (let i = 0; i < count; ++i) {
-        nextItems.push({groupKey: nextGroupKey, key: nextKey + i});
-    }
-    return nextItems;
+export type IImageWaterfallProps = {
+    cols: { xxxl?: number, xxl?: number, xl?: number, lg?: number, md?: number, sm?: number, xs?: number },
+    rowGap: number,
+    colGap: number,
+    data: { key: number, groupKey: number }[],
+    hasNoMore: boolean,
+    onAppend: (nextGroupKey: number) => Promise<void>;
+    scrollContainer: any,
 }
 
 const Item = ({num, itemWidth}: any) => (
@@ -26,17 +26,35 @@ const Item = ({num, itemWidth}: any) => (
             src={`https://naver.github.io/egjs-infinitegrid/assets/image/${(num % 33) + 1}.jpg`}
             alt="egjs"
         />
+        <div>num {num}</div>
     </div>);
 
-function ImageWaterfall() {
-    const masonryRef = React.useRef(null);
-    const referenceBoxRef = React.useRef(null);
-    const [items, setItems] = React.useState(() => getItems(0, 10));
-    const [itemWidth, setItemWidth] = React.useState(0);
+const ImageWaterfall = (props: IImageWaterfallProps) => {
+    const masonryRef = useRef(null);
+    const referenceBoxRef = useRef(null);
+    const [itemWidth, setItemWidth] = useState(0);
+    const [rendering, setRendering] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleScroll = () => {
-        console.log('handleScroll')
-        masonryRef.current.renderItems();
+        if (rendering) return;
+        setRendering(true)
+        masonryRef.current?.renderItems();
+    }
+
+    const handleRenderComplete = () => {
+        setRendering(false);
+    }
+
+    const handleRequestAppend = async (e: any) => {
+        if (props.hasNoMore) return;
+        const nextGroupKey = (+e.groupKey! || 0) + 1;
+
+        e.wait();
+        setLoading(true);
+        await props.onAppend(nextGroupKey);
+        setLoading(false);
+        e.ready();
     }
 
     useEffect(() => {
@@ -44,7 +62,6 @@ function ImageWaterfall() {
             if (referenceBoxRef.current) {
                 const width = Math.floor(referenceBoxRef.current.getBoundingClientRect().width);
                 setItemWidth(width)
-                console.log('handleResize', width)
             }
         }
 
@@ -60,69 +77,49 @@ function ImageWaterfall() {
     }, [referenceBoxRef.current])
 
     useEffect(() => {
-        const scroller = document.getElementById('left-main-wrapper')
-        console.log('scroller', scroller)
+        const scroller = props.scrollContainer.current;
+
         if (scroller) {
             scroller.addEventListener('scroll', handleScroll);
         }
+
         return () => {
             scroller.removeEventListener('scroll', handleScroll);
         }
-    },[])
+    }, [props.scrollContainer])
 
     return (
-        <div
-            style={{width: "100%", position: 'relative'}}
-            // onWheel={handleScroll}
-        >
+        <div style={{width: "100%", position: 'relative', minWidth: '100px', minHeight: '30vh'}}>
             <GridExt
                 style={{
                     position: 'absolute',
                     width: "100%",
                     visibility: 'hidden'
                 }}
-                cols={{
-                    xs: 4,
-                    sm: 4,
-                    md: 4,
-                    lg: 4,
-                    xl: 4,
-                    xxl: 4,
-                    xxxl: 4
-                }}
-                colGap={16}
-                rowGap={16}
+                cols={props.cols}
+                colGap={props.colGap}
+                rowGap={props.rowGap}
                 refContainerWidth={true}
             >
                 <Grid.GridItem span={1}>
-                    <div ref={referenceBoxRef} style={{width: '100%'}}>123</div>
+                    <div ref={referenceBoxRef} style={{width: '100%', minWidth: '100px', height: '10px'}}/>
                 </Grid.GridItem>
             </GridExt>
-            <MasonryInfiniteGrid
+            {(itemWidth !== 0) && <MasonryInfiniteGrid
                 ref={masonryRef}
-                style={{
-                    width: "100%",
-                }}
+                style={{width: "100%"}}
                 gap={{
-                    vertical: 16,
-                    horizontal: 16
+                    vertical: props.rowGap,
+                    horizontal: props.colGap,
                 }}
                 useTransform={false}
                 useResizeObserver={true}
                 observeChildren={true}
-                onRequestAppend={(e) => {
-                    const nextGroupKey = (+e.groupKey! || 0) + 1;
-
-                    console.log('onRequestAppend')
-
-                    setItems([
-                        ...items,
-                        ...getItems(nextGroupKey, 10),
-                    ]);
-                }}
+                onRequestAppend={handleRequestAppend}
+                onRenderComplete={handleRenderComplete}
             >
                 {
-                    items.map((item) => {
+                    props.data.map((item) => {
                         return (
                             <Item
                                 data-grid-groupkey={item.groupKey}
@@ -133,7 +130,15 @@ function ImageWaterfall() {
                         )
                     })
                 }
-            </MasonryInfiniteGrid>
+            </MasonryInfiniteGrid>}
+            {loading && <div
+                style={{width: '100%', height: '128px', position: 'relative'}}
+            >
+                <Space style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'absolute'}}>
+                    <Spin/>
+                    <span>正在加载喵...</span>
+                </Space>
+            </div>}
         </div>
     )
 }
