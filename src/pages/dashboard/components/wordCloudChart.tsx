@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import 'echarts-wordcloud';
-import { Select, Space } from '@arco-design/web-react';
+import {Select, Space, Spin} from '@arco-design/web-react';
 
 const Option = Select.Option;
 
@@ -135,7 +135,7 @@ const WordCloudChart = ({ timeRange, setTimeRange }) => {
                 </Space>
             </div>
 
-            {loading && <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>加载中...</div>}
+            {loading && <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}><Spin /></div>}
             <div
                 ref={chartRef}
                 style={{ width: '100%', height: '400px', opacity: loading ? 0.5 : 1, transition: 'opacity 0.3s ease' }}
