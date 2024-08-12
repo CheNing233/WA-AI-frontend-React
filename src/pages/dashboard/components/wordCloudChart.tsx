@@ -102,11 +102,11 @@ const WordCloudChart = ({ timeRange, setTimeRange }) => {
 
     return (
         <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 10, margin: 0, height: 31.5 }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, margin: 0, height: 31.5 }}>
                 <h2 style={{ margin: 0 }}>热门搜索词</h2>
             </div>
 
-            <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}>
+            <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 1 }}>
                 <Space>
                     <Select
                         addBefore='选择期限'

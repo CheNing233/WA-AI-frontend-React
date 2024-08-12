@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu } from '@arco-design/web-react';
-import { BrowserRouter as Router, Route, Switch, Link, useLocation } from 'react-router-dom';
-import { IconApps, IconUser, IconFolder, IconDashboard, IconFileImage, IconSettings } from '@arco-design/web-react/icon';
+import { Route, Switch, Link, useLocation } from 'react-router-dom';
+import {
+    IconApps,
+    IconUser,
+    IconFolder,
+    IconDashboard,
+    IconFileImage,
+    IconSettings,
+    IconTags
+} from '@arco-design/web-react/icon';
 
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 
 import dashboard from "@/pages/dashboard/dashboard";
+import data from "@/pages/dashboard/components/data"
 import userList from "@/pages/dashboard/user/userList";
 import userDetails from "@/pages/dashboard/user/userDetails";
 import userPermissions from "@/pages/dashboard/user/userPermissions";
@@ -62,6 +71,12 @@ const DashboardIndex = () => {
                             <Link to="/dashboard" className={"menu-link"}>
                                 <IconApps />
                                 首页统计面板
+                            </Link>
+                        </Menu.Item>
+                        <Menu.Item key="/dashboard/data">
+                            <Link to="/dashboard/data" className={"menu-link"}>
+                                <IconTags />
+                                数据中心
                             </Link>
                         </Menu.Item>
                         <Menu.SubMenu
@@ -203,6 +218,7 @@ const DashboardIndex = () => {
                 <Content style={{ padding: '20px' }}>
                     <Switch>
                         <Route exact path="/dashboard" component={dashboard} />
+                        <Route exact path="/dashboard/data" component={data} />
                         <Route path="/dashboard/userList" component={userList} />
                         <Route path="/dashboard/userDetails" component={userDetails} />
                         <Route path="/dashboard/userPermissions" component={userPermissions} />
