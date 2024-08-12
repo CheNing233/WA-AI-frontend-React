@@ -49,7 +49,7 @@ const DashboardIndex = () => {
 
     return (
         <Layout style={{ minHeight: '74vh' }}>
-            <Sider theme="dark" style={{ backgroundColor: 'white', height: '90vh', overflow: 'hidden', position: 'fixed', left: 0 }}>
+            <Sider theme="dark" style={{ width:'170px',backgroundColor: 'white', height: '90vh', overflow: 'hidden', position: 'fixed', left: 0 }}>
                 <SimpleBar style={{ maxHeight: '100%', height: '100%' }}>
                     <Menu
                         mode="vertical"
@@ -199,8 +199,8 @@ const DashboardIndex = () => {
                     </Menu>
                 </SimpleBar>
             </Sider>
-            <Layout style={{ marginLeft: 200 }}>
-                <Content style={{ padding: '24px' }}>
+            <Layout style={{ marginLeft: 160 }}>
+                <Content style={{ padding: '20px' }}>
                     <Switch>
                         <Route exact path="/dashboard" component={dashboard} />
                         <Route path="/dashboard/userList" component={userList} />
