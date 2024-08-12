@@ -55,7 +55,7 @@ const Home = () => {
                                 <Button
                                     size={'large'}
                                     shape={'round'}
-                                    onClick={()=>{
+                                    onClick={() => {
                                         setImageViewerShow(true)
                                     }}
                                 >

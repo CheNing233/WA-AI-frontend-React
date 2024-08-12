@@ -102,7 +102,15 @@ function App() {
 
                         <ResizeBox.Split
                             panes={[
-                                <>
+                                <div
+                                    id={'left-main-wrapper'}
+                                    style={{
+                                        width: '100%',
+                                        height: '100vh',
+                                        overflowX: 'hidden',
+                                        overflowY: 'auto'
+                                    }}
+                                >
                                     <Header/>
                                     <Switch>
                                         {
@@ -121,8 +129,8 @@ function App() {
                                         </Route>
                                     </Switch>
                                     <Footer/>
-                                    <ImagePreviewer />
-                                </>,
+                                    <ImagePreviewer/>
+                                </div>,
                                 <>
                                     <Workbench/>
                                 </>

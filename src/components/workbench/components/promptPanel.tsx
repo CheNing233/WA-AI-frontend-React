@@ -54,7 +54,11 @@ const PromptPanel = (props: { name: string }) => {
                     </Grid.Col>
                     <Grid.Col flex={'1'}/>
                     <Grid.Col flex={'shrink'}>
-                        <Button shape={'round'} size={'small'} icon={<IconCode/>}>
+                        <Button
+                            shape={'round'}
+                            size={'small'}
+                            icon={<IconCode/>}
+                        >
                             输入提示
                             <Switch style={{position: 'relative', top: '-1.5px', left: '6px'}} size={'small'}/>
                         </Button>
