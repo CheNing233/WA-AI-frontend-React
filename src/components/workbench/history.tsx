@@ -44,6 +44,7 @@ const History = () => {
                     }}
                 >
                     <ImageWaterfall
+                        key={'workbench-waterfall'}
                         cols={{
                             xs: 1,
                             sm: 2,
@@ -57,7 +58,7 @@ const History = () => {
                         colGap={16}
                         data={data}
                         hasNoMore={false}
-                        scrollContainer={containerRef}
+                        scrollContainer={containerRef.current}
                         onAppend={getItems}
                     />
                 </div>

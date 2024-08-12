@@ -91,13 +91,14 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
     }, [referenceBoxRef.current])
 
     useEffect(() => {
-        const scroller = props.scrollContainer.current;
+        const scroller = props.scrollContainer;
 
         if (scroller) {
             scroller.addEventListener('scroll', handleScroll);
         }
 
         return () => {
+            if (!scroller) return;
             scroller.removeEventListener('scroll', handleScroll);
         }
     }, [props.scrollContainer])

@@ -3,12 +3,11 @@ import GridExt from "@/components/gridExt";
 import ImageSlider from "@/components/imageSlider";
 import {IconFullscreen, IconMoreVertical, IconStar, IconThumbUp} from "@arco-design/web-react/icon";
 import {ControlPlatformIcon} from "tdesign-icons-react";
+import ContentWrapper from "@/components/contentWrapper";
 
 const DetailPage = () => {
     return (
-        <div
-            style={{margin: '20px 32px 24px 32px'}}
-        >
+        <ContentWrapper>
             <Space direction={'vertical'} size={16} style={{width: '100%'}}>
                 <Breadcrumb>
                     <Breadcrumb.Item>上一级</Breadcrumb.Item>
@@ -184,7 +183,7 @@ const DetailPage = () => {
                     </Grid.Col>
                 </Grid.Row>
             </Space>
-        </div>
+        </ContentWrapper>
     )
 }
 

@@ -4,6 +4,8 @@ import ImageCard from "@/components/imageCard";
 import GridExt from "@/components/gridExt";
 import useWorkbench from "@/components/workbench/useWorkbench";
 import useImagePreviewer from "@/components/imagePreviewer/useImagePreviewer";
+import ContentWrapper from "@/components/contentWrapper";
+import Banner from "@/components/banner";
 
 const Home = () => {
     const {setWorkbenchShow} = useWorkbench()
@@ -11,7 +13,7 @@ const Home = () => {
     const {GridItem} = Grid;
 
     return (
-        <div style={{padding: '32px 48px 32px 48px'}}>
+        <ContentWrapper>
             <GridExt
                 cols={{
                     xs: 1,
@@ -32,38 +34,31 @@ const Home = () => {
                     span={6}
                 >
                     <div style={{width: '100%', aspectRatio: '6/4'}}>
-                        <div
-                            style={{
-                                position: 'relative',
-                                top: '50%',
-                                transform: 'translate(0, -55%)',
-                                padding: '24px'
-                            }}
-                        >
-                            <h1 style={{color: 'var(--color-text-1)'}}>欢迎来到 WA，今天想画点什么？</h1>
-                            <p style={{color: 'var(--color-text-1)'}}>这里是 WA，一个基于 Stable Diffusion 的 AI
-                                生成平台。我们在这里提供免费的图片生成服务，包括文生图、图生图、超分放大等。并提供各式各样的附加模型。如果你有更好的想法或是想加入开发，请及时联系我们。</p>
-                            <Space>
-                                <Button size={'large'} type={'primary'} shape={'round'}
-                                        icon={<ControlPlatformIcon/>}
+                        <Banner
+                            title={'欢迎来到 WA，今天想画点什么？'}
+                            description={'这里是 WA，一个基于 Stable Diffusion 的 AI 生成平台。我们在这里提供免费的图片生成服务，包括文生图、图生图、超分放大等。并提供各式各样的附加模型。如果你有更好的想法或是想加入开发，请及时联系我们。'}
+                            extra={
+                                <Space>
+                                    <Button size={'large'} type={'primary'} shape={'round'}
+                                            icon={<ControlPlatformIcon/>}
+                                            onClick={() => {
+                                                setWorkbenchShow(true)
+                                            }}
+                                    >
+                                        打开工作台
+                                    </Button>
+                                    <Button
+                                        size={'large'}
+                                        shape={'round'}
                                         onClick={() => {
-                                            setWorkbenchShow(true)
+                                            setImageViewerShow(true)
                                         }}
-                                >
-                                    打开工作台
-                                </Button>
-                                <Button
-                                    size={'large'}
-                                    shape={'round'}
-                                    onClick={() => {
-                                        setImageViewerShow(true)
-                                    }}
-                                >
-                                    探索所有帖子 {' >'}
-                                </Button>
-                            </Space>
-
-                        </div>
+                                    >
+                                        探索所有帖子 {' >'}
+                                    </Button>
+                                </Space>
+                            }
+                        />
                     </div>
                 </GridItem>
                 <GridItem
@@ -133,7 +128,7 @@ const Home = () => {
                     </div>
                 </GridItem>
             </GridExt>
-        </div>
+        </ContentWrapper>
     )
 }
 
