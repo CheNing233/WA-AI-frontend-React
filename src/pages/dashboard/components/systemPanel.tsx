@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Grid } from '@arco-design/web-react';
 import { IconUser, IconFile, IconCommon, IconImage } from '@arco-design/web-react/icon';
+import { useHistory } from 'react-router-dom';
 
 interface SystemPanelData {
     userCount: number;
@@ -17,9 +18,17 @@ interface SystemPanelData {
     sdImageAddCount: number;
 }
 
+const containerStyle: React.CSSProperties = {
+    width: '80%',
+    margin: '0px auto',
+    borderRadius: '8px',
+    padding: '20px',
+};
+
 const SystemPanel: React.FC = () => {
     const [data, setData] = useState<SystemPanelData | null>(null);
     const [loading, setLoading] = useState(true);
+    const history = useHistory(); // 获取历史对象
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,17 +46,24 @@ const SystemPanel: React.FC = () => {
         fetchData();
     }, []);
 
-    const renderCard = (title: string, count: number, icon: React.ReactNode) => (
+    const handleCardClick = (key: string) => {
+        history.push(`/dashboard/data?tab=${key}`); // 使用查询参数进行导航
+    };
+
+    const renderCard = (title: string, count: number, icon: React.ReactNode, key: string) => (
         <Card
             hoverable
-            bordered={false}
+            bordered={true} // 将 bordered 设置为 true，以确保有边框
+            onClick={() => handleCardClick(key)}
             style={{
-                backgroundColor: '#f0faff',
-                borderRadius: '20px',  // Increased border radius for more rounded corners
+                borderRadius: '20px',
                 textAlign: 'center',
                 padding: '20px 10px',
                 height: '100%',
-                margin: '5px 15px',  // Added margin for spacing between cards
+                margin: '5px 15px',
+                cursor: 'pointer',
+                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)', // 添加阴影效果
+                border: '1px solid #e8e8e8', // 设置边框样式和颜色
             }}
         >
             <div style={{ fontSize: '30px', marginBottom: '-25px' }}>{icon}</div>
@@ -59,23 +75,23 @@ const SystemPanel: React.FC = () => {
     );
 
     const items = [
-        { title: '用户总数 >', count: data?.userCount ?? 0, icon: <IconUser /> },
-        { title: '模型总数 >', count: data?.modelCount ?? 0, icon: <IconFile /> },
-        { title: '帖子总数 >', count: data?.postCount ?? 0, icon: <IconFile /> },
-        { title: '评论总数 >', count: data?.commentCount ?? 0, icon: <IconCommon /> },
-        { title: '任务总数 >', count: data?.taskCount ?? 0, icon: <IconFile /> },
-        { title: 'SD图片总数 >', count: data?.sdImageCount ?? 0, icon: <IconImage /> },
+        { title: '用户总数 >', count: data?.userCount ?? 0, icon: <IconUser />, key: 'user' },
+        { title: '模型总数 >', count: data?.modelCount ?? 0, icon: <IconFile />, key: 'model' },
+        { title: '帖子总数 >', count: data?.postCount ?? 0, icon: <IconFile />, key: 'posts' },
+        { title: '评论总数 >', count: data?.commentCount ?? 0, icon: <IconCommon />, key: 'comments' },
+        { title: '任务总数 >', count: data?.taskCount ?? 0, icon: <IconFile />, key: 'tasks' },
+        { title: 'SD图片总数 >', count: data?.sdImageCount ?? 0, icon: <IconImage />, key: 'sd-images' },
     ];
 
     return (
-        <div>
+        <div style={containerStyle}>
             <div style={{ marginBottom: 20 }}>
-                <h2 style={{ margin: 0 }}>数据统计</h2>
+                <h2 style={{ margin: 0, color: 'var(--color-text-2)'}}>数据统计</h2>
             </div>
             <Grid.Row gutter={[10, 10]}>
                 {items.map((item, index) => (
                     <Grid.Col key={index} span={8} xs={12} sm={8} md={8} lg={8}>
-                        {renderCard(item.title, item.count, item.icon)}
+                        {renderCard(item.title, item.count, item.icon, item.key)}
                     </Grid.Col>
                 ))}
             </Grid.Row>

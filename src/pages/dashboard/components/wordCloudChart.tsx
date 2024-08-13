@@ -1,24 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import 'echarts-wordcloud';
-import {Select, Space, Spin} from '@arco-design/web-react';
+import { Select, Space, Spin } from '@arco-design/web-react';
 
 const Option = Select.Option;
 
+const containerStyle: React.CSSProperties = {
+    width: '80%',
+    margin: '0px auto', // 水平居中容器
+    marginBottom: '20px',
+    borderRadius: '8px', // 根据需要调整边角圆度
+    padding: '20px', // 容器内的填充
+    position: 'relative', // 确保子元素的绝对定位
+};
+
 const WordCloudChart = ({ timeRange, setTimeRange }) => {
-    const chartRef = useRef(null);
+    const chartRef = useRef<HTMLDivElement | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const resizeObserverLoopErr = () => {
-            const observer = new ResizeObserver(() => {});
-            observer.observe(document.body);
-            observer.disconnect();
-        };
-
-        resizeObserverLoopErr();
-
-        const chartInstance = echarts.init(chartRef.current);
+        const chartInstance = echarts.init(chartRef.current!);
 
         const fetchData = async () => {
             setLoading(true);
@@ -101,12 +102,12 @@ const WordCloudChart = ({ timeRange, setTimeRange }) => {
     };
 
     return (
-        <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, margin: 0, height: 31.5 }}>
-                <h2 style={{ margin: 0 }}>热门搜索词</h2>
+        <div style={containerStyle}>
+            <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, margin: 20, height: 31.5 }}>
+                <h2 style={{ margin: 0, color: 'var(--color-text-2)' }}>热门搜索词</h2>
             </div>
 
-            <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 1 }}>
+            <div style={{ position: 'absolute', top: 0, right: 0, margin: 20, zIndex: 1 }}>
                 <Space>
                     <Select
                         addBefore='选择期限'
