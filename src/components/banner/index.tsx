@@ -26,7 +26,7 @@ const centerStyle = {
  */
 const Banner = (props: IBannerProps) => {
 
-    const alignStyle = props.align === 'left' ? leftStyle : centerStyle;
+    const alignStyle = props.align === 'center' ? centerStyle : leftStyle;
 
     return (
         <div
