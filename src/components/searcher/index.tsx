@@ -36,14 +36,14 @@ const Searcher = (props: ISearcherProps) => {
     const [searchValues, setSearchValues] = useState([])
     const [filters, setFilters] = useState(() => {
         let newFilters = {}
-        props.filters.forEach(group => {
+        props.filters?.forEach(group => {
             newFilters[group.groupName] = []
         })
         return newFilters
     })
     const [allFilters, setAllFilters] = useState(() => {
         let newFilters = {}
-        props.filters.forEach(group => {
+        props.filters?.forEach(group => {
             newFilters[group.groupName] = [
                 ...group.options.map(option => option.value)
             ]
@@ -161,9 +161,9 @@ const Searcher = (props: ISearcherProps) => {
         setSearchValues(newSearchValues)
     }
 
-    const filterGroupItem = (group: IFilterGroup) => {
+    const filterGroupItem = (group: IFilterGroup, index: number) => {
         return (
-            <>
+            <Space style={{width: '100%'}} direction={'vertical'} key={index}>
                 <div>
                     <span style={{paddingLeft: '6px'}}>{group.groupName}</span>
                     <Divider style={{margin: '8px 0 0 0'}}/>
@@ -179,7 +179,7 @@ const Searcher = (props: ISearcherProps) => {
                         updateFiltersToSearch(newFilters)// 将过滤器压进搜索框
                     }}
                 />
-            </>
+            </Space>
         )
     }
 
@@ -215,7 +215,7 @@ const Searcher = (props: ISearcherProps) => {
                             setSearchValues(values)
                         }}
                         addAfter={
-                            <Tooltip content={'标签变化后立即自动搜索'}>
+                            <Tooltip content={'内容变化后立即自动搜索'}>
                                 <Checkbox
                                     checked={autoSearch}
                                     onChange={(checked) => {
