@@ -63,19 +63,8 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
         const handleResize = () => {
             if (referenceBoxRef.current) {
                 const width = Math.floor(referenceBoxRef.current.getBoundingClientRect().width);
-
-                if (masonryRef.current && width > 0) {
-                    setStatus(masonryRef.current.getStatus());
-                }
-
-                if (width > 0 && itemWidth === 0) {
-                    setTimeout(() => {
-                        if (masonryRef.current && status) {
-                            // masonryRef.current.setStatus(status)
-                        }
-                    }, 500)
-                }
                 setItemWidth(width)
+                masonryRef.current.renderItems();
             }
         }
 
@@ -120,7 +109,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                     <div ref={referenceBoxRef} style={{width: '100%', height: '10px'}}/>
                 </Grid.GridItem>
             </GridExt>
-            {referenceBoxRef?.current && <MasonryInfiniteGrid
+            <MasonryInfiniteGrid
                 ref={masonryRef}
                 // status={status ? status : undefined}
                 style={{width: "100%"}}
@@ -128,9 +117,10 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                     vertical: props.rowGap,
                     horizontal: props.colGap,
                 }}
-                useTransform={true}
+                useTransform={false}
                 useResizeObserver={false}
-                observeChildren={true}
+                observeChildren={false}
+                resizeDebounce={0}
                 onRequestAppend={handleRequestAppend}
                 onRenderComplete={handleRenderComplete}
             >
@@ -146,7 +136,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                         )
                     })
                 }
-            </MasonryInfiniteGrid>}
+            </MasonryInfiniteGrid>
             {loading && <div
                 style={{width: '100%', height: '128px', position: 'relative'}}
             >
