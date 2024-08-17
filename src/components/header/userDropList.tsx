@@ -3,27 +3,46 @@ import {ThunderIcon, WalletIcon} from "tdesign-icons-react";
 import {IconShareExternal} from "@arco-design/web-react/icon";
 import clipboard from "@/utils/clipboard";
 import {useHistory} from "react-router-dom";
+import {IUser, useUser} from "@/store/user";
+import authentication from "@/utils/authentication";
+import PermissionWrapper from "@/components/permissionWrapper";
 
 const UserDropList = () => {
     const history = useHistory();
 
+    const userLogged = useUser((state: IUser) => state.userLogged)
+    const userPerms = useUser((state: IUser) => state.userPerms)
+
+    const result = authentication({
+        requiredPermissions: [{resource: 'user', actions: ['fuck']}],
+        oneOfPerm: false
+    }, userPerms)
+    console.log("authentication", result)
+
+    const handleClickMenu = (key: string) => {
+        console.log(key)
+        switch (key){
+            case 'log':
+                if (userLogged){
+                    // TODO 退出登录
+                } else {
+                    history.push('/login')
+                }
+                break;
+        }
+    }
+
     return (
-        <Menu
-            style={{maxHeight: '900px'}}
-        >
-            <Menu.Item style={{height: '48px', margin: '6px 0 8px 0'}} key='0'>
+        <Menu style={{maxHeight: '900px'}} onClickMenuItem={handleClickMenu}>
+            <Menu.Item style={{height: '48px', margin: '6px 0 8px 0'}} key='avatar'>
                 <Space align={'center'} style={{marginTop: '4px'}}>
-                    <Avatar
-                        shape={'circle'}
-                    >
+                    <Avatar shape={'circle'}>
                         WA
                     </Avatar>
                     <Divider style={{margin: '0 0 0 0'}} type='vertical'/>
-                    <h3
-                        style={{margin: '0 0 0 0'}}
-                    >
+                    <h4 style={{margin: '0 0 0 0'}}>
                         请先登录 {'>'}
-                    </h3>
+                    </h4>
                 </Space>
             </Menu.Item>
             <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
@@ -68,17 +87,24 @@ const UserDropList = () => {
 
             <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
 
-            <Menu.Item key='1'>个人资料</Menu.Item>
-            <Menu.Item key='2'>我的收藏</Menu.Item>
-            <Menu.Item key='3'>我的图片</Menu.Item>
-            <Menu.Item key='4'>我的帖子</Menu.Item>
+            <Menu.Item key='profile'>个人资料</Menu.Item>
+            <Menu.Item key='favourites'>我的收藏</Menu.Item>
+            <Menu.Item key='images'>我的图片</Menu.Item>
+            <Menu.Item key='posts'>我的帖子</Menu.Item>
 
             <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
 
-            <Menu.Item key='log' onClick={() => {
-                history.push('/login')
-            }}>登录</Menu.Item>
-
+            <PermissionWrapper
+                required={{
+                    requiredPermissions: [{resource: 'user', actions: ['login', 'register']}],
+                    oneOfPerm: true
+                }}
+                backup={<Menu.Item key='log' disabled={true}>登录已禁用</Menu.Item>}
+            >
+                <Menu.Item key='log'>
+                    {userLogged ? '退出登录' : '登录'}
+                </Menu.Item>
+            </PermissionWrapper>
         </Menu>
     )
 }

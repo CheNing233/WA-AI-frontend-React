@@ -9,7 +9,7 @@ import {GlobalContext} from '@/context';
 import locate from './locate'
 import useLocale from "@/utils/useLocale";
 import Logo from "@/components/header/logo";
-import UserDropList from "@/components/header/user-drop-list";
+import UserDropList from "@/components/header/userDropList";
 
 import useRoute, {getFlattenRoutes} from "@/routes";
 import {useHistory, useLocation} from 'react-router-dom'

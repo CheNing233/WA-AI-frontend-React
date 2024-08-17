@@ -8,9 +8,6 @@ import './styles/index.css'
 import zhCN from '@arco-design/web-react/es/locale/zh-CN';
 import enUS from '@arco-design/web-react/es/locale/en-US';
 
-import {Provider} from 'react-redux';
-import {createStore} from 'redux';
-import rootReducer from './store';
 import useStorage from './utils/useStorage';
 import {GlobalContext} from "./context";
 import Footer from "@/components/footer";
@@ -21,9 +18,6 @@ import Workbench from "@/components/workbench";
 import useDragSelect from "@/utils/useDragSelect";
 import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
 import ImagePreviewer from "@/components/imagePreviewer";
-
-
-const store = createStore(rootReducer);
 
 
 function App() {
@@ -96,57 +90,55 @@ function App() {
                     },
                 }}
             >
-                <Provider store={store}>
-                    <GlobalContext.Provider value={contextValue}>
-                        <Background/>
+                <GlobalContext.Provider value={contextValue}>
+                    <Background/>
 
-                        <ResizeBox.Split
-                            panes={[
-                                <div
-                                    id={'left-main-wrapper'}
-                                    style={{
-                                        width: '100%',
-                                        height: '100vh',
-                                        overflowX: 'hidden',
-                                        overflowY: 'auto'
-                                    }}
-                                >
-                                    <Header/>
-                                    <Switch>
-                                        {
-                                            flattenRoutes.map((route) => {
-                                                return (
-                                                    <Route
-                                                        key={route.key}
-                                                        path={'/' + route.key}
-                                                        component={route.component}
-                                                    />
-                                                )
-                                            })
-                                        }
-                                        <Route path="/">
-                                            <Redirect to={`/${defaultRoute}`}/>
-                                        </Route>
-                                    </Switch>
-                                    <Footer/>
-                                    <ImagePreviewer/>
-                                </div>,
-                                <>
-                                    <Workbench/>
-                                </>
-                            ]}
-                            style={{height: '100vh', overflow: 'hidden'}}
-                            onMovingStart={() => {
-                                setElDragSelect(false)
-                            }}
-                            onMovingEnd={() => {
-                                setElDragSelect(true)
-                            }}
-                            disabled={!(workbenchVisible && !workbenchWrapperInDrawer)}
-                            size={(workbenchVisible && !workbenchWrapperInDrawer) ? 0.7 : 1.01}
-                        />
-                    </GlobalContext.Provider>
-                </Provider>
+                    <ResizeBox.Split
+                        panes={[
+                            <div
+                                id={'left-main-wrapper'}
+                                style={{
+                                    width: '100%',
+                                    height: '100vh',
+                                    overflowX: 'hidden',
+                                    overflowY: 'auto'
+                                }}
+                            >
+                                <Header/>
+                                <Switch>
+                                    {
+                                        flattenRoutes.map((route) => {
+                                            return (
+                                                <Route
+                                                    key={route.key}
+                                                    path={'/' + route.key}
+                                                    component={route.component}
+                                                />
+                                            )
+                                        })
+                                    }
+                                    <Route path="/">
+                                        <Redirect to={`/${defaultRoute}`}/>
+                                    </Route>
+                                </Switch>
+                                <Footer/>
+                                <ImagePreviewer/>
+                            </div>,
+                            <>
+                                <Workbench/>
+                            </>
+                        ]}
+                        style={{height: '100vh', overflow: 'hidden'}}
+                        onMovingStart={() => {
+                            setElDragSelect(false)
+                        }}
+                        onMovingEnd={() => {
+                            setElDragSelect(true)
+                        }}
+                        disabled={!(workbenchVisible && !workbenchWrapperInDrawer)}
+                        size={(workbenchVisible && !workbenchWrapperInDrawer) ? 0.7 : 1.01}
+                    />
+                </GlobalContext.Provider>
             </ConfigProvider>
         </BrowserRouter>
     );

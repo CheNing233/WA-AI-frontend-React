@@ -94,10 +94,12 @@ const User = () => {
                     >
                         <Card bordered={true}>
                             <Tabs type={'rounded'} defaultActiveTab={'updates'}
-                                  overflow={'dropdown'}
+                                  overflow={'dropdown'} style={{marginLeft: '-6px'}}
                             >
                                 <Tabs.TabPane key='updates' title='我的动态' style={{padding: '0 6px 0 6px'}}/>
                                 <Tabs.TabPane key='favourites' title='我的收藏' style={{padding: '0 6px 0 6px'}}/>
+                                <Tabs.TabPane key='images' title='我的图片' style={{padding: '0 6px 0 6px'}}/>
+                                <Tabs.TabPane key='posts' title='我的帖子' style={{padding: '0 6px 0 6px'}}/>
                             </Tabs>
                         </Card>
                         <Updates/>
