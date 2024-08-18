@@ -77,10 +77,10 @@ const SystemPanel: React.FC = () => {
     const items = [
         { title: '用户总数 >', count: data?.userCount ?? 0, icon: <IconUser />, key: 'user' },
         { title: '模型总数 >', count: data?.modelCount ?? 0, icon: <IconFile />, key: 'model' },
-        { title: '帖子总数 >', count: data?.postCount ?? 0, icon: <IconFile />, key: 'posts' },
-        { title: '评论总数 >', count: data?.commentCount ?? 0, icon: <IconCommon />, key: 'comments' },
-        { title: '任务总数 >', count: data?.taskCount ?? 0, icon: <IconFile />, key: 'tasks' },
-        { title: 'SD图片总数 >', count: data?.sdImageCount ?? 0, icon: <IconImage />, key: 'sd-images' },
+        { title: '帖子总数 >', count: data?.postCount ?? 0, icon: <IconFile />, key: 'post' },
+        { title: '评论总数 >', count: data?.commentCount ?? 0, icon: <IconCommon />, key: 'comment' },
+        { title: '任务总数 >', count: data?.taskCount ?? 0, icon: <IconFile />, key: 'task' },
+        { title: 'SD图片总数 >', count: data?.sdImageCount ?? 0, icon: <IconImage />, key: 'image' },
     ];
 
     return (
