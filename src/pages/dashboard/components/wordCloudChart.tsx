@@ -1,17 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import 'echarts-wordcloud';
-import { Select, Space, Spin } from '@arco-design/web-react';
+import { Spin, Select, Message } from '@arco-design/web-react';
 
 const Option = Select.Option;
 
 const containerStyle: React.CSSProperties = {
     width: '80%',
-    margin: '0px auto', // 水平居中容器
+    margin: '0px auto',
     marginBottom: '20px',
-    borderRadius: '8px', // 根据需要调整边角圆度
-    padding: '20px', // 容器内的填充
-    position: 'relative', // 确保子元素的绝对定位
+    borderRadius: '8px',
+    padding: '20px',
+    position: 'relative',
+};
+
+const selectWrapperStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
 };
 
 const WordCloudChart = ({ timeRange, setTimeRange }) => {
@@ -83,21 +89,31 @@ const WordCloudChart = ({ timeRange, setTimeRange }) => {
         };
     }, [timeRange]);
 
-    const handleDayChange = (value) => {
+    const handleDayChange = (value: string) => {
         const currentTime = Date.now();
         const dayInMilliseconds = 86400000;
         const newTimeRange = {
             ...timeRange,
-            startTime: currentTime - value * dayInMilliseconds,
+            startTime: currentTime - parseInt(value) * dayInMilliseconds,
             endTime: currentTime,
         };
         setTimeRange(newTimeRange);
+
+        Message.info({
+            content: `您选择了 ${value}天`,
+            showIcon: true,
+        });
     };
 
-    const handleLimitChange = (value) => {
+    const handleLimitChange = (value: string) => {
         setTimeRange({
             ...timeRange,
-            limit: value,
+            limit: parseInt(value),
+        });
+
+        Message.info({
+            content: `您选择了前 ${value} 个词语`,
+            showIcon: true,
         });
     };
 
@@ -108,32 +124,36 @@ const WordCloudChart = ({ timeRange, setTimeRange }) => {
             </div>
 
             <div style={{ position: 'absolute', top: 0, right: 0, margin: 20, zIndex: 1 }}>
-                <Space>
-                    <Select
-                        addBefore='选择期限'
-                        placeholder='选择天数'
-                        style={{ width: 180 }}
-                        onChange={handleDayChange}
-                        defaultValue={7}
-                    >
-                        <Option value={7}>7天</Option>
-                        <Option value={30}>30天</Option>
-                        <Option value={90}>90天</Option>
-                        <Option value={365}>1年</Option>
-                    </Select>
-                    <Select
-                        addBefore='选择数量'
-                        placeholder='选择数量'
-                        style={{ width: 180 }}
-                        onChange={handleLimitChange}
-                        defaultValue={10}
-                    >
-                        <Option value={10}>前10</Option>
-                        <Option value={50}>前50</Option>
-                        <Option value={100}>前100</Option>
-                        <Option value={200}>前200</Option>
-                    </Select>
-                </Space>
+                <div style={{ display: 'flex', gap: '20px' }}>
+                    <div style={selectWrapperStyle}>
+                        <span style={{ fontWeight: 800, color: 'var(--color-text-2)' }}>时间选择 |</span>
+                        <Select
+                            placeholder='选择天数'
+                            style={{ width: 100 }}
+                            onChange={handleDayChange}
+                            defaultValue='7'
+                        >
+                            <Option value='7'>7天</Option>
+                            <Option value='30'>30天</Option>
+                            <Option value='90'>90天</Option>
+                            <Option value='365'>365天</Option>
+                        </Select>
+                    </div>
+                    <div style={selectWrapperStyle}>
+                        <span style={{ fontWeight: 800, color: 'var(--color-text-2)' }}>数量选择 |</span>
+                        <Select
+                            placeholder='选择数量'
+                            style={{ width: 100 }}
+                            onChange={handleLimitChange}
+                            defaultValue='10'
+                        >
+                            <Option value='10'>前10</Option>
+                            <Option value='50'>前50</Option>
+                            <Option value='100'>前100</Option>
+                            <Option value='200'>前200</Option>
+                        </Select>
+                    </div>
+                </div>
             </div>
 
             {loading && <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}><Spin /></div>}

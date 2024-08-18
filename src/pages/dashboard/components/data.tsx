@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Select, Typography, Message } from '@arco-design/web-react';
+import { Tabs, Select, Typography, Message, Spin } from '@arco-design/web-react';
 import '@arco-design/web-react/dist/css/arco.css';
 import { CSSProperties } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -32,14 +33,14 @@ const Data: React.FC = () => {
     const location = useLocation();
     const [timeRange, setTimeRange] = useState<string>('7');
     const [selectedTab, setSelectedTab] = useState<string>('user');
+    const [chartOptions, setChartOptions] = useState<any>({});
+    const [loading, setLoading] = useState<boolean>(false); // Loading state
 
     useEffect(() => {
-        // Scroll to top when the component mounts or location changes
         setTimeout(() => {
             window.scrollTo(0, 0);
         }, 0);
 
-        // Update selected tab based on URL query parameter
         const queryParams = new URLSearchParams(location.search);
         const tab = queryParams.get('tab');
         if (tab) {
@@ -47,37 +48,89 @@ const Data: React.FC = () => {
         }
     }, [location.search]);
 
-    const titleText = `近${timeRange}天${selectedTab === 'user' ? '用户量' : selectedTab === 'model' ? '模型量' : selectedTab === 'posts' ? '帖子量' : selectedTab === 'comments' ? '评论量' : selectedTab === 'tasks' ? '任务量' : 'SD图片量'}`;
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true); // Start loading
 
-    const chartOptions = {
-        tooltip: {
-            trigger: 'axis',
-        },
-        legend: {
-            data: [''],
-        },
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: ['08-01', '08-02', '08-03', '08-04', '08-05', '08-06', '08-07'],
-        },
-        yAxis: {
-            type: 'value',
-        },
-        series: [
-            {
-                name: '变化量',
-                type: 'line',
-                stack: '总量',
-                data: [120, 132, 101, 134, 90, 230, 210],
-            },
-        ],
-    };
+            const endDate = new Date().toISOString().split('T')[0];
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - parseInt(timeRange));
+            const startDateString = startDate.toISOString().split('T')[0];
+
+            try {
+                const response = await axios.get('http://***REMOVED***:5050/dashboard', {
+                    params: {
+                        startDate: startDateString,
+                        endDate: endDate,
+                        type: selectedTab,
+                    },
+                });
+
+                const data = response.data.data;
+                setChartOptions({
+                    tooltip: {
+                        trigger: 'axis',
+                    },
+                    legend: {
+                        data: ['总数', '增量'],
+                        textStyle: {
+                            color: '#165DFF',
+                        },
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: true,
+                        data: data.date.map(date => date.split('-').slice(1).join('-')), // Format as MM-DD
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: '总数',
+                        },
+                        {
+                            type: 'value',
+                            name: '增量',
+                        },
+                    ],
+                    series: [
+                        {
+                            name: '总数',
+                            type: 'bar',
+                            yAxisIndex: 0,
+                            data: data.count,
+                            itemStyle: {
+                                color: '#73a0fa',
+                            },
+                        },
+                        {
+                            name: '增量',
+                            type: 'line',
+                            yAxisIndex: 1,
+                            data: data.addCount,
+                            itemStyle: {
+                                color: '#fa5737',
+                            },
+                            smooth: true,
+                        },
+                    ],
+                });
+            } catch (error) {
+                Message.error({
+                    content: '数据加载失败，请稍后重试。',
+                    showIcon: true,
+                });
+            } finally {
+                setLoading(false); // End loading
+            }
+        };
+
+        fetchData();
+    }, [timeRange, selectedTab]);
 
     const handleDayChange = (value: string) => {
         setTimeRange(value);
         Message.info({
-            content: `您选择了 ${value}天.`,
+            content: `您选择了 ${value}天`,
             showIcon: true,
         });
     };
@@ -86,10 +139,12 @@ const Data: React.FC = () => {
         setSelectedTab(key);
     };
 
+    const titleText = `近${timeRange}天${selectedTab === 'user' ? '用户量' : selectedTab === 'model' ? '模型量' : selectedTab === 'post' ? '帖子量' : selectedTab === 'comment' ? '评论量' : selectedTab === 'task' ? '任务量' : 'SD图片量'}`;
+
     return (
         <div style={containerStyle}>
             <Tabs
-                activeTab={selectedTab} // Use activeKey to control the active tab
+                activeTab={selectedTab}
                 onChange={handleTabChange}
                 extra={
                     <div style={selectWrapperStyle}>
@@ -114,16 +169,16 @@ const Data: React.FC = () => {
                 <TabPane key="model" title="模型">
                     <Typography.Paragraph style={contentStyle}></Typography.Paragraph>
                 </TabPane>
-                <TabPane key="posts" title="帖子">
+                <TabPane key="post" title="帖子">
                     <Typography.Paragraph style={contentStyle}></Typography.Paragraph>
                 </TabPane>
-                <TabPane key="comments" title="评论">
+                <TabPane key="comment" title="评论">
                     <Typography.Paragraph style={contentStyle}></Typography.Paragraph>
                 </TabPane>
-                <TabPane key="tasks" title="任务">
+                <TabPane key="task" title="任务">
                     <Typography.Paragraph style={contentStyle}></Typography.Paragraph>
                 </TabPane>
-                <TabPane key="sd-images" title="SD图片">
+                <TabPane key="image" title="SD图片">
                     <Typography.Paragraph style={contentStyle}></Typography.Paragraph>
                 </TabPane>
             </Tabs>
@@ -133,7 +188,11 @@ const Data: React.FC = () => {
             </Typography.Title>
 
             <div>
-                <ReactECharts option={chartOptions} style={{ height: 350 }} />
+                {loading ? (
+                    <Spin tip="加载中..." style={{ display: 'block', margin: '100px auto' }} />
+                ) : (
+                    <ReactECharts option={chartOptions} style={{ height: 350 }} />
+                )}
             </div>
         </div>
     );
