@@ -13,21 +13,25 @@ import {
 
 import dashboard from "@/pages/dashboard/dashboard";
 import data from "@/pages/dashboard/components/data"
-import userList from "@/pages/dashboard/user/userList";
-import userDetails from "@/pages/dashboard/user/userDetails";
+
+import userManagement from "@/pages/dashboard/user/userManagement";
 import userPermissions from "@/pages/dashboard/user/userPermissions";
+
 import postPublish from "@/pages/dashboard/post/postPublish";
 import postReview from "@/pages/dashboard/post/postReview";
 import postCategory from "@/pages/dashboard/post/postCategory";
 import postStats from "@/pages/dashboard/post/postStats";
+
 import modelPublish from "@/pages/dashboard/model/modelPublish";
 import modelReview from "@/pages/dashboard/model/modelReview";
 import modelCategory from "@/pages/dashboard/model/modelCategory";
 import modelStats from "@/pages/dashboard/model/modelStats";
+
 import imagePublish from "@/pages/dashboard/image/imagePublish";
 import imageReview from "@/pages/dashboard/image/imageReview";
 import imageCategory from "@/pages/dashboard/image/imageCategory";
 import imageStats from "@/pages/dashboard/image/imageStats";
+
 import configManagement from "@/pages/dashboard/system/configManagement";
 import staticResource from "@/pages/dashboard/system/staticResource";
 import clusterManagement from "@/pages/dashboard/system/clusterManagement";
@@ -84,19 +88,14 @@ const DashboardIndex = () => {
                         </div>
                         }
                     >
-                        <Menu.Item key="/dashboard/userList">
-                            <Link to="/dashboard/userList">
-                                用户列表
-                            </Link>
-                        </Menu.Item>
-                        <Menu.Item key="/dashboard/userDetails">
-                            <Link to="/dashboard/userDetails">
-                                用户详情
+                        <Menu.Item key="/dashboard/userManagement">
+                            <Link to="/dashboard/userManagement">
+                                用户查询与更新
                             </Link>
                         </Menu.Item>
                         <Menu.Item key="/dashboard/userPermissions">
                             <Link to="/dashboard/userPermissions">
-                                用户权限
+                                用户身份
                             </Link>
                         </Menu.Item>
                     </Menu.SubMenu>
@@ -212,8 +211,7 @@ const DashboardIndex = () => {
                     <Switch>
                         <Route exact path="/dashboard" component={dashboard} />
                         <Route exact path="/dashboard/data" component={data} />
-                        <Route path="/dashboard/userList" component={userList} />
-                        <Route path="/dashboard/userDetails" component={userDetails} />
+                        <Route path="/dashboard/userManagement" component={userManagement} />
                         <Route path="/dashboard/userPermissions" component={userPermissions} />
                         <Route path="/dashboard/postPublish" component={postPublish} />
                         <Route path="/dashboard/postReview" component={postReview} />
