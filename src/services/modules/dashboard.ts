@@ -12,7 +12,7 @@ export interface GetCountRes {
     /* */
     errorMsg: string;
 
-    /* */
+    /* 报错这里改 any，其他报错自己 gpt */
     data: Record<string, unknown>;
 
     /* */
