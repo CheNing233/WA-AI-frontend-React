@@ -4,8 +4,24 @@ import Login from "./login"
 import Register from "./register"
 
 import "./styles/index.css"
+import {useEffect, useState} from "react";
+import eventbus from "@/eventbus";
 
 const LoginIndex = () => {
+
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        const handleLoading = (isLoading: boolean) => {
+            setLoading(isLoading)
+        }
+
+        eventbus.on('login.index.loading', handleLoading)
+        return () => {
+            eventbus.off('login.index.loading', handleLoading)
+        }
+    }, []);
+
     return (
         <div style={{
             width: "100%",
@@ -33,7 +49,7 @@ const LoginIndex = () => {
                 <Card style={{width: "45vw", minWidth: "300px", maxWidth: "550px", marginTop: "48px"}}
                       title={false}
                       bordered={true}
-                      loading={false}
+                      loading={loading}
                     // cover={
                     //     <div>123</div>
                     // }

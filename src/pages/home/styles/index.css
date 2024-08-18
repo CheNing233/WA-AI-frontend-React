@@ -1,0 +1,17 @@
+@keyframes verticalFloatCycle {
+    0%,
+    100% {
+        top: 24px;
+    }
+
+    50% {
+        top: 32px;
+    }
+}
+
+.floating-down-arrow {
+    position: absolute;
+    left: 19px;
+    top: 32px;
+    animation: verticalFloatCycle 2s infinite;
+}

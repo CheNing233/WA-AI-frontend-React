@@ -1,15 +1,24 @@
 import {useEffect, useState} from "react";
 
-import {Button, Checkbox, Divider, Form, Grid, Input, Space} from '@arco-design/web-react';
+import {Button, Checkbox, Divider, Form, Grid, Input, Message, Space} from '@arco-design/web-react';
 import {IconLock, IconUser} from '@arco-design/web-react/icon';
 import "@arco-design/web-react/dist/css/arco.css";
 
 import {LogoGithubIcon} from 'tdesign-icons-react'
 
+import {useHistory} from 'react-router-dom'
+
+
 import useLocale from '@/utils/useLocale';
 import locale from './locate';
 import HelpIcon from "@/components/helpIcon";
 import ForgetPassword from "@/pages/login/forget-pwd";
+import eventbus from "@/eventbus";
+import api from "@/services/export";
+import {LoginParams} from "@/services/modules/account";
+
+import CryptoJS from 'crypto-js';
+
 
 const initialFormValues = {
     user: '',
@@ -21,6 +30,8 @@ const Login = () => {
     // 语言包
     const loc = useLocale(locale);
 
+    const history = useHistory()
+
     // 忘记密码弹窗
     const [
         showForgetPasswordModel,
@@ -29,20 +40,51 @@ const Login = () => {
 
     // form
     const [form] = Form.useForm();
+
     // 获取用户名
     const user: string = Form.useWatch("user", form)
-    const [userTip, setUserTip] = useState("");
+    const [loginWithUser, setLoginWithUser] = useState(true);
     useEffect(() => {
         const emailPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (emailPattern.test(user)) {
-            setUserTip(loc['login.form.userName.useEmail']);
+            setLoginWithUser(false)
         } else {
-            setUserTip(loc['login.form.userName.useUser']);
+            setLoginWithUser(true)
         }
 
     }, [user, loc])
 
+
+    const handleSubmit = (values) => {
+        eventbus.emit('login.index.loading', true)
+
+        let params: LoginParams = {
+            rememberMe: values.rememberMe,
+        }
+
+        if (loginWithUser) {
+            params.userName = values.user
+        } else {
+            params.email = values.user
+        }
+
+        params.password = CryptoJS.SHA256(values.password).toString(CryptoJS.enc.Hex)
+
+        api.account.login(params)
+            .then((loginRes) => {
+                if(loginRes.data.data === '登录成功'){
+                    Message.success('登录成功喵~')
+                    history.push('/home')
+                } else {
+                    Message.error(`登陆失败：${loginRes.data.errorMsg}`)
+                }
+            })
+            .finally(()=>{
+                eventbus.emit('login.index.loading', false)
+                eventbus.emit('user.getLoginState')
+            })
+    }
 
     return (
         <Form
@@ -50,13 +92,14 @@ const Login = () => {
             style={{width: "100%"}}
             wrapperCol={{span: 24}}
             initialValues={initialFormValues}
+            onSubmit={handleSubmit}
             autoComplete="off"
         >
             <Space direction={"vertical"} size={16} style={{width: "100%"}}>
                 <Form.Item
                     style={{width: "100%", marginBottom: "0"}}
                     field={"user"}
-                    extra={userTip}
+                    extra={loginWithUser ? loc['login.form.userName.useUser'] : loc['login.form.userName.useEmail']}
                     rules={[
                         {required: true, message: loc['form.error.required']}
                     ]}

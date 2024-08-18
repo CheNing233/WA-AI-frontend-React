@@ -1,14 +1,18 @@
-import create from 'zustand'
+import {create} from 'zustand'
 import {GuestPerm} from "@/constants/permissions";
 import {UserPermission} from "@/utils/authentication";
 
 export type IUserInfo = {
+    id: number,
     nickName: string;
     userName: string;
     avatar: string;
+    avatarUrl?: string;
     email: string;
     gender: string;
-    describe: string;
+    describe: string | null;
+    calculationPoint: any,
+    githubId: number | null
 }
 
 export type IUser = {
@@ -18,18 +22,27 @@ export type IUser = {
     setUserInfo: (userInfo: IUserInfo) => void;
     userPerms: UserPermission;
     setUserPerms: (userPerms: UserPermission) => void;
+    getLogin: () => void
 }
 
-export const useUser = create((set) => ({
+export const initialUserInfo = {
+    id: null,
+    nickName: '游客',
+    userName: 'guest',
+    avatar: null,
+    avatarUrl: null,
+    email: null,
+    gender: null,
+    describe: null,
+    calculationPoint: null,
+    githubId: null
+}
+
+export const useUser = create((set, getState) => ({
     userLogged: false,
     setUserLogged: (userLogged: boolean) => set(() => ({userLogged})),
     userInfo: {
-        nickName: '游客',
-        userName: 'guest',
-        avatar: null,
-        email: null,
-        gender: null,
-        describe: null,
+        ...initialUserInfo
     },
     setUserInfo: (userInfo: IUserInfo) => set(() => ({userInfo})),
     userPerms: GuestPerm,
