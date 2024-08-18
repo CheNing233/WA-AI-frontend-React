@@ -1,11 +1,13 @@
-import {Button, Grid, Space} from "@arco-design/web-react";
-import {ControlPlatformIcon} from "tdesign-icons-react";
+import {Button, Grid} from "@arco-design/web-react";
+import {ChevronDownDoubleIcon, ControlPlatformIcon, MouseIcon} from "tdesign-icons-react";
 import ImageCard from "@/components/imageCard";
 import GridExt from "@/components/gridExt";
 import useWorkbench from "@/components/workbench/useWorkbench";
 import useImagePreviewer from "@/components/imagePreviewer/useImagePreviewer";
 import ContentWrapper from "@/components/contentWrapper";
 import Banner from "@/components/banner";
+
+import './styles/index.css'
 
 const Home = () => {
     const {setWorkbenchShow} = useWorkbench()
@@ -38,25 +40,42 @@ const Home = () => {
                             title={'欢迎来到 WA，今天想画点什么？'}
                             description={'这里是 WA，一个基于 Stable Diffusion 的 AI 生成平台。我们在这里提供免费的图片生成服务，包括文生图、图生图、超分放大等。并提供各式各样的附加模型。如果你有更好的想法或是想加入开发，请及时联系我们。'}
                             extra={
-                                <Space>
-                                    <Button size={'large'} type={'primary'} shape={'round'}
-                                            icon={<ControlPlatformIcon/>}
+                                <Grid.Row gutter={[8, 8]} align={'center'}>
+                                    <Grid.Col flex={'shrink'}>
+                                        <Button size={'large'} type={'primary'} shape={'round'}
+                                                icon={<ControlPlatformIcon/>}
+                                                onClick={() => {
+                                                    setWorkbenchShow(true)
+                                                }}
+                                        >
+                                            打开工作台
+                                        </Button>
+                                    </Grid.Col>
+                                    <Grid.Col flex={'shrink'}>
+                                        <Button
+                                            size={'large'}
+                                            shape={'round'}
                                             onClick={() => {
-                                                setWorkbenchShow(true)
+                                                setImageViewerShow(true)
                                             }}
-                                    >
-                                        打开工作台
-                                    </Button>
-                                    <Button
-                                        size={'large'}
-                                        shape={'round'}
-                                        onClick={() => {
-                                            setImageViewerShow(true)
-                                        }}
-                                    >
-                                        探索所有帖子 {' >'}
-                                    </Button>
-                                </Space>
+                                        >
+                                            探索所有帖子 {' >'}
+                                        </Button>
+                                    </Grid.Col>
+
+                                    <Grid.Col flex={'shrink'}>
+                                        <Button type={'text'} shape={'round'} size={'large'}
+                                                icon={
+                                                    <>
+                                                        <MouseIcon/>
+                                                        <ChevronDownDoubleIcon className={'floating-down-arrow'}/>
+                                                    </>
+                                                }
+                                        >
+                                            向下滚动，尝试画一下
+                                        </Button>
+                                    </Grid.Col>
+                                </Grid.Row>
                             }
                         />
                     </div>

@@ -18,7 +18,7 @@ import Workbench from "@/components/workbench";
 import useDragSelect from "@/utils/useDragSelect";
 import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
 import ImagePreviewer from "@/components/imagePreviewer";
-
+import LoginManagement from "@/utils/loginManagement";
 
 function App() {
     const [lang, setLang] = useStorage('arco-lang', 'zh-CN');
@@ -46,7 +46,6 @@ function App() {
                 return zhCN;
         }
     }
-
     const setArcoTheme = (theme: string) => {
         if (theme === 'dark') {
             document.body.setAttribute('arco-theme', 'dark');
@@ -74,6 +73,7 @@ function App() {
 
     const {setElDragSelect} = useDragSelect(document.body)
 
+
     return (
         <BrowserRouter>
             <ConfigProvider
@@ -92,7 +92,7 @@ function App() {
             >
                 <GlobalContext.Provider value={contextValue}>
                     <Background/>
-
+                    <LoginManagement />
                     <ResizeBox.Split
                         panes={[
                             <div

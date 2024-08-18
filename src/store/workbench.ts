@@ -1,4 +1,4 @@
-import create from 'zustand'
+import {create} from 'zustand'
 
 export type IWorkbenchSetting = {
     width?: string | number | any,

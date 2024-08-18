@@ -14,6 +14,7 @@ import UserDropList from "@/components/header/userDropList";
 import useRoute, {getFlattenRoutes} from "@/routes";
 import {useHistory, useLocation} from 'react-router-dom'
 import useWorkbench from "@/components/workbench/useWorkbench";
+import {IUser, useUser} from "@/store/user";
 
 const Header = () => {
     const {lang, setLang, theme, setTheme} = useContext(GlobalContext);
@@ -26,6 +27,9 @@ const Header = () => {
     const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
 
     const {workbenchShow, setWorkbenchShow} = useWorkbench();
+
+    const userInfo = useUser((state: IUser) => state.userInfo)
+
 
     /**
      * 获取当前选中的路由键
@@ -136,7 +140,11 @@ const Header = () => {
                                 shape={'circle'}
                                 style={{cursor: 'pointer'}}
                             >
-                                wa
+                                {
+                                    userInfo.avatarUrl
+                                        ? <img alt={'avatar'} src={userInfo.avatarUrl}/>
+                                        : 'WA'
+                                }
                             </Avatar>
                         </Dropdown>
                     </Space>
