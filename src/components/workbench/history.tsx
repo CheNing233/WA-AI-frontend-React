@@ -1,11 +1,21 @@
 import {Card, Link, Space} from "@arco-design/web-react";
 import ImageWaterfall from "@/components/imageWaterfall";
 import {useRef, useState} from "react";
+import ImageCard from "@/components/imageCard";
 
 const History = () => {
 
     const containerRef = useRef(null);
     const [data, setData] = useState([]);
+
+    const dataItemElement = (data: any) => {
+        return (
+            <ImageCard
+                src={`https://naver.github.io/egjs-infinitegrid/assets/image/1.jpg`}
+                alt="egjs"
+            />
+        )
+    }
 
     const getItems = async (nextGroupKey: number) => {
         const count = 20;
@@ -57,6 +67,7 @@ const History = () => {
                         rowGap={16}
                         colGap={16}
                         data={data}
+                        dataItemElement={dataItemElement}
                         hasNoMore={false}
                         scrollContainer={containerRef.current}
                         onAppend={getItems}

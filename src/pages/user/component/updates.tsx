@@ -1,10 +1,20 @@
 import {Card, Space} from "@arco-design/web-react";
 import {useState} from "react";
 import ImageWaterfall from "@/components/imageWaterfall";
+import ImageCard from "@/components/imageCard";
 
 const Updates = () => {
     const [data, setData] = useState([]);
     const [pinnedHasNoMore, setPinnedHasNoMore] = useState(false)
+
+    const dataItemElement = (data: any) => {
+        return (
+            <ImageCard
+                src={`https://naver.github.io/egjs-infinitegrid/assets/image/1.jpg`}
+                alt="egjs"
+            />
+        )
+    }
 
     const getItems = async (nextGroupKey: number) => {
         const count = 5;
@@ -43,6 +53,7 @@ const Updates = () => {
                     rowGap={16}
                     colGap={16}
                     data={data}
+                    dataItemElement={dataItemElement}
                     hasNoMore={pinnedHasNoMore}
                     onAppend={getItems}
                     scrollContainer={

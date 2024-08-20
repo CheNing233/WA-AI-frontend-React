@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {MasonryInfiniteGrid} from "@egjs/react-infinitegrid";
 
-import {Button, Grid, Space, Spin} from "@arco-design/web-react";
+import {Button, Card, Grid, Space, Spin} from "@arco-design/web-react";
 
 export type ITagWaterfallProps = {
     cols: { xxxl?: number, xxl?: number, xl?: number, lg?: number, md?: number, sm?: number, xs?: number },
@@ -14,21 +14,22 @@ export type ITagWaterfallProps = {
 }
 
 const Item = ({num, data}: any) => (
-    <Grid.Row
-        gutter={[16, 16]}
-        key={num}
-        style={{width: '100%', justifyContent: 'space-evenly'}}
-    >
-        {data.map((item: any, index: number) => {
-            return (
-                <Grid.Col key={index} flex={'shrink'}>
-                    <Button>
-                        tag-{item.label}
-                    </Button>
-                </Grid.Col>
-            )
-        })}
-    </Grid.Row>
+    <Card style={{width: '100%'}} key={num} title={`TOP ${(num + 1) * 100}`} bordered={true}>
+        <Grid.Row
+            gutter={[16, 16]}
+            style={{width: '100%', justifyContent: 'space-evenly'}}
+        >
+            {data.map((item: any, index: number) => {
+                return (
+                    <Grid.Col key={index} flex={'shrink'}>
+                        <Button>
+                            tag-{item.label}
+                        </Button>
+                    </Grid.Col>
+                )
+            })}
+        </Grid.Row>
+    </Card>
 )
 
 const TagWaterfall = (props: ITagWaterfallProps) => {

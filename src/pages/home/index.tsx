@@ -1,5 +1,5 @@
 import {Button, Grid} from "@arco-design/web-react";
-import {ChevronDownDoubleIcon, ControlPlatformIcon, MouseIcon} from "tdesign-icons-react";
+import {ControlPlatformIcon} from "tdesign-icons-react";
 import ImageCard from "@/components/imageCard";
 import GridExt from "@/components/gridExt";
 import useWorkbench from "@/components/workbench/useWorkbench";
@@ -63,18 +63,18 @@ const Home = () => {
                                         </Button>
                                     </Grid.Col>
 
-                                    <Grid.Col flex={'shrink'}>
-                                        <Button type={'text'} shape={'round'} size={'large'}
-                                                icon={
-                                                    <>
-                                                        <MouseIcon/>
-                                                        <ChevronDownDoubleIcon className={'floating-down-arrow'}/>
-                                                    </>
-                                                }
-                                        >
-                                            向下滚动，尝试画一下
-                                        </Button>
-                                    </Grid.Col>
+                                    {/*<Grid.Col flex={'shrink'}>*/}
+                                    {/*    <Button type={'text'} shape={'round'} size={'large'}*/}
+                                    {/*            icon={*/}
+                                    {/*                <>*/}
+                                    {/*                    <MouseIcon/>*/}
+                                    {/*                    <ChevronDownDoubleIcon className={'floating-down-arrow'}/>*/}
+                                    {/*                </>*/}
+                                    {/*            }*/}
+                                    {/*    >*/}
+                                    {/*        向下滚动，尝试画一下*/}
+                                    {/*    </Button>*/}
+                                    {/*</Grid.Col>*/}
                                 </Grid.Row>
                             }
                         />
@@ -86,63 +86,11 @@ const Home = () => {
                     <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
                         <ImageCard
                             width={'100%'}
+
+                            author={'glcn'}
+                            title={'测试test'}
                             src={'https://obj.glcn.top/wa-image/1718369431376.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-                            // fit={'cover'}
-                        />
-                    </div>
-                </GridItem>
-                <GridItem
-                    span={3}
-                >
-                    <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
-                        <ImageCard
-                            width={'100%'}
-                            src={'https://obj.glcn.top/wa-image/1718249775686.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-                            // fit={'cover'}
-                        />
-                    </div>
-                </GridItem>
-                <GridItem
-                    span={3}
-                >
-                    <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
-                        <ImageCard
-                            width={'100%'}
-                            src={'https://obj.glcn.top/wa-image/1717883976272.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-                            // fit={'cover'}
-                        />
-                    </div>
-                </GridItem>
-                <GridItem
-                    span={3}
-                >
-                    <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
-                        <ImageCard
-                            width={'100%'}
-                            src={'https://obj.glcn.top/wa-image/1717789813510.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-                            // fit={'cover'}
-                        />
-                    </div>
-                </GridItem>
-                <GridItem
-                    span={3}
-                >
-                    <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
-                        <ImageCard
-                            width={'100%'}
-                            src={'https://obj.glcn.top/wa-image/1717103499089.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-                            // fit={'cover'}
-                        />
-                    </div>
-                </GridItem>
-                <GridItem
-                    span={3}
-                >
-                    <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
-                        <ImageCard
-                            width={'100%'}
-                            src={'https://obj.glcn.top/wa-image/1717347981049.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-                            // fit={'cover'}
+
                         />
                     </div>
                 </GridItem>

@@ -9,12 +9,12 @@ import {GlobalContext} from '@/context';
 import locate from './locate'
 import useLocale from "@/utils/useLocale";
 import Logo from "@/components/header/logo";
-import UserDropList from "@/components/header/userDropList";
 
 import useRoute, {getFlattenRoutes} from "@/routes";
 import {useHistory, useLocation} from 'react-router-dom'
 import useWorkbench from "@/components/workbench/useWorkbench";
 import {IUser, useUser} from "@/store/user";
+import UserDropList from "@/components/header/userDropList";
 
 const Header = () => {
     const {lang, setLang, theme, setTheme} = useContext(GlobalContext);
@@ -89,7 +89,7 @@ const Header = () => {
                 <Grid.Col flex={"1"}/>
 
                 <Grid.Col flex={"shrink"}>
-                    <Space size={12} style={{float: 'right', marginLeft: '12px'}}>
+                    <Space size={12} style={{ marginLeft: '12px'}}>
                         <Select
                             triggerElement={<Button shape={"circle"} icon={<IconLanguage/>}/>}
                             options={[
@@ -129,12 +129,7 @@ const Header = () => {
                         >
                             在线画图
                         </Button>
-
-                        <Dropdown
-                            position={'br'}
-                            unmountOnExit={true}
-                            droplist={UserDropList()}
-                        >
+                        <UserDropList>
                             <Avatar
                                 size={36}
                                 shape={'circle'}
@@ -146,10 +141,9 @@ const Header = () => {
                                         : 'WA'
                                 }
                             </Avatar>
-                        </Dropdown>
+                        </UserDropList>
                     </Space>
                 </Grid.Col>
-
             </Grid.Row>
 
             <Divider style={{position: 'absolute', left: '0', bottom: '0', margin: '0 0 0 0'}} type='horizontal'/>

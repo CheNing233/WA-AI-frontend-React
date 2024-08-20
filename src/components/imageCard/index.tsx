@@ -2,10 +2,27 @@ import React, {useState} from 'react';
 
 import './styles/index.css'
 import {Avatar, Button, Skeleton, Space, Typography} from "@arco-design/web-react";
-import {ChatBubble1Icon, ControlPlatformIcon} from "tdesign-icons-react";
-import {IconHeart, IconStar} from "@arco-design/web-react/icon";
 
-const ImageCard = (props: any) => {
+export interface IBottomBarProps {
+    name: string,
+    value: string,
+    icon: React.ReactNode,
+    onClick: () => void
+}
+
+export interface IImageCardProps {
+    src: string,
+    author: string,
+    authorAvatar?: string,
+    title: string,
+    time?: string,
+    fit?: boolean,
+    bottomBar?: IBottomBarProps[],
+    onImageClick?: () => void
+}
+
+
+const ImageCard = (props: IImageCardProps | any) => {
     const [maskMouseOver, setMaskMouseOver] = useState(false);
 
     const [onLoaded, setOnLoaded] = useState(false)
@@ -60,19 +77,19 @@ const ImageCard = (props: any) => {
 
                     {/*author*/}
                     <Space align={'center'}>
-                        <Avatar
+                        {props.authorAvatar && <Avatar
                             shape={'square'}
                             size={40}
                         >
-                            WA
-                        </Avatar>
+                            <img src={props.authorAvatar} alt={'avatar'}/>
+                        </Avatar>}
                         <Space direction={'vertical'} size={1}>
-                        <span className={'image-box-author-text'}>
-                            author
-                        </span>
                             <span className={'image-box-author-text'}>
-                            2023-07-01
-                        </span>
+                                {props.author}
+                            </span>
+                            {props.time && <span className={'image-box-author-text'}>
+                                {props.time}
+                            </span>}
                         </Space>
                     </Space>
 
@@ -83,45 +100,23 @@ const ImageCard = (props: any) => {
                         style={{width: '100%'}}
                         className={'image-box-title-text'}
                     >
-                        111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+                        {props.title}
                     </Typography.Ellipsis>
 
                     {/*options*/}
-                    <Space>
-                        <Button
-                            icon={<ControlPlatformIcon/>}
-                            size={'mini'}
-                            shape={'round'}
-                            style={{background: 'rgba(0,0,0,0.15)', color: 'white'}}
-                        >
-                            1
-                        </Button>
-                        <Button
-                            icon={<IconStar/>}
-                            size={'mini'}
-                            shape={'round'}
-                            style={{background: 'rgba(0,0,0,0.15)', color: 'white'}}
-                        >
-                            1
-                        </Button>
-                        <Button
-                            icon={<IconHeart/>}
-                            size={'mini'}
-                            shape={'round'}
-                            style={{background: 'rgba(0,0,0,0.15)', color: 'white'}}
-                        >
-                            1
-                        </Button>
-                        <Button
-                            icon={<ChatBubble1Icon/>}
-                            size={'mini'}
-                            shape={'round'}
-                            style={{background: 'rgba(0,0,0,0.15)', color: 'white'}}
-                        >
-                            1
-                        </Button>
-                    </Space>
-
+                    {props.bottomBar && <Space>
+                        {props.bottomBar.map((item: IBottomBarProps, index: number) => (
+                            <Button
+                                icon={item.icon}
+                                key={item.name}
+                                size={'mini'}
+                                shape={'round'}
+                                style={{background: 'rgba(0,0,0,0.15)', color: 'white'}}
+                            >
+                                {item.value}
+                            </Button>
+                        ))}
+                    </Space>}
                 </Space>
             </div>
 
@@ -130,6 +125,7 @@ const ImageCard = (props: any) => {
                 className={'image-box-mask' + (maskMouseOver ? ' on-hover' : '')}
                 onMouseOver={handleMaskMouseOver}
                 onMouseOut={handleMaskMouseOut}
+                onClick={props.onImageClick}
             >
 
             </div>

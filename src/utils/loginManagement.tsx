@@ -9,9 +9,9 @@ const LoginManagement = () => {
     const [setUserLogged, setUserInfo, setUserPerms] = useUser(
         (state: IUser) => [state.setUserLogged, state.setUserInfo, state.setUserPerms]
     )
-    const [userLogged, userInfo, userPerms] = useUser(
-        (state: IUser) => [state.userLogged, state.userInfo, state.userPerms]
-    )
+    // const [userLogged, userInfo, userPerms] = useUser(
+    //     (state: IUser) => [state.userLogged, state.userInfo, state.userPerms]
+    // )
 
     useEffect(() => {
         /**
@@ -66,15 +66,6 @@ const LoginManagement = () => {
             eventbus.off('user.getLoginState', getLoginState)
         }
     }, [])
-
-    useEffect(() => {
-        const logout = () => {
-            api.account.logout()
-                .then((result)=>{
-
-                })
-        }
-    }, []);
 
     return null
 }

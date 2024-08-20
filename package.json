@@ -101,6 +101,7 @@
     ]
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/loadable__component": "^5.13.9",
     "@types/react-router-dom": "^5.3.3",
     "customize-cra": "^1.0.0",

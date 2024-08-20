@@ -1,7 +1,5 @@
 import {useEffect, useRef, useState} from "react";
 import {MasonryInfiniteGrid} from "@egjs/react-infinitegrid";
-
-import ImageCard from "@/components/imageCard";
 import {Grid, Space, Spin} from "@arco-design/web-react";
 import GridExt from "@/components/gridExt";
 
@@ -10,22 +8,20 @@ export type IImageWaterfallProps = {
     cols: { xxxl?: number, xxl?: number, xl?: number, lg?: number, md?: number, sm?: number, xs?: number },
     rowGap: number,
     colGap: number,
-    data: { key: number, groupKey: number }[],
+    data: {
+        key: number,
+        groupKey: number,
+        [key: string]: any
+    }[],
+    dataItemElement: (data: any) => JSX.Element,
     hasNoMore: boolean,
     onAppend: (nextGroupKey: number) => Promise<void>;
     scrollContainer: any,
 }
 
-const Item = ({num, itemWidth}: any) => (
-    <div
-        style={{
-            width: itemWidth - 1,
-        }}
-    >
-        <ImageCard
-            src={`https://naver.github.io/egjs-infinitegrid/assets/image/${(num % 33) + 1}.jpg`}
-            alt="egjs"
-        />
+const Item = ({num, itemWidth, item, render}: any) => (
+    <div style={{width: itemWidth - 1,}}>
+        {render(item)}
         <div>num {num}</div>
     </div>
 )
@@ -37,6 +33,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
     const [rendering, setRendering] = useState(false);
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState(null);
+
 
     const handleScroll = () => {
         if (rendering) return;
@@ -131,6 +128,8 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                                 data-grid-groupkey={item.groupKey}
                                 key={item.key}
                                 num={item.key}
+                                item={item}
+                                render={props.dataItemElement}
                                 itemWidth={itemWidth}
                             />
                         )
