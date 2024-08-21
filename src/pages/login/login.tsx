@@ -56,32 +56,46 @@ const Login = () => {
     }, [user, loc])
 
 
+    /**
+     * 处理表单提交事件
+     * @param {Object} values - 表单字段的值
+     */
     const handleSubmit = (values) => {
+        // 触发登录加载动画
         eventbus.emit('login.index.loading', true)
 
+        // 初始化登录参数
         let params: LoginParams = {
             rememberMe: values.rememberMe,
         }
 
+        // 根据登录方式设置用户名或邮箱参数
         if (loginWithUser) {
             params.userName = values.user
         } else {
             params.email = values.user
         }
 
+        // 对密码进行SHA256加密
         params.password = CryptoJS.SHA256(values.password).toString(CryptoJS.enc.Hex)
 
+        // 调用API进行登录
         api.account.login(params)
             .then((loginRes) => {
-                if(loginRes.data.data === '登录成功'){
+                // 处理登录响应
+                if (loginRes.data.data === '登录成功') {
+                    // 登录成功提示并跳转至首页
                     Message.success('登录成功喵~')
                     history.push('/home')
                 } else {
+                    // 登录失败提示错误信息
                     Message.error(`登陆失败：${loginRes.data.errorMsg}`)
                 }
             })
-            .finally(()=>{
+            .finally(() => {
+                // 停止登录加载动画
                 eventbus.emit('login.index.loading', false)
+                // 触发获取用户登录状态事件
                 eventbus.emit('user.getLoginState')
             })
     }

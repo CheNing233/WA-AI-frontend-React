@@ -4,10 +4,20 @@ import {Button, Grid, Select, Space, Typography} from "@arco-design/web-react";
 import Searcher, {ISearcherChildProps} from "@/components/searcher";
 import {FC, useState} from "react";
 import ImageWaterfall from "@/components/imageWaterfall";
+import ImageCard from "@/components/imageCard";
 
 const Models = () => {
 
     const [data, setData] = useState([]);
+
+    const dataItemElement = (data: any) => {
+        return (
+            <ImageCard
+                src={`https://naver.github.io/egjs-infinitegrid/assets/image/1.jpg`}
+                alt="egjs"
+            />
+        )
+    }
 
     const getItems = async (nextGroupKey: number) => {
         const count = 20;
@@ -86,31 +96,29 @@ const Models = () => {
                     />
                 </div>
 
-                <ContentWrapper>
-                    <Searcher
-                        allowDate={true}
-                        filters={[
-                            {
-                                groupName: '模型类型',
-                                options: [
-                                    {label: 'Checkpoint', value: 'Checkpoint',},
-                                    {label: 'LoRa', value: 'LoRa',},
-                                    {label: 'Embedding', value: 'Embedding',},
-                                    {label: 'VAE', value: 'VAE',},
-                                ]
-                            },
-                            {
-                                groupName: '基底模型',
-                                options: [
-                                    {label: 'SD 1.5', value: 'SD 1.5',},
-                                    {label: 'SDXL', value: 'SDXL',},
-                                ]
-                            },
-                        ]}
-                    >
-                        <SearcherExtra/>
-                    </Searcher>
-                </ContentWrapper>
+                <Searcher
+                    allowDate={true}
+                    filters={[
+                        {
+                            groupName: '模型类型',
+                            options: [
+                                {label: 'Checkpoint', value: 'Checkpoint',},
+                                {label: 'LoRa', value: 'LoRa',},
+                                {label: 'Embedding', value: 'Embedding',},
+                                {label: 'VAE', value: 'VAE',},
+                            ]
+                        },
+                        {
+                            groupName: '基底模型',
+                            options: [
+                                {label: 'SD 1.5', value: 'SD 1.5',},
+                                {label: 'SDXL', value: 'SDXL',},
+                            ]
+                        },
+                    ]}
+                >
+                    <SearcherExtra/>
+                </Searcher>
 
                 <div style={{width: '100%', marginTop: '12px'}}>
                     <ImageWaterfall
@@ -127,6 +135,7 @@ const Models = () => {
                         rowGap={16}
                         colGap={16}
                         data={data}
+                        dataItemElement={dataItemElement}
                         hasNoMore={false}
                         onAppend={getItems}
                         scrollContainer={

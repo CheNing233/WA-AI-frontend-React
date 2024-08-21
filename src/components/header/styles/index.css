@@ -10,3 +10,9 @@
     width: 100%;
     margin: -14px 0 -14px 0 !important;
 }
+
+.user-dropdown-menu {
+    position: relative;
+    display: block;
+    width: 250px;
+}

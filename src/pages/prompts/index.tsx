@@ -47,12 +47,9 @@ const Prompts = () => {
                         }
                     />
                 </div>
-                <Card
-                    bordered={true}
-                >
-                    <Searcher
-                    />
-                </Card>
+
+                <Searcher
+                />
 
                 <Affix
                     offsetTop={60}
@@ -93,10 +90,11 @@ const Prompts = () => {
                             </Space>
                         }
                     >
-                        <p>单击下面的提示词，将其加入到购物车中；单击 + 按钮即可增加权重，单击 - 按钮减少权重，单击 × 按钮删除；使用右上方的“推到工作台”和“复制”按钮获得提示词进行绘图。</p>
+                        <p>单击下面的提示词，将其加入到购物车中；单击 + 按钮即可增加权重，单击 - 按钮减少权重，单击 ×
+                            按钮删除；使用右上方的“推到工作台”和“复制”按钮获得提示词进行绘图。</p>
                     </Card>
                 </Affix>
-                <Card bordered={true} title={'提示词云'} style={{position: 'relative'}}>
+                <div style={{position: 'relative'}}>
                     <TagWaterfall
                         key={'tag-waterfall'}
                         cols={{
@@ -108,7 +106,7 @@ const Prompts = () => {
                             xxl: 4,
                             xxxl: 5,
                         }}
-                        rowGap={8}
+                        rowGap={16}
                         colGap={8}
                         data={data}
                         hasNoMore={false}
@@ -117,7 +115,7 @@ const Prompts = () => {
                             document.getElementById('left-main-wrapper')
                         }
                     />
-                </Card>
+                </div>
             </Space>
         </ContentWrapper>
     )
