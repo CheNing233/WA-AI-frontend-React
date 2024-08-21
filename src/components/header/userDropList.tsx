@@ -11,6 +11,7 @@ import eventbus from "@/eventbus";
 import {AxiosError} from "axios";
 
 import './styles/index.css'
+import {loadingMessage} from "@/utils/loadingMessage";
 
 const UserDropList = (props: any) => {
     const history = useHistory();
@@ -42,16 +43,22 @@ const UserDropList = (props: any) => {
                     Modal.confirm({
                         title: '确认退出登录？',
                         onOk: () => {
-                            api.account.logout()
-                                .then(() => {
-                                    Message.success('退出成功')
-                                })
-                                .catch((error: AxiosError) => {
-                                    Message.error(`退出失败：${error.message}`)
-                                })
-                                .finally(() => {
-                                    eventbus.emit('user.getLoginState')
-                                })
+                            loadingMessage(
+                                'msg.logout',
+                                '退出登录中...',
+                                (resolve) => {
+                                    api.account.logout()
+                                        .then(() => {
+                                            resolve(true, '退出成功')
+                                        })
+                                        .catch((error: AxiosError) => {
+                                            resolve(false, `退出失败：${error.message}`)
+                                        })
+                                        .finally(() => {
+                                            eventbus.emit('user.getLoginState')
+                                        })
+                                }
+                            )
                         }
                     })
                 } else {

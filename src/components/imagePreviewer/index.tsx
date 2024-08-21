@@ -3,11 +3,13 @@ import {Avatar, Button, Card, Descriptions, Grid, Image, Modal, Space, Tag, Typo
 import React, {useEffect, useRef, useState} from "react";
 import {IconClose, IconCopy, IconLeft, IconRight, IconStar, IconThumbUp} from "@arco-design/web-react/icon";
 import {ControlPlatformIcon} from "tdesign-icons-react";
+import {useImagePreviewerSetting} from "@/store/imagePreviewer";
 
 const ImagePreviewer = () => {
     const smallLayoutThres = 1024
 
     const {imageViewerShow, setImageViewerShow} = useImagePreviewer()
+    const imageList = useImagePreviewerSetting((state) => state.imageList)
     const imageContainer = useRef(null)
     const [paramsCardShow, setParamsCardShow] = useState(true)
     const [smallLayout, setSmallLayout] = useState(false)
@@ -97,8 +99,8 @@ const ImagePreviewer = () => {
                             overflow: 'hidden',
                         }}
                     >
-                        <Image.Preview
-                            src='https://obj.glcn.top/wa-image/1718357537691.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'
+                        <Image.PreviewGroup
+                            srcList={imageList}
                             visible={true}
                             closable={false}
                             getPopupContainer={() => imageContainer.current}

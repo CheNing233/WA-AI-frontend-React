@@ -8,6 +8,7 @@ import ContentWrapper from "@/components/contentWrapper";
 import Banner from "@/components/banner";
 
 import './styles/index.css'
+import {loadingMessage} from "@/utils/loadingMessage";
 
 const Home = () => {
     const {setWorkbenchShow} = useWorkbench()
@@ -56,7 +57,22 @@ const Home = () => {
                                             size={'large'}
                                             shape={'round'}
                                             onClick={() => {
-                                                setImageViewerShow(true)
+                                                setImageViewerShow(
+                                                    true,
+                                                    (resolve, abortController) => {
+                                                        setTimeout(() => {
+                                                            if (!abortController.signal.aborted) {
+                                                                resolve([
+                                                                    'https://obj.glcn.top/wa-image/1718369431376.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100',
+                                                                    'https://obj.glcn.top/wa-image/1718249700025.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100',
+                                                                    'https://obj.glcn.top/wa-image/1718249611312.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100',
+                                                                ])
+                                                                console.log('pushed')
+                                                            } else {
+                                                                console.log('aborted')
+                                                            }
+                                                        }, 3000)
+                                                    })
                                             }}
                                         >
                                             探索所有帖子 {' >'}
@@ -86,11 +102,24 @@ const Home = () => {
                     <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
                         <ImageCard
                             width={'100%'}
-
                             author={'glcn'}
                             title={'测试test'}
                             src={'https://obj.glcn.top/wa-image/1718369431376.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-
+                            onImageClick={() => {
+                                loadingMessage(
+                                    'image-viewer-loading',
+                                    '加载中...',
+                                    (resolve) => {
+                                        setTimeout(() => {
+                                            resolve(true, '加载成功')
+                                        }, 1000)
+                                    },
+                                    true,
+                                    (messageClose) => {
+                                        messageClose()
+                                    }
+                                )
+                            }}
                         />
                     </div>
                 </GridItem>

@@ -15,4 +15,5 @@ export const UserPerm: UserPermission = {
 export const AdminPerm: UserPermission = {
     ...UserPerm,
     'article.other': ['edit', 'delete'],
+    'dashboard': ['visible'],
 }

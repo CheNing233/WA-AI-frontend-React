@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-import {Button, Checkbox, Divider, Form, Grid, Input, Message, Space} from '@arco-design/web-react';
+import {Button, Checkbox, Divider, Form, Grid, Input, Space} from '@arco-design/web-react';
 import {IconLock, IconUser} from '@arco-design/web-react/icon';
 import "@arco-design/web-react/dist/css/arco.css";
 
@@ -18,6 +18,7 @@ import api from "@/services/export";
 import {LoginParams} from "@/services/modules/account";
 
 import CryptoJS from 'crypto-js';
+import {loadingMessage} from "@/utils/loadingMessage";
 
 
 const initialFormValues = {
@@ -79,25 +80,36 @@ const Login = () => {
         // 对密码进行SHA256加密
         params.password = CryptoJS.SHA256(values.password).toString(CryptoJS.enc.Hex)
 
-        // 调用API进行登录
-        api.account.login(params)
-            .then((loginRes) => {
-                // 处理登录响应
-                if (loginRes.data.data === '登录成功') {
-                    // 登录成功提示并跳转至首页
-                    Message.success('登录成功喵~')
-                    history.push('/home')
-                } else {
-                    // 登录失败提示错误信息
-                    Message.error(`登陆失败：${loginRes.data.errorMsg}`)
-                }
-            })
-            .finally(() => {
-                // 停止登录加载动画
-                eventbus.emit('login.index.loading', false)
-                // 触发获取用户登录状态事件
-                eventbus.emit('user.getLoginState')
-            })
+        loadingMessage(
+            'msg.login',
+            '登录中...',
+            (resolve) => {
+                // 调用API进行登录
+                api.account.login(params)
+                    .then((loginRes) => {
+                        // 处理登录响应
+                        if (loginRes.data.data === '登录成功') {
+                            // 登录成功提示并跳转至首页
+                            resolve(true, '登录成功喵~')
+                            history.push('/home')
+                        } else {
+                            // 登录失败提示错误信息
+                            resolve(false, `登陆失败：${loginRes.data.errorMsg}`)
+                        }
+                    })
+                    .catch((error) => {
+                        // 登录失败提示错误信息
+                        resolve(false, `登陆失败：${error.message}`)
+                    })
+                    .finally(() => {
+                        // 停止登录加载动画
+                        eventbus.emit('login.index.loading', false)
+                        // 触发获取用户登录状态事件
+                        eventbus.emit('user.getLoginState')
+                    })
+            }
+        )
+
     }
 
     return (

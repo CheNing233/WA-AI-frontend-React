@@ -30,7 +30,7 @@ const ContentWrapper = (props: Props) => {
      */
     useEffect(() => {
         const handleResize = () => {
-            const width = containerRef.current.getBoundingClientRect().width;
+            const width = containerRef.current?.getBoundingClientRect().width;
             setSmallLayout(width < smallLayoutThreshold);
         };
 

@@ -1,4 +1,4 @@
-import {Avatar, Button, Divider, Dropdown, Grid, Menu, Message, Select, Space, Tooltip,} from "@arco-design/web-react";
+import {Avatar, Button, Divider, Grid, Menu, Message, Select, Space, Tooltip,} from "@arco-design/web-react";
 
 import './styles/index.css'
 import {IconLanguage, IconMoonFill, IconSunFill} from "@arco-design/web-react/icon";
@@ -23,12 +23,13 @@ const Header = () => {
     const location = useLocation()
     const history = useHistory()
 
-    const [routes] = useRoute();
+    const userInfo = useUser((state: IUser) => state.userInfo)
+    const userPermission = useUser((state: IUser) => state.userPerms)
+
+    const [routes] = useRoute(userPermission);
     const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
 
     const {workbenchShow, setWorkbenchShow} = useWorkbench();
-
-    const userInfo = useUser((state: IUser) => state.userInfo)
 
 
     /**
@@ -89,7 +90,7 @@ const Header = () => {
                 <Grid.Col flex={"1"}/>
 
                 <Grid.Col flex={"shrink"}>
-                    <Space size={12} style={{ marginLeft: '12px'}}>
+                    <Space size={12} style={{marginLeft: '12px'}}>
                         <Select
                             triggerElement={<Button shape={"circle"} icon={<IconLanguage/>}/>}
                             options={[
