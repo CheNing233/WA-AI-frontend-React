@@ -69,3 +69,12 @@ export function info(): Promise<AxiosResponse> {
 export function authTest(): Promise<AxiosResponse> {
     return request.get(`/system/authTest`);
 }
+
+/**
+ * getUserInformation
+ * @param {string} id
+ * @returns
+ */
+export function getUserInformation(id: number): Promise<AxiosResponse> {
+    return request.get(`/user/${id}`);
+}

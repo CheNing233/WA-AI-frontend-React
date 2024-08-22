@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 
 import './styles/index.css'
 import {Avatar, Button, Skeleton, Space, Typography} from "@arco-design/web-react";
+import {getQiniuImageWithParams} from "@/utils/qiniuImage";
 
 export interface IBottomBarProps {
     name: string,
@@ -43,7 +44,20 @@ const ImageCard = (props: IImageCardProps | any) => {
         <div className={'image-container'}>
             {/*image*/}
             <img
-                src={props.src}
+                src={onLoaded
+                    ? getQiniuImageWithParams({
+                        imageUrl: props.src,
+                        width: 768,
+                        height: 768,
+                        quality: 60,
+                    })
+                    : getQiniuImageWithParams({
+                        imageUrl: props.src,
+                        width: 256,
+                        height: 256,
+                        quality: 40,
+                    })
+                }
                 className={'image-box' + (props.fit ? ' fit-cover' : '')}
                 alt={'img'}
                 onLoad={handleImageLoaded}

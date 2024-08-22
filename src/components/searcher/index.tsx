@@ -16,6 +16,7 @@ export type IFilterGroup = {
 
 export type ISearcherProps = {
     children?: any;
+    leftChildren?: any;
     filters?: IFilterGroup[];
     allowDate?: boolean;
 }
@@ -186,6 +187,11 @@ const Searcher = (props: ISearcherProps) => {
     return (
         <div style={{width: '100%'}}>
             <Grid.Row gutter={[12, 12]} align={'center'}>
+
+                {props.leftChildren && <Grid.Col flex={'shrink'}>
+                    {props.leftChildren}
+                </Grid.Col>}
+
                 {props.filters && <Grid.Col flex={'shrink'}>
                     <Popover
                         position={'bl'}
@@ -264,6 +270,7 @@ const Searcher = (props: ISearcherProps) => {
                     </Button>
                 </Grid.Col>
             </Grid.Row>
+
             <div style={{width: '100%'}}>
                 {Children.map(props.children, child => {
                     return cloneElement(child, {

@@ -9,10 +9,14 @@ const ImagePreviewer = () => {
     const smallLayoutThres = 1024
 
     const {imageViewerShow, setImageViewerShow} = useImagePreviewer()
-    const imageList = useImagePreviewerSetting((state) => state.imageList)
     const imageContainer = useRef(null)
+
     const [paramsCardShow, setParamsCardShow] = useState(true)
     const [smallLayout, setSmallLayout] = useState(false)
+
+    const imageList = useImagePreviewerSetting((state) => state.imageList)
+    const [imageListIndex, setImageListIndex] = useState(0)
+
 
     const handleResize = () => {
         const width = window.innerWidth
@@ -97,13 +101,40 @@ const ImagePreviewer = () => {
                             width: '100%',
                             height: '100vh',
                             overflow: 'hidden',
+                            userSelect: 'none'
                         }}
                     >
                         <Image.PreviewGroup
                             srcList={imageList}
+                            current={imageListIndex}
                             visible={true}
                             closable={false}
+                            resetTranslate={false}
+                            onChange={(index) => {
+                                setImageListIndex(index)
+                            }}
                             getPopupContainer={() => imageContainer.current}
+                            actions={[
+                                {
+                                    key: 'count',
+                                    content: (
+                                        <span style={{fontSize: '13px'}}>
+                                            {`第 ${imageListIndex + 1}/${imageList.length} 张`}
+                                        </span>
+                                    )
+                                },
+                                {
+                                    key: 'thumbUp',
+                                    content: <IconThumbUp/>
+                                },
+                                {
+                                    key: 'favourite',
+                                    content: <IconStar/>
+                                },
+                            ]}
+                            actionsLayout={[
+                                'fullScreen', 'zoomIn', 'zoomOut', 'originalSize', 'count', 'thumbUp', 'favourite'
+                            ]}
                         />
                     </div>
                 </Grid.Col>

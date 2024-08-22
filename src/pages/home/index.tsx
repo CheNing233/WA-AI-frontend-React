@@ -1,4 +1,4 @@
-import {Button, Grid} from "@arco-design/web-react";
+import {Button, Grid, Message} from "@arco-design/web-react";
 import {ControlPlatformIcon} from "tdesign-icons-react";
 import ImageCard from "@/components/imageCard";
 import GridExt from "@/components/gridExt";
@@ -9,11 +9,39 @@ import Banner from "@/components/banner";
 
 import './styles/index.css'
 import {loadingMessage} from "@/utils/loadingMessage";
+import {useEffect, useState} from "react";
+import api from "@/services/export";
+import {IPost} from "@/services/modules/posts";
+import {getPostsExtraInfo} from "@/services/utils/posts";
+import {convertUTCTime} from "@/utils/time";
 
 const Home = () => {
     const {setWorkbenchShow} = useWorkbench()
     const {setImageViewerShow} = useImagePreviewer()
     const {GridItem} = Grid;
+
+    const [posts, setPosts] = useState<Array<IPost>>([])
+
+    useEffect(() => {
+        api.posts.getPostLiteByTime(1, 12)
+            .then((postsRes) => {
+                const list: IPost[] = postsRes.data.data.list
+                if (list) {
+                    getPostsExtraInfo(
+                        list,
+                        (p) => {
+                            console.log('ppppppppp', p, posts)
+                            setPosts(p)
+                        }
+                    )
+                }
+            })
+            .catch((error) => {
+                Message.error(`获取数据失败：${error.message}`)
+            })
+    }, []);
+
+
 
     return (
         <ContentWrapper>
@@ -96,33 +124,45 @@ const Home = () => {
                         />
                     </div>
                 </GridItem>
-                <GridItem
-                    span={3}
-                >
-                    <div style={{position: 'relative', width: '100%', aspectRatio: '3/4.14', overflow: 'hidden'}}>
-                        <ImageCard
-                            width={'100%'}
-                            author={'glcn'}
-                            title={'测试test'}
-                            src={'https://obj.glcn.top/wa-image/1718369431376.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'}
-                            onImageClick={() => {
-                                loadingMessage(
-                                    'image-viewer-loading',
-                                    '加载中...',
-                                    (resolve) => {
-                                        setTimeout(() => {
-                                            resolve(true, '加载成功')
-                                        }, 1000)
-                                    },
-                                    true,
-                                    (messageClose) => {
-                                        messageClose()
-                                    }
-                                )
-                            }}
-                        />
-                    </div>
-                </GridItem>
+
+                {posts && posts.map((post, index) => {
+                    return (
+                        <GridItem span={3} key={`home-posts-${index}`}>
+                            <div style={{
+                                position: 'relative',
+                                width: '100%',
+                                aspectRatio: '3/4.14',
+                                overflow: 'hidden'
+                            }}>
+                                <ImageCard
+                                    width={'100%'}
+                                    author={post.userNickName}
+                                    authorAvatar={post.userAvatarUrl}
+                                    title={post.title}
+                                    time={convertUTCTime(post.updateTime)}
+                                    src={post.bannerUrl}
+                                    onImageClick={() => {
+                                        loadingMessage(
+                                            'image-viewer-loading',
+                                            '加载中...',
+                                            (resolve) => {
+                                                setTimeout(() => {
+                                                    resolve(true, '加载成功')
+                                                }, 1000)
+                                            },
+                                            true,
+                                            (messageClose) => {
+                                                messageClose()
+                                            }
+                                        )
+                                    }}
+                                />
+                            </div>
+                        </GridItem>
+                    )
+                })}
+
+
             </GridExt>
         </ContentWrapper>
     )

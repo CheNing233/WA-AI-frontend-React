@@ -9,10 +9,10 @@ export type IUserInfo = {
     avatar: string;
     avatarUrl?: string;
     email: string;
-    gender: string;
-    describe: string | null;
-    calculationPoint: any,
-    githubId: number | null
+    gender?: string;
+    describe?: string | null;
+    calculationPoint?: any,
+    githubId?: number | null
 }
 
 export type IUser = {

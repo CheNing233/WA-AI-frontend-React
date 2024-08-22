@@ -1,13 +1,18 @@
 import {useContext} from "react";
 import {GlobalContext} from '@/context';
 import {useImagePreviewerSetting} from "@/store/imagePreviewer";
+import {IUserInfo} from "@/store/user";
 
 export type IWorkbench = {
     imageViewerShow: boolean,
     setImageViewerShow: (
         visible: boolean,
         onRequest?: (
-            resolve: (imageList?: string[]) => void,
+            resolve: (
+                imageList?: string[],
+                imageUser?: IUserInfo,
+                imageParams?: any
+            ) => void,
             abortController: AbortController
         ) => void) => void
 }
@@ -22,9 +27,13 @@ const useImagePreviewer = (): IWorkbench => {
     // 从全局上下文中获取图片查看器的可见性状态和设置可见性的函数
     const {imageViewerVisible, setImageViewerVisible} = useContext(GlobalContext);
     // 使用useImagePreviewerSetting钩子函数来获取图片列表设置、AbortController及相关设置函数
-    const [setImageList, abortController, setAbortController] = useImagePreviewerSetting(
+    const [
+        setImageList, setImageUser, setImageParams,
+        abortController, setAbortController
+    ] = useImagePreviewerSetting(
         (state) => [
-            state.setImageList, state.abortController, state.setAbortController
+            state.setImageList, state.setImageUser, state.setImageParams,
+            state.abortController, state.setAbortController
         ]
     )
 
@@ -42,9 +51,19 @@ const useImagePreviewer = (): IWorkbench => {
         ) => void,
     ) => {
         // 定义一个处理函数，用于设置图片列表
-        const handleResolve = (imageList?: string[]) => {
+        const handleResolve = (
+            imageList?: string[],
+            imageUser?: IUserInfo,
+            imageParams?: any
+        ) => {
             if (imageList) {
                 setImageList(imageList)
+            }
+            if (imageUser) {
+                setImageUser(imageUser)
+            }
+            if (imageParams) {
+                setImageParams(imageParams)
             }
         }
 
