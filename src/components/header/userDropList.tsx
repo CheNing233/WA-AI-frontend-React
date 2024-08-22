@@ -1,4 +1,16 @@
-import {Avatar, Button, Card, Divider, Dropdown, Menu, Message, Modal, Space, Statistic} from "@arco-design/web-react";
+import {
+    Avatar,
+    Button,
+    Card,
+    Divider,
+    Dropdown,
+    Menu,
+    Message,
+    Modal,
+    Space,
+    Statistic,
+    Tag
+} from "@arco-design/web-react";
 import {ThunderIcon, WalletIcon} from "tdesign-icons-react";
 import {IconShareExternal} from "@arco-design/web-react/icon";
 import clipboard from "@/utils/clipboard";
@@ -12,6 +24,7 @@ import {AxiosError} from "axios";
 
 import './styles/index.css'
 import {loadingMessage} from "@/utils/loadingMessage";
+import {AdminPerm} from "@/constants/permissions";
 
 const UserDropList = (props: any) => {
     const history = useHistory();
@@ -28,6 +41,30 @@ const UserDropList = (props: any) => {
     //     oneOfPerm: false
     // }, userPerms)
     // console.log("authentication", result)
+
+    const getUserTagState = () => {
+        if (userLogged) {
+            if (userPerms === AdminPerm) {
+                return (
+                    <Tag size={'small'} bordered={true} color={'arcoblue'}>
+                        管理员
+                    </Tag>
+                )
+            } else {
+                return (
+                    <Tag size={'small'} bordered={true} color={'green'}>
+                        Lv0
+                    </Tag>
+                )
+            }
+        } else {
+            return (
+                <Tag size={'small'} bordered={true}>
+                    游客
+                </Tag>
+            )
+        }
+    }
 
     const handleClickMenu = (key: string) => {
         switch (key) {
@@ -80,16 +117,7 @@ const UserDropList = (props: any) => {
                 droplist={
                     <Menu style={{maxHeight: '900px', width: '250px'}} onClickMenuItem={handleClickMenu}>
                         <Menu.Item style={{height: '48px', margin: '6px 0 8px 0'}} key='avatar'>
-                            {!userLogged && <Space align={'center'} style={{marginTop: '4px'}}>
-                                <Avatar shape={'circle'}>
-                                    WA
-                                </Avatar>
-                                <Divider style={{margin: '0 0 0 0'}} type='vertical'/>
-                                <h4 style={{margin: '0 0 0 0'}}>
-                                    请先登录 {'>'}
-                                </h4>
-                            </Space>}
-                            {userLogged && <Space align={'center'} style={{marginTop: '4px'}}>
+                            <Space align={'center'} style={{marginTop: '4px'}}>
                                 <Avatar shape={'circle'}>
                                     {
                                         userInfo.avatarUrl
@@ -98,10 +126,13 @@ const UserDropList = (props: any) => {
                                     }
                                 </Avatar>
                                 <Divider style={{margin: '0 0 0 0'}} type='vertical'/>
-                                <h4 style={{margin: '0 0 0 0'}}>
-                                    {userInfo.nickName} {'>'}
-                                </h4>
-                            </Space>}
+                                <Space size={8}>
+                                    {getUserTagState()}
+                                    <span style={{margin: '0 0 0 0', lineHeight: '0'}}>
+                                        {userLogged ? userInfo.nickName : '请先登录'} {'>'}
+                                    </span>
+                                </Space>
+                            </Space>
                         </Menu.Item>
                         <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
                         <Card>

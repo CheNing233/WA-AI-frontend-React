@@ -7,7 +7,7 @@ const Logo = () => {
     const userPermission = useUser((state: IUser) => state.userPerms)
 
     const history = useHistory();
-    const [defaultRoute] = useRoute(userPermission);
+    const [permissionRoute, defaultRoute] = useRoute(userPermission);
 
     return (
         <Space style={{cursor: 'pointer', transform: 'translate(0, -1px)', marginLeft: '12px'}}>

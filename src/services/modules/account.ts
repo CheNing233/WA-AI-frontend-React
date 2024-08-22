@@ -60,3 +60,12 @@ export function isLogin(): Promise<AxiosResponse> {
 export function info(): Promise<AxiosResponse> {
     return request.get(`/account/me`);
 }
+
+
+/**
+ * 权限测试
+ * @returns
+ */
+export function authTest(): Promise<AxiosResponse> {
+    return request.get(`/system/authTest`);
+}

@@ -2,7 +2,8 @@ import api from "@/services/export";
 import {initialUserInfo, IUser, IUserInfo, useUser} from "@/store/user";
 import eventbus from "@/eventbus";
 import {useEffect} from "react";
-import {GuestPerm, UserPerm} from "@/constants/permissions";
+import {AdminPerm, GuestPerm, UserPerm} from "@/constants/permissions";
+import {Message} from "@arco-design/web-react";
 
 
 const LoginManagement = () => {
@@ -26,8 +27,15 @@ const LoginManagement = () => {
                     if (isLoginRes.data.data) {
                         // 设置用户已登录状态为true
                         setUserLogged(true)
-                        // 设置用户权限
-                        setUserPerms(UserPerm)
+                        // 调用API获取用户权限
+                        api.account.authTest()
+                            .then((permRes) => {
+                                if (permRes.data.data[0] === 'administrator') {
+                                    setUserPerms(AdminPerm)
+                                } else {
+                                    setUserPerms(UserPerm)
+                                }
+                            })
                         // 调用API获取用户详细信息
                         api.account.info()
                             .then((infoRes) => {
@@ -44,6 +52,7 @@ const LoginManagement = () => {
                                             newUserInfo.avatarUrl = avatarRes.data.data.url
                                             // 设置用户信息
                                             setUserInfo(newUserInfo)
+                                            Message.success(`欢迎回来，${newUserInfo.nickName}`)
                                         })
                                 } else {
                                     // 如果不存在头像，直接设置用户信息
