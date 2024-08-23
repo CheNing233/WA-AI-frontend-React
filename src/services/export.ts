@@ -5,12 +5,15 @@ import * as dashboard from './modules/dashboard'
 
 import * as images from './modules/images'
 import * as posts from './modules/posts'
+import * as models from './modules/models'
+
 
 const api = {
     account,
     sd,
     images,
     posts,
+    models,
     staticImage,
     dashboard
 }

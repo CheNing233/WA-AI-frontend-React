@@ -1,6 +1,47 @@
 import {IPost} from "@/services/modules/posts";
 import api from "@/services/export";
 
+
+/**
+ * 异步获取用户额外信息
+ *
+ * 此函数用于异步获取帖子作者的头像URL
+ *
+ * @returns 返回一个Promise，表示异步操作已完成
+ */
+export const getPostUserInfo = (newPost: IPost) => {
+    return new Promise((resolve) => {
+        api.account.getUserInformation(newPost.userId)
+            .then((userRes) => {
+                const avatarId = userRes.data.data.avatar
+
+                api.staticImage.getUrlByStaticImageId(avatarId)
+                    .then((urlRes) => {
+                        newPost.userAvatarUrl = urlRes.data.data.url
+                        resolve(newPost)
+                    })
+            })
+    })
+}
+
+/**
+ * 异步获取帖子额外信息
+ *
+ * 此函数用于异步获取帖子的封面URL
+ *
+ * @returns 返回一个Promise，表示异步操作已完成
+ */
+export const getPostBannerUrl = (newPost: IPost) => {
+    return new Promise((resolve, reject) => {
+        api.staticImage.getUrlByStaticImageId(newPost.sdimageIdList[0])
+            .then((urlRes) => {
+                newPost.bannerUrl = urlRes.data.data.url
+                resolve(newPost)
+            })
+    })
+}
+
+
 /**
  * 获取帖子的额外信息
  *
@@ -26,59 +67,8 @@ export const getPostsExtraInfo = (
     const getExtraInfo = (post: IPost) => {
         let newPost = post
 
-        /**
-         * 异步获取用户额外信息
-         *
-         * 此函数用于异步获取帖子作者的头像URL
-         *
-         * @returns 返回一个Promise，表示异步操作已完成
-         */
-        const getExtraUserInfo = async () => {
-            return new Promise((resolve) => {
-                api.account.getUserInformation(newPost.userId)
-                    .then((userRes) => {
-                        const avatarId = userRes.data.data.avatar
-
-                        api.staticImage.getUrlByStaticImageId(avatarId)
-                            .then((urlRes) => {
-                                newPost.userAvatarUrl = urlRes.data.data.url
-                                resolve(null)
-                            })
-                    })
-            })
-        }
-
-        /**
-         * 异步获取帖子额外信息
-         *
-         * 此函数用于异步获取帖子的封面URL
-         *
-         * @returns 返回一个Promise，表示异步操作已完成
-         */
-        const getExtraPostInfo = async () => {
-            return new Promise((resolve, reject) => {
-                api.staticImage.getUrlByStaticImageId(newPost.sdimageIdList[0])
-                    .then((urlRes) => {
-                        newPost.bannerUrl = urlRes.data.data.url
-                        resolve(null)
-                    })
-                    .catch(() => {
-                        // Retry the request on failure
-                        api.staticImage.getUrlByStaticImageId(newPost.sdimageIdList[0])
-                            .then((urlRes) => {
-                                newPost.bannerUrl = urlRes.data.data.url;
-                                resolve(null);
-                            })
-                            .catch((error) => {
-                                reject(error); // If second request also fails, reject the promise
-                            });
-                    })
-            })
-        }
-
-
         return new Promise((resolve) => {
-            Promise.all([getExtraUserInfo(), getExtraPostInfo()])
+            Promise.all([getPostUserInfo(newPost), getPostBannerUrl(newPost)])
                 .finally(() => {
                     resolve(newPost)
                 })

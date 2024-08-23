@@ -5,33 +5,63 @@ import Searcher, {ISearcherChildProps} from "@/components/searcher";
 import {FC, useState} from "react";
 import ImageWaterfall from "@/components/imageWaterfall";
 import ImageCard from "@/components/imageCard";
+import api from "@/services/export";
+import {getModelsExtraInfo} from "@/services/utils/models";
+import {convertUTCTime} from "@/utils/time";
+import {IModel} from "@/services/modules/models";
 
 const Models = () => {
 
     const [data, setData] = useState([]);
 
-    const dataItemElement = (data: any) => {
+    const dataItemElement = (data: IModel | any) => {
         return (
             <ImageCard
-                src={`https://naver.github.io/egjs-infinitegrid/assets/image/1.jpg`}
-                alt="egjs"
+                width={'100%'}
+                id={data.id}
+                author={data.nickName}
+                authorAvatar={data.userAvatarUrl}
+                title={data.title}
+                time={convertUTCTime(data.updateTime)}
+                src={data.bannerUrl}
+                onImageClick={() => {
+
+                }}
             />
         )
     }
 
-    const getItems = async (nextGroupKey: number) => {
+    const getItems = async (nextGroupKey: number, resolve: () => void) => {
         const count = 20;
-        const nextItems = [];
         const nextKey = (nextGroupKey - 1) * count;
 
-        for (let i = 0; i < count; ++i) {
-            nextItems.push({groupKey: nextGroupKey, key: nextKey + i});
-        }
+        api.models.getSdModelsList(nextGroupKey, count)
+            .then(modelsRes => {
+                const list = modelsRes.data.data.models;
 
-        setData([
-            ...data,
-            ...nextItems,
-        ]);
+                if (list) {
+                    getModelsExtraInfo(
+                        list,
+                        (finalModels) => {
+                            const newModels = []
+
+                            for (let i = 0; i < finalModels.length; ++i) {
+                                newModels.push({
+                                    groupKey: nextGroupKey, key: nextKey + i,
+                                    ...finalModels[i]
+                                });
+                            }
+
+                            setData([
+                                ...data,
+                                ...newModels,
+                            ]);
+
+                            resolve()
+                        }
+                    )
+                }
+            })
     }
 
     const SearcherExtra: FC<ISearcherChildProps> = ({sendValueToSearch}) => {
