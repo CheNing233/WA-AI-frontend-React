@@ -17,7 +17,7 @@ import {IconClose} from "@arco-design/web-react/icon";
 export const loadingMessage = (
     key: string,
     text: string,
-    loadingFunc: (resolve: (success?: boolean, text?: string) => void) => void,
+    loadingFunc: (resolve: (success?: boolean | 'waiting', text?: string) => void) => void,
     allowCancel?: boolean,
     onCancel?: (messageClose: () => void) => void
 ) => {
@@ -42,17 +42,24 @@ export const loadingMessage = (
     });
 
     // 定义一个处理异步操作完成的回调函数，根据操作结果展示成功或错误消息。
-    const handleResolve = (success?: boolean, text?: string) => {
+    const handleResolve = (success?: boolean | 'waiting', text?: string) => {
         if (!text) {
             messageClose()
             return;
         }
         if (success) {
-            Message.success({
-                id: key,
-                content: text,
-                duration: 3000,
-            })
+            if (success === 'waiting')
+                Message.loading({
+                    id: key,
+                    content: text,
+                    duration: 0,
+                })
+            else
+                Message.success({
+                    id: key,
+                    content: text,
+                    duration: 3000,
+                })
         } else {
             Message.error({
                 id: key,

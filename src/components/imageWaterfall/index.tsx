@@ -15,14 +15,13 @@ export type IImageWaterfallProps = {
     }[],
     dataItemElement: (data: any) => JSX.Element,
     hasNoMore: boolean,
-    onAppend: (nextGroupKey: number) => Promise<void>;
+    onAppend: (nextGroupKey: number, resolve: () => void) => void;
     scrollContainer: any,
 }
 
 const Item = ({num, itemWidth, item, render}: any) => (
     <div style={{width: itemWidth - 1,}}>
         {render(item)}
-        <div>num {num}</div>
     </div>
 )
 
@@ -32,7 +31,6 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
     const [itemWidth, setItemWidth] = useState(0);
     const [rendering, setRendering] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState(null);
 
 
     const handleScroll = () => {
@@ -45,15 +43,19 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
         setRendering(false);
     }
 
-    const handleRequestAppend = async (e: any) => {
+    const handleRequestAppend = (e: any) => {
         if (props.hasNoMore || itemWidth === 0) return;
         const nextGroupKey = (+e.groupKey! || 0) + 1;
 
+        const handleResolve = () => {
+            setLoading(false);
+            e.ready();
+        }
+
         e.wait();
         setLoading(true);
-        await props.onAppend(nextGroupKey);
-        setLoading(false);
-        e.ready();
+        props.onAppend(nextGroupKey, handleResolve);
+
     }
 
     useEffect(() => {

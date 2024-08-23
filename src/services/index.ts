@@ -1,6 +1,7 @@
 import axios from "axios";
 import {backendApiUrl} from "@/config/serviceUrl";
 import {cacheRequestInterceptor, cacheResponseInterceptor} from "@/services/cache";
+import {retryInterceptor} from "@/services/retry";
 
 
 const axiosInstance = axios.create({
@@ -8,6 +9,9 @@ const axiosInstance = axios.create({
     withCredentials: true
 });
 
+/*
+* Debug INTERCEPTOR
+*/
 axiosInstance.interceptors.request.use((config) => {
     const {params, data, headers, method, url} = config;
     console.debug(
@@ -27,7 +31,17 @@ axiosInstance.interceptors.response.use((response) => {
     return response;
 })
 
+/*
+* Retry INTERCEPTOR
+*/
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    retryInterceptor
+)
 
+/*
+* Cache & Intercept duplicate INTERCEPTOR
+*/
 axiosInstance.interceptors.request.use(cacheRequestInterceptor)
 axiosInstance.interceptors.response.use(cacheResponseInterceptor)
 

@@ -4,6 +4,7 @@ import eventbus from "@/eventbus";
 import {useEffect} from "react";
 import {AdminPerm, GuestPerm, UserPerm} from "@/constants/permissions";
 import {Message} from "@arco-design/web-react";
+import {getUserAvatar} from "@/services/utils/account";
 
 
 const LoginManagement = () => {
@@ -41,23 +42,15 @@ const LoginManagement = () => {
                             .then((infoRes) => {
                                 // 处理并更新用户信息
                                 let newUserInfo: IUserInfo = {...infoRes.data.data}
-                                // 重置头像URL
-                                newUserInfo.avatarUrl = null
-                                // 如果用户信息和头像存在，获取头像URL
-                                if (newUserInfo && newUserInfo.avatar) {
-                                    // 通过头像ID获取头像URL
-                                    api.staticImage.getUrlByStaticImageId(newUserInfo.avatar)
-                                        .then((avatarRes) => {
-                                            // 更新用户信息中的头像URL
-                                            newUserInfo.avatarUrl = avatarRes.data.data.url
-                                            // 设置用户信息
-                                            setUserInfo(newUserInfo)
-                                            Message.success(`欢迎回来，${newUserInfo.nickName}`)
-                                        })
-                                } else {
-                                    // 如果不存在头像，直接设置用户信息
-                                    setUserInfo(newUserInfo)
-                                }
+
+                                // 获取用户头像
+                                getUserAvatar(
+                                    newUserInfo,
+                                    (u) => {
+                                        setUserInfo(u)
+                                        Message.success(`欢迎回来，${newUserInfo.nickName}`)
+                                    }
+                                )
                             })
                     } else { // 如果未登录
                         // 设置用户已登录状态为false

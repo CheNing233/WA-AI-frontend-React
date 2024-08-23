@@ -1,15 +1,10 @@
-import Qs from 'qs'
+import {generateReqKey} from "@/services/utils/generateReqKey";
 
 const cacheBuffer: any = {}
 const cacheTimeout = 60000;
 
 const pendingRequests: any = new Map();
 
-
-const generateReqKey = (config: any) => {
-    const {method, url, params, data} = config;
-    return [method, url, Qs.stringify(params), Qs.stringify(data)].join("&");
-}
 
 // 定义一个请求拦截器，用于缓存 GET 请求，并拒绝所有重复请求
 export const cacheRequestInterceptor = (config: any) => {
@@ -19,7 +14,7 @@ export const cacheRequestInterceptor = (config: any) => {
         const key = generateReqKey(config);
 
         // 检查请求重复
-        if (pendingRequests.has(key)) {
+        if (pendingRequests.has(key) && !config.cache?.forceUpdate) {
             // 重复请求
             console.log(`重复命中 ${config.method} ${config.url}`);
 
@@ -28,7 +23,9 @@ export const cacheRequestInterceptor = (config: any) => {
                 return new Promise((resolve) => {
                     const check = () => {
                         // 第一个请求结束，将第一个请求的数据同步到该重复请求中
-                        if (cacheBuffer[key] && Date.now() - cacheBuffer[key].timestamp < cacheTimeout) {
+                        if (cacheBuffer[key]
+                            && Date.now() - cacheBuffer[key].timestamp < cacheTimeout
+                        ) {
                             const responseData = {
                                 status: 200,
                                 data: cacheBuffer[key].data,
@@ -52,7 +49,10 @@ export const cacheRequestInterceptor = (config: any) => {
             pendingRequests.set(key, true);
 
             // 检查是否存在有效缓存，如果存在，则直接返回缓存数据
-            if (cacheBuffer[key] && Date.now() - cacheBuffer[key].timestamp < cacheTimeout) {
+            if (cacheBuffer[key]
+                && Date.now() - cacheBuffer[key].timestamp < cacheTimeout
+                && !config?.cache?.forceUpdate
+            ) {
                 // 从 pendingRequests 中移除该请求
                 pendingRequests.delete(key, true);
 

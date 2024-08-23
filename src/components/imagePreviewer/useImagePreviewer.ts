@@ -1,20 +1,43 @@
 import {useContext} from "react";
 import {GlobalContext} from '@/context';
-import {useImagePreviewerSetting} from "@/store/imagePreviewer";
+import {IImageListItem, useImagePreviewerSetting} from "@/store/imagePreviewer";
 import {IUserInfo} from "@/store/user";
 
-export type IWorkbench = {
-    imageViewerShow: boolean,
-    setImageViewerShow: (
+export interface IOnRequestResolveFunc {
+    (
+        imageList?: IImageListItem[],
+        imageUser?: IUserInfo,
+        imageExtraInfo?: any
+    ): void
+}
+
+export interface IOnRequestFunc {
+    (
+        resolve: IOnRequestResolveFunc,
+        abortController: AbortController
+    ): void
+}
+
+export interface IOnParamsRequestFunc {
+    (
+        imageItem: IImageListItem,
+        imageIndex: number | string,
+        resolve: (params: any, index: number | string) => void,
+        abortController: AbortController
+    )
+}
+
+export interface setImageViewerShowFunc {
+    (
         visible: boolean,
-        onRequest?: (
-            resolve: (
-                imageList?: string[],
-                imageUser?: IUserInfo,
-                imageParams?: any
-            ) => void,
-            abortController: AbortController
-        ) => void) => void
+        onRequest?: IOnRequestFunc,
+        onParamsRequest?: IOnParamsRequestFunc,
+    ): void
+}
+
+export interface IWorkbench {
+    imageViewerShow: boolean,
+    setImageViewerShow: setImageViewerShowFunc
 }
 
 /**
@@ -28,33 +51,26 @@ const useImagePreviewer = (): IWorkbench => {
     const {imageViewerVisible, setImageViewerVisible} = useContext(GlobalContext);
     // 使用useImagePreviewerSetting钩子函数来获取图片列表设置、AbortController及相关设置函数
     const [
-        setImageList, setImageUser, setImageParams,
-        abortController, setAbortController
+        setImageList, setImageUser, setImageExtra,
+        abortController, setAbortController,
+        setOnParamsRequest
     ] = useImagePreviewerSetting(
         (state) => [
-            state.setImageList, state.setImageUser, state.setImageParams,
-            state.abortController, state.setAbortController
+            state.setImageList, state.setImageUser, state.setImageExtra,
+            state.abortController, state.setAbortController,
+            state.setOnParamsRequest
         ]
     )
 
-    /**
-     * 设置图片预览器的显示状态
-     *
-     * @param {boolean} visible - 图片预览器的可见性
-     * @param {function} onRequest - 可选的回调函数，用于在显示请求前后执行自定义逻辑
-     */
-    const setImageViewerShow = (
-        visible: boolean,
-        onRequest?: (
-            resolve: (imageList?: string[]) => void,
-            abortController: AbortController
-        ) => void,
+    // 设置图片预览器显示状态的函数
+    const setImageViewerShow: setImageViewerShowFunc = (
+        visible,
+        onRequest,
+        onParamsRequest
     ) => {
         // 定义一个处理函数，用于设置图片列表
-        const handleResolve = (
-            imageList?: string[],
-            imageUser?: IUserInfo,
-            imageParams?: any
+        const handleResolve: IOnRequestResolveFunc = (
+            imageList, imageUser, imageExtraInfo
         ) => {
             if (imageList) {
                 setImageList(imageList)
@@ -62,8 +78,8 @@ const useImagePreviewer = (): IWorkbench => {
             if (imageUser) {
                 setImageUser(imageUser)
             }
-            if (imageParams) {
-                setImageParams(imageParams)
+            if (imageExtraInfo) {
+                setImageExtra(imageExtraInfo)
             }
         }
 
@@ -80,11 +96,17 @@ const useImagePreviewer = (): IWorkbench => {
         if (onRequest) {
             onRequest(handleResolve, abortController)
         }
+
+        if (onParamsRequest) {
+            setOnParamsRequest(onParamsRequest)
+        }
     }
 
     // 返回图片预览器的显示状态和设置显示状态的方法
-    return {imageViewerShow: imageViewerVisible, setImageViewerShow: setImageViewerShow}
+    return {
+        imageViewerShow: imageViewerVisible,
+        setImageViewerShow: setImageViewerShow
+    }
 }
 
-
-export default useImagePreviewer
+export default useImagePreviewer;
