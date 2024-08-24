@@ -1,4 +1,16 @@
-import {Button, Checkbox, DatePicker, Divider, Grid, InputTag, Popover, Space, Tooltip} from "@arco-design/web-react";
+import {
+    Affix,
+    Button,
+    Card,
+    Checkbox,
+    DatePicker,
+    Divider,
+    Grid,
+    InputTag,
+    Popover,
+    Space,
+    Tooltip
+} from "@arco-design/web-react";
 import {IconCheck, IconDown, IconFilter, IconSearch, IconStop} from "@arco-design/web-react/icon";
 import {Children, cloneElement, useEffect, useState} from "react";
 import {getListUsePrefix} from "@/components/searcher/utils/prefix";
@@ -17,8 +29,11 @@ export type IFilterGroup = {
 export type ISearcherProps = {
     children?: any;
     leftChildren?: any;
+    rightChildren?: any;
     filters?: IFilterGroup[];
     allowDate?: boolean;
+    popupPosition?: 'top' | 'bottom',
+    stickyContainer?: () => any;
 }
 
 export type ISearcherChildProps = {
@@ -31,7 +46,6 @@ const PREFIX = {
 }
 
 const Searcher = (props: ISearcherProps) => {
-
     const [autoSearch, setAutoSearch] = useState(true)
     const searchMethodText = autoSearch ? '并回车' : '并按下「搜索」'
     const [searchValues, setSearchValues] = useState([])
@@ -185,100 +199,114 @@ const Searcher = (props: ISearcherProps) => {
     }
 
     return (
-        <div style={{width: '100%'}}>
-            <Grid.Row gutter={[12, 12]} align={'center'}>
+        <Affix
+            style={{width: '100%'}}
+            offsetTop={0}
+            target={props.stickyContainer}
+        >
+            <Card style={{width: '100%'}} bordered={true}>
+                <Grid.Row gutter={[12, 12]} align={'center'}>
 
-                {props.leftChildren && <Grid.Col flex={'shrink'}>
-                    {props.leftChildren}
-                </Grid.Col>}
+                    {props.leftChildren && <Grid.Col flex={'shrink'}>
+                        {props.leftChildren}
+                    </Grid.Col>}
 
-                {props.filters && <Grid.Col flex={'shrink'}>
-                    <Popover
-                        position={'bl'}
-                        unmountOnExit={false}
-                        content={
-                            <Space
-                                style={{width: '308px'}}
-                                direction={'vertical'}
-                            >
-                                {props.filters.map(filterGroupItem)}
-                            </Space>
-                        }
-                    >
-                        <Button icon={<IconFilter/>}>
-                            筛选<IconDown/>
-                        </Button>
-                    </Popover>
-                </Grid.Col>}
-
-                <Grid.Col flex={'1'}>
-                    <InputTag
-                        placeholder={'请输入搜索内容' + searchMethodText}
-                        allowClear={true}
-                        animation={false}
-                        value={searchValues}
-                        onChange={(values) => {
-                            setSearchValues(values)
-                        }}
-                        addAfter={
-                            <Tooltip content={'内容变化后立即自动搜索'}>
-                                <Checkbox
-                                    checked={autoSearch}
-                                    onChange={(checked) => {
-                                        setAutoSearch(checked)
-                                    }}
+                    {props.filters && <Grid.Col flex={'shrink'}>
+                        <Popover
+                            position={'bl'}
+                            unmountOnExit={false}
+                            content={
+                                <Space
+                                    style={{width: '308px'}}
+                                    direction={'vertical'}
                                 >
-                                    {({checked}) => {
-                                        return (<Button
-                                            icon={checked ? <IconCheck/> : <IconStop/>}
-                                            style={{
-                                                position: 'relative',
-                                                userSelect: 'none',
-                                                margin: '0 -12px 0 -17px',
-                                                left: '0',
-                                                top: '0',
-                                            }}
-                                        >
-                                            自动搜索
-                                        </Button>)
-                                    }}
-                                </Checkbox>
-                            </Tooltip>
-                        }
-                    />
-                </Grid.Col>
+                                    {props.filters.map(filterGroupItem)}
+                                </Space>
+                            }
+                        >
+                            <Button icon={<IconFilter/>}>
+                                筛选<IconDown/>
+                            </Button>
+                        </Popover>
+                    </Grid.Col>}
 
-                {props.allowDate && <Grid.Col flex={'shrink'}>
-                    <DatePicker.WeekPicker
-                        allowClear={true}
-                        style={{width: '118px'}}
-                        placeholder={'第几周'}
-                        value={week ? week : ''}
-                        onChange={(dateString, date) => {
-                            setWeek(date)
-                            updateWeekToSearch(dateString)
-                        }}
-                    />
-                </Grid.Col>}
+                    <Grid.Col flex={'1'}>
+                        <InputTag
+                            autoFocus={true}
+                            placeholder={'请输入搜索内容' + searchMethodText}
+                            allowClear={true}
+                            animation={false}
+                            value={searchValues}
+                            onChange={(values) => {
+                                setSearchValues(values)
+                            }}
+                            addAfter={
+                                <Tooltip content={'内容变化后立即自动搜索'}
+                                         position={props.popupPosition || 'top'}
+                                >
+                                    <Checkbox
+                                        checked={autoSearch}
+                                        onChange={(checked) => {
+                                            setAutoSearch(checked)
+                                        }}
+                                    >
+                                        {({checked}) => {
+                                            return (<Button
+                                                icon={checked ? <IconCheck/> : <IconStop/>}
+                                                style={{
+                                                    position: 'relative',
+                                                    userSelect: 'none',
+                                                    margin: '0 -12px 0 -17px',
+                                                    left: '0',
+                                                    top: '0',
+                                                }}
+                                            >
+                                                自动搜索
+                                            </Button>)
+                                        }}
+                                    </Checkbox>
+                                </Tooltip>
+                            }
+                        />
+                    </Grid.Col>
 
-                <Grid.Col flex={'shrink'}>
-                    <Button
-                        icon={<IconSearch/>}
-                        type={'primary'}
-                    >
-                        搜索
-                    </Button>
-                </Grid.Col>
-            </Grid.Row>
+                    {props.allowDate && <Grid.Col flex={'shrink'}>
+                        <DatePicker.WeekPicker
+                            allowClear={true}
+                            style={{width: '118px'}}
+                            placeholder={'第几周'}
+                            value={week ? week : ''}
+                            onChange={(dateString, date) => {
+                                setWeek(date)
+                                updateWeekToSearch(dateString)
+                            }}
+                        />
+                    </Grid.Col>}
 
-            <div style={{width: '100%'}}>
-                {Children.map(props.children, child => {
-                    return cloneElement(child, {
-                        sendValueToSearch: handleChildComponentValueSearch
-                    });
-                })}
-            </div>
-        </div>
+                    <Grid.Col flex={'shrink'}>
+                        <Button
+                            icon={<IconSearch/>}
+                            type={'primary'}
+                        >
+                            搜索
+                        </Button>
+                    </Grid.Col>
+
+                    {props.rightChildren && <Grid.Col flex={'shrink'}>
+                        {props.rightChildren}
+                    </Grid.Col>}
+
+                </Grid.Row>
+
+                <div style={{width: '100%'}}>
+                    {Children.map(props.children, child => {
+                        return cloneElement(child, {
+                            sendValueToSearch: handleChildComponentValueSearch
+                        });
+                    })}
+                </div>
+            </Card>
+        </Affix>
     )
 }
 

@@ -22,7 +22,6 @@ export type IUser = {
     setUserInfo: (userInfo: IUserInfo) => void;
     userPerms: UserPermission;
     setUserPerms: (userPerms: UserPermission) => void;
-    getLogin: () => void
 }
 
 export const initialUserInfo = {
@@ -38,7 +37,7 @@ export const initialUserInfo = {
     githubId: null
 }
 
-export const useUser = create((set, getState) => ({
+export const useUser = create<IUser>((set, getState) => ({
     userLogged: false,
     setUserLogged: (userLogged: boolean) => set(() => ({userLogged})),
     userInfo: {

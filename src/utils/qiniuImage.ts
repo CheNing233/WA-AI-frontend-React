@@ -11,18 +11,18 @@ export const getQiniuImageWithParams = (
 ) => {
     const baseParam = 'imageMogr2/auto-orient'
 
-    let size = ''
+    let size = '/thumbnail/1024x1024>'
     if (width && height) {
         size = `/thumbnail/${width}x${height}>`
     }
 
-    let formatParam = 'webp'
-    if (format !== null) {
+    let formatParam = '/format/webp'
+    if (format) {
         formatParam = `/format/${format}`
     }
 
-    let qualityParam = '75'
-    if (quality !== null) {
+    let qualityParam = '/format/75'
+    if (quality) {
         qualityParam = `/quality/${quality}`
     }
 

@@ -19,6 +19,8 @@ export interface IImageCardProps {
     title: string,
     time?: string,
     fit?: boolean,
+    children?: React.ReactNode,
+    maskContent?: React.ReactNode,
     bottomBar?: IBottomBarProps[],
     onImageClick?: (id: string | number) => void
 }
@@ -61,14 +63,8 @@ const ImageCard = (props: IImageCardProps | any) => {
                             imageUrl: props.src,
                             width: 128,
                             height: 128,
-                            quality: 8,
+                            quality: 10,
                         })
-                    // getQiniuImageWithParams({
-                    //     imageUrl: props.src,
-                    //     width: 768,
-                    //     height: 768,
-                    //     quality: 50
-                    // })
                 }
                 className={'image-box' + (props.fit ? ' fit-cover' : '')}
                 alt={'img'}
@@ -153,8 +149,11 @@ const ImageCard = (props: IImageCardProps | any) => {
                 onMouseOut={handleMaskMouseOut}
                 onClick={handleImageOnClick}
             >
-
+                {props.maskContent}
             </div>
+
+            {/*children*/}
+            {props.children}
         </div>
     )
 }
