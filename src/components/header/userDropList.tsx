@@ -1,4 +1,16 @@
-import {Avatar, Button, Card, Divider, Dropdown, Menu, Message, Modal, Space, Statistic} from "@arco-design/web-react";
+import {
+    Avatar,
+    Button,
+    Card,
+    Divider,
+    Dropdown,
+    Menu,
+    Message,
+    Modal,
+    Space,
+    Statistic,
+    Tag
+} from "@arco-design/web-react";
 import {ThunderIcon, WalletIcon} from "tdesign-icons-react";
 import {IconShareExternal} from "@arco-design/web-react/icon";
 import clipboard from "@/utils/clipboard";
@@ -11,6 +23,8 @@ import eventbus from "@/eventbus";
 import {AxiosError} from "axios";
 
 import './styles/index.css'
+import {loadingMessage} from "@/utils/loadingMessage";
+import {AdminPerm} from "@/constants/permissions";
 
 const UserDropList = (props: any) => {
     const history = useHistory();
@@ -28,6 +42,30 @@ const UserDropList = (props: any) => {
     // }, userPerms)
     // console.log("authentication", result)
 
+    const getUserTagState = () => {
+        if (userLogged) {
+            if (userPerms === AdminPerm) {
+                return (
+                    <Tag size={'small'} bordered={true} color={'arcoblue'}>
+                        管理员
+                    </Tag>
+                )
+            } else {
+                return (
+                    <Tag size={'small'} bordered={true} color={'green'}>
+                        Lv0
+                    </Tag>
+                )
+            }
+        } else {
+            return (
+                <Tag size={'small'} bordered={true}>
+                    游客
+                </Tag>
+            )
+        }
+    }
+
     const handleClickMenu = (key: string) => {
         switch (key) {
             case 'avatar':
@@ -42,16 +80,22 @@ const UserDropList = (props: any) => {
                     Modal.confirm({
                         title: '确认退出登录？',
                         onOk: () => {
-                            api.account.logout()
-                                .then(() => {
-                                    Message.success('退出成功')
-                                })
-                                .catch((error: AxiosError) => {
-                                    Message.error(`退出失败：${error.message}`)
-                                })
-                                .finally(() => {
-                                    eventbus.emit('user.getLoginState')
-                                })
+                            loadingMessage(
+                                'msg.logout',
+                                '退出登录中...',
+                                (resolve) => {
+                                    api.account.logout()
+                                        .then(() => {
+                                            resolve(true, '退出成功')
+                                        })
+                                        .catch((error: AxiosError) => {
+                                            resolve(false, `退出失败：${error.message}`)
+                                        })
+                                        .finally(() => {
+                                            eventbus.emit('user.getLoginState')
+                                        })
+                                }
+                            )
                         }
                     })
                 } else {
@@ -73,16 +117,7 @@ const UserDropList = (props: any) => {
                 droplist={
                     <Menu style={{maxHeight: '900px', width: '250px'}} onClickMenuItem={handleClickMenu}>
                         <Menu.Item style={{height: '48px', margin: '6px 0 8px 0'}} key='avatar'>
-                            {!userLogged && <Space align={'center'} style={{marginTop: '4px'}}>
-                                <Avatar shape={'circle'}>
-                                    WA
-                                </Avatar>
-                                <Divider style={{margin: '0 0 0 0'}} type='vertical'/>
-                                <h4 style={{margin: '0 0 0 0'}}>
-                                    请先登录 {'>'}
-                                </h4>
-                            </Space>}
-                            {userLogged && <Space align={'center'} style={{marginTop: '4px'}}>
+                            <Space align={'center'} style={{marginTop: '4px'}}>
                                 <Avatar shape={'circle'}>
                                     {
                                         userInfo.avatarUrl
@@ -91,10 +126,13 @@ const UserDropList = (props: any) => {
                                     }
                                 </Avatar>
                                 <Divider style={{margin: '0 0 0 0'}} type='vertical'/>
-                                <h4 style={{margin: '0 0 0 0'}}>
-                                    {userInfo.nickName} {'>'}
-                                </h4>
-                            </Space>}
+                                <Space size={8}>
+                                    {getUserTagState()}
+                                    <span style={{margin: '0 0 0 0', lineHeight: '0'}}>
+                                        {userLogged ? userInfo.nickName : '请先登录'} {'>'}
+                                    </span>
+                                </Space>
+                            </Space>
                         </Menu.Item>
                         <Divider style={{margin: '0 0 0 0'}} type='horizontal'/>
                         <Card>

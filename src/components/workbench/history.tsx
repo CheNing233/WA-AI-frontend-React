@@ -10,14 +10,17 @@ const History = () => {
 
     const dataItemElement = (data: any) => {
         return (
-            <ImageCard
-                src={`https://naver.github.io/egjs-infinitegrid/assets/image/1.jpg`}
-                alt="egjs"
-            />
+            <>
+                <ImageCard
+                    src={`https://naver.github.io/egjs-infinitegrid/assets/image/1.jpg`}
+                    alt="egjs"
+                />
+                {data.key}
+            </>
         )
     }
 
-    const getItems = async (nextGroupKey: number) => {
+    const getItems = (nextGroupKey: number, resolve: () => void) => {
         const count = 20;
         const nextItems = [];
         const nextKey = (nextGroupKey - 1) * count;
@@ -30,6 +33,8 @@ const History = () => {
             ...data,
             ...nextItems,
         ]);
+
+        resolve();
     }
 
     return (
@@ -49,8 +54,8 @@ const History = () => {
                     style={{
                         width: '100%',
                         height: 'calc(100vh - 136px)',
-                        overflowX: 'visible',
-                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        overflowY: 'scroll',
                     }}
                 >
                     <ImageWaterfall

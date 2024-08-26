@@ -6,7 +6,7 @@ import ModelPanel from "@/components/workbench/components/modelPanel";
 import PromptPanel from "@/components/workbench/components/promptPanel";
 import SettingsPanel from "@/components/workbench/components/settingsPanel";
 import HiresPanel from "@/components/workbench/components/hiresPanel";
-import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
+import {IWorkbenchSetting, useWorkbenchModels, useWorkbenchSetting} from "@/store/workbench";
 
 const Work = () => {
     const [activeTab, setActiveTab] = useWorkbenchSetting(
@@ -23,6 +23,14 @@ const Work = () => {
         const panelNameArr = [...txt2imgActivePanel, panelName]
         setTxt2imgActivePanel(panelNameArr)
     }
+
+    const [
+        txt2imgCheckpoint, txt2imgVae, txt2imgExtraModel
+    ] = useWorkbenchModels((state) => {
+        return [
+            state.txt2imgCheckpoint, state.txt2imgVae, state.txt2imgExtraModel
+        ]
+    })
 
     return (
         <Space style={{top: '0', width: '100%'}} direction={'vertical'}>
@@ -67,7 +75,13 @@ const Work = () => {
                             style={{width: '100%', padding: '12px 0 12px 0'}}
                         >
                             <div key={'model'}>
-                                <ModelPanel name={'txt2img-model'}/>
+                                <ModelPanel
+                                    name={'txt2img-model'}
+                                    target={'txt2img'}
+                                    checkpoint={txt2imgCheckpoint}
+                                    vae={txt2imgVae}
+                                    extraModels={txt2imgExtraModel}
+                                />
                             </div>
                             <div key={'prompt'}>
                                 <PromptPanel name={'txt2img-prompt'}/>

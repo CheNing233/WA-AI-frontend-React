@@ -1,4 +1,5 @@
 import {create} from 'zustand'
+import {IModel} from "@/services/modules/models";
 
 export type IWorkbenchSetting = {
     width?: string | number | any,
@@ -12,17 +13,153 @@ export type IWorkbenchSetting = {
 }
 
 
-export const useWorkbenchSetting = create((set) => ({
+export const useWorkbenchSetting = create<IWorkbenchSetting>((set) => ({
     width: '100vw',
     setWidth: (width: string | number) => set(() => ({width})),
     wrapperInDrawer: true,
     setWrapperInDrawer: (wrapperInDrawer: boolean) => set(() => ({wrapperInDrawer})),
     activeTab: 'txt2img',
     setActiveTab: (activeTab: string) => set(() => ({activeTab})),
-    txt2imgActivePanel: ['txt2img-prompt'],
+    txt2imgActivePanel: [
+        'txt2img-model',
+        'txt2img-prompt',
+        'txt2img-settings',
+        'txt2img-hires'
+    ],
     setTxt2imgActivePanel: (txt2imgActivePanel: string[]) => set(() => (
         {txt2imgActivePanel: Array.from(new Set(txt2imgActivePanel))}
     ))
+}))
+
+export type IWorkbenchModel = {
+    id: string | number,
+    title: string,
+    type: string,
+    filename: string,
+
+    asNegative?: boolean,
+    weight?: number,
+
+    bannerUrl?: string,
+}
+
+export type IWorkbenchModels = {
+    txt2imgCheckpoint: IWorkbenchModel,
+    img2imgCheckpoint: IWorkbenchModel,
+    txt2imgVae: IWorkbenchModel,
+    img2imgVae: IWorkbenchModel,
+    txt2imgExtraModel: IWorkbenchModel[],
+    img2imgExtraModel: IWorkbenchModel[],
+    setModel: (
+        model: IWorkbenchModel | IModel | any,
+        target: 'txt2img' | 'img2img'
+    ) => void,
+    deleteModel: (
+        modelId: string | number,
+        target: 'txt2img' | 'img2img'
+    ) => void,
+    changeModel: (
+        modelId: string | number,
+        target: 'txt2img' | 'img2img',
+        key: string,
+        value: any
+    ) => void
+}
+
+const initialCheckpoint: IWorkbenchModel = {
+    id: 277,
+    title: 'tmndMix_tmndMixSPRAINBOW',
+    type: 'CHECKPOINT',
+    filename: 'tmndMix_tmndMixSPRAINBOW'
+}
+
+const initialVae: IWorkbenchModel = {
+    id: 250,
+    title: 'ClearVAE_NansLess1.safetensors',
+    type: 'VAE',
+    filename: 'ClearVAE_NansLess1.safetensors'
+}
+
+const removeDuplicatesById = (array: any[]): any[] => {
+    const map = new Map<number, any>(); // 使用 Map 存储对象，键为 id
+    for (const obj of array) {
+        map.set(obj.id, obj);
+    }
+
+    return Array.from(map.values()); // 返回去重后的对象数组
+};
+
+const removeObjectById = (idToRemove: string | number, array: any[]): any[] => {
+    return array.filter(obj => obj.id !== idToRemove);
+};
+
+const updateObjectInArray = (objects: any[], id: number | string, key: string, value: any): any[] => {
+    return objects.map(obj => {
+        if (obj.id === id) {
+            return {...obj, [key]: value};
+        }
+        return obj;
+    });
+};
+
+export const useWorkbenchModels = create<IWorkbenchModels>((set) => ({
+    txt2imgCheckpoint: {...initialCheckpoint},
+    img2imgCheckpoint: {...initialCheckpoint},
+    txt2imgVae: {...initialVae},
+    img2imgVae: {...initialVae},
+    txt2imgExtraModel: [],
+    img2imgExtraModel: [],
+    setModel: (model, target) => set((state) => {
+        const fitModel: IWorkbenchModel = {
+            id: model.id,
+            title: model.title,
+            type: model.type,
+            filename: model.filename,
+            weight: 1,
+            asNegative: false,
+            bannerUrl: model.bannerUrl || null
+        }
+
+        switch (fitModel.type) {
+            case 'CHECKPOINT':
+                if (target === 'txt2img')
+                    return {txt2imgCheckpoint: fitModel}
+                else if (target === 'img2img')
+                    return {img2imgCheckpoint: fitModel}
+                break;
+            case 'VAE':
+                if (target === 'txt2img')
+                    return {txt2imgVae: fitModel}
+                else if (target === 'img2img')
+                    return {img2imgVae: fitModel}
+                break;
+            default:
+                if (target === 'txt2img')
+                    return {
+                        txt2imgExtraModel: removeDuplicatesById(
+                            [...state.txt2imgExtraModel, fitModel]
+                        )
+                    }
+                else if (target === 'img2img')
+                    return {
+                        img2imgExtraModel: removeDuplicatesById(
+                            [...state.img2imgExtraModel, fitModel]
+                        )
+                    }
+        }
+    }),
+    deleteModel: (modelId, target) => set((state) => {
+        if (target === 'txt2img')
+            return {txt2imgExtraModel: removeObjectById(modelId, state.txt2imgExtraModel)}
+        else if (target === 'img2img')
+            return {img2imgExtraModel: removeObjectById(modelId, state.img2imgExtraModel)}
+    }),
+    changeModel: (modelId, target, key, value) => set((state) => {
+        if (target === 'txt2img')
+            return {txt2imgExtraModel: updateObjectInArray(state.txt2imgExtraModel, modelId, key, value)}
+        else if (target === 'img2img')
+            return {img2imgExtraModel: updateObjectInArray(state.img2imgExtraModel, modelId, key, value)}
+    })
 }))
 
 
@@ -105,7 +242,7 @@ export type IWorkbenchParams = {
 };
 
 
-export const useWorkbenchParams = create((set) => ({
+export const useWorkbenchParams = create<IWorkbenchParams>((set) => ({
     txt2imgParams: {
         prompt: "",
         steps: 28,

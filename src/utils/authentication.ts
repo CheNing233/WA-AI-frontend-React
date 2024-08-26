@@ -22,7 +22,7 @@ const judge = (actions: string[], perm: string[]) => {
 /**
  * 定义认证信息类型，包含资源和操作
  */
-type SrcAndAct = {
+export type SrcAndAct = {
     resource: string | RegExp; // 资源可以是字符串或正则表达式，用于匹配资源名称
     actions?: string[]; // 可选的操作数组，用于指定具体操作权限
 };

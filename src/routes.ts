@@ -1,5 +1,6 @@
 import lazyLoad from "@/utils/lazyload";
 import {useEffect, useMemo, useState} from "react";
+import authResources, {SrcAndAct, UserPermission} from "@/utils/authentication";
 
 export type IRoute = {
     name: string;
@@ -12,9 +13,9 @@ export type IRoute = {
     // 已渲染的组件
     component?: any;
     // 当前路由需要权限才能访问
-    requiredPermissions?: string[];
+    requiredPermissions?: Array<SrcAndAct>;
     // 当前路由需要权限中的一个或多个才能访问
-    oneOfPerm?: string[];
+    oneOfPerm?: boolean;
 };
 
 export const routes: IRoute[] = [
@@ -51,7 +52,10 @@ export const routes: IRoute[] = [
     {
         name: 'menu.dashboard',
         key: 'dashboard',
-        ignore: true
+        ignore: true,
+        requiredPermissions: [
+            {resource: 'dashboard', actions: ['visible']}
+        ]
     },
     {
         name: 'menu.login',
@@ -120,7 +124,7 @@ export const getFlattenRoutes = (routes: IRoute[]) => {
  * @param userPermission 用户权限数组，用于确定用户可以访问哪些路由
  * @returns 返回一个元组，包含处理后的路由数组和默认路由字符串
  */
-const useRoute = (userPermission?: string[]): [IRoute[], string] => {
+const useRoute = (userPermission: UserPermission): [IRoute[], string] => {
     /**
      * 路由过滤函数
      *
@@ -137,6 +141,24 @@ const useRoute = (userPermission?: string[]): [IRoute[], string] => {
         }
         // 遍历路由数组
         for (const route of routes) {
+            // 解构路由对象，获取权限信息
+            const {requiredPermissions, oneOfPerm} = route;
+            // 初始化路由可见性为true
+            let visible = true;
+            // 如果路由有要求的权限，检查当前用户是否具备这些权限
+            if (requiredPermissions) {
+                // 调用权限校验函数，判断路由是否可见
+                visible = authResources(
+                    {srcAndActList: requiredPermissions, oneOfPerm: oneOfPerm},
+                    userPermission
+                );
+            }
+
+            // 如果路由不可见，跳过此路由
+            if (!visible) {
+                continue;
+            }
+
             // 判断路由是否有子路由
             if (route.children && route.children.length) {
                 // 创建一个新的路由对象，清空其子路由

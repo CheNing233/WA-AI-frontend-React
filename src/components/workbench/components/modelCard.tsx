@@ -1,16 +1,17 @@
 import {Button, Collapse, Grid, Space, Tag, Typography} from "@arco-design/web-react";
 import {IconDelete, IconInfoCircle, IconSwap} from "@arco-design/web-react/icon";
+import {getQiniuImageWithParams} from "@/utils/qiniuImage";
 
 export type IModelCardProps = {
-    id: string,
+    id: string | number,
     name: string,
     imageSrc: string,
     type: string,
     children?: any,
     allowSwitch?: boolean,
     allowDelete?: boolean,
-    onSwitch?: (id: string) => void,
-    onDelete?: (id: string) => void,
+    onSwitch?: (id: string | number) => void,
+    onDelete?: (id: string | number) => void,
 }
 
 const ModelCard = (props: IModelCardProps) => {
@@ -19,8 +20,13 @@ const ModelCard = (props: IModelCardProps) => {
         <Grid.Row style={{width: '100%'}} gutter={[0, 8]} align={'center'}>
             <Grid.Col flex={'shrink'}>
                 <img
-                    src={props.imageSrc}
-                    alt={props.name}
+                    src={getQiniuImageWithParams({
+                        imageUrl: props.imageSrc,
+                        width: 128,
+                        height: 128,
+                        quality: 50,
+                    }) || require('@/assets/placeholder/noPreview.png')}
+                    alt={''}
                     style={{
                         objectFit: 'cover', width: '72px', height: '72px', borderRadius: '4px',
                         marginBottom: '-8px'
@@ -41,12 +47,16 @@ const ModelCard = (props: IModelCardProps) => {
                         </Grid.Col>
                         <Grid.Col flex={'1'}/>
                         {props.allowDelete && <Grid.Col flex={'shrink'}>
-                            <Button status={'danger'} size={'mini'} icon={<IconDelete/>}>
+                            <Button status={'danger'} size={'mini'} icon={<IconDelete/>}
+                                    onClick={() => props.onDelete(props.id)}
+                            >
                                 删除模型
                             </Button>
                         </Grid.Col>}
                         {props.allowSwitch && <Grid.Col flex={'shrink'}>
-                            <Button type={'primary'} size={'mini'} icon={<IconSwap/>}>
+                            <Button type={'primary'} size={'mini'} icon={<IconSwap/>}
+                                    onClick={() => props.onSwitch(props.id)}
+                            >
                                 切换模型
                             </Button>
                         </Grid.Col>}
@@ -72,7 +82,7 @@ const ModelCard = (props: IModelCardProps) => {
                                         rows={1}
                                         expandable={false}
                                     >
-                                        tmndMix_tmndMixSPRAINBOW
+                                        {props.name}
                                     </Typography.Ellipsis>
                                 </div>
                             }

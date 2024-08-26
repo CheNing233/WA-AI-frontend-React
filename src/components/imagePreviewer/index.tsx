@@ -3,14 +3,161 @@ import {Avatar, Button, Card, Descriptions, Grid, Image, Modal, Space, Tag, Typo
 import React, {useEffect, useRef, useState} from "react";
 import {IconClose, IconCopy, IconLeft, IconRight, IconStar, IconThumbUp} from "@arco-design/web-react/icon";
 import {ControlPlatformIcon} from "tdesign-icons-react";
+import {useImagePreviewerSetting} from "@/store/imagePreviewer";
+import {convertUTCTime} from "@/utils/time";
+import {flattenObject, splitObject} from "@/components/imagePreviewer/utils/object";
+
+const getParamsBoxArray = (obj: any) => {
+    const arr = [];
+
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            arr.push({label: key, value: obj[key]});
+        }
+    }
+
+    return arr
+}
+
+const ParamsRender = (props: { params?: Map<any, any>, index?: number | string }) => {
+    const [promptBox, setPromptBox] = useState(null)
+    const [mainBox, setMainBox] = useState(null)
+    const [otherBox, setOtherBox] = useState(null)
+
+
+    useEffect(() => {
+        if (props.params[props.index]) {
+            const params = flattenObject(props.params[props.index])
+
+            let [prompts, second] = splitObject(params, [
+                'prompt',
+                'negative_prompt'
+            ])
+
+            let [main, others] = splitObject(second, [
+                "steps",
+                "seed",
+                "sampler_name",
+                "cfg_scale",
+                "width",
+                "height",
+                'sd_model_name',
+                'sd_vae_name'
+            ])
+
+            if (prompts)
+                setPromptBox(prompts)
+            if (main)
+                setMainBox(main)
+            if (others)
+                setOtherBox(others)
+        }
+    }, [props.params, props.index]);
+
+
+    return (
+        <Space direction={'vertical'}>
+            {/*prompt*/}
+            {promptBox && <Card
+                title={'提示词'}
+                bordered={true}
+            >
+                <Grid.Row gutter={[0, 8]}>
+                    <Grid.Col flex={'shrink'}>
+                        <Tag size={'medium'} color={'arcoblue'}>正向提示词</Tag>
+                    </Grid.Col>
+                    <Grid.Col flex={'1'}/>
+                    <Grid.Col flex={'shrink'}>
+                        <Button size={'small'} icon={<IconCopy/>}/>
+                    </Grid.Col>
+                    <Grid.Col span={24}>
+                        <Typography.Ellipsis
+                            rows={3}
+                            expandable={true}
+                        >
+                            <span>{promptBox.prompt}</span>
+                        </Typography.Ellipsis>
+                    </Grid.Col>
+                    <Grid.Col flex={'shrink'}>
+                        <Tag size={'medium'} color={'arcoblue'}>反向提示词</Tag>
+                    </Grid.Col>
+                    <Grid.Col flex={'1'}/>
+                    <Grid.Col flex={'shrink'}>
+                        <Button size={'small'} icon={<IconCopy/>}/>
+                    </Grid.Col>
+                    <Grid.Col span={24}>
+                        <Typography.Ellipsis
+                            rows={3}
+                            expandable={true}
+                        >
+                            <span>{promptBox.negative_prompt}</span>
+                        </Typography.Ellipsis>
+                    </Grid.Col>
+                </Grid.Row>
+            </Card>}
+
+            {/*main metadata*/}
+            {mainBox && <Card
+                title={'主要参数'}
+                bordered={true}
+            >
+                <Descriptions
+                    column={1}
+                    data={getParamsBoxArray(mainBox)}
+                    style={{paddingTop: '12px'}}
+                    labelStyle={{paddingRight: 24}}
+                    valueStyle={{wordBreak: 'break-all'}}
+                />
+            </Card>}
+
+            {/*other metadata*/}
+            {otherBox && <Card
+                title={'其他参数'}
+                bordered={true}
+            >
+                <Descriptions
+                    column={1}
+                    data={getParamsBoxArray(otherBox)}
+                    style={{paddingTop: '12px'}}
+                    labelStyle={{paddingRight: 24}}
+                    valueStyle={{wordBreak: 'break-all'}}
+                />
+            </Card>}
+        </Space>
+    )
+}
+
 
 const ImagePreviewer = () => {
     const smallLayoutThres = 1024
 
     const {imageViewerShow, setImageViewerShow} = useImagePreviewer()
     const imageContainer = useRef(null)
+
     const [paramsCardShow, setParamsCardShow] = useState(true)
     const [smallLayout, setSmallLayout] = useState(false)
+
+    const imageUser = useImagePreviewerSetting(
+        (state) => state.imageUser
+    )
+    const imageExtra = useImagePreviewerSetting(
+        (state) => state.imageExtra
+    )
+    const imageList = useImagePreviewerSetting(
+        (state) => state.imageList
+    )
+    const [imageListIndex, setImageListIndex] = useState(0)
+    const [
+        imageParams, setImageParams, clearImageParams
+    ] = useImagePreviewerSetting(
+        (state) => [state.imageParams, state.setImageParams, state.clearImageParams]
+    )
+    const onParamsRequest = useImagePreviewerSetting(
+        (state) => state.onParamsRequest
+    )
+    const abortController = useImagePreviewerSetting(
+        (state) => state.abortController
+    )
 
     const handleResize = () => {
         const width = window.innerWidth
@@ -19,6 +166,33 @@ const ImagePreviewer = () => {
         }
         setSmallLayout(width < smallLayoutThres)
     }
+
+    const handleParamsResolve = (params: any, index: number | string) => {
+        setImageParams(index, params)
+    }
+
+    useEffect(() => {
+        setImageListIndex(0)
+        clearImageParams()
+        if (imageList.length > 0)
+            onParamsRequest(imageList[0], 0, handleParamsResolve, abortController)
+        if (imageList.length > 1)
+            onParamsRequest(imageList[1], 1, handleParamsResolve, abortController)
+    }, [imageList]);
+
+    useEffect(() => {
+        if (!imageParams[imageListIndex])
+            onParamsRequest(imageList[imageListIndex], imageListIndex, handleParamsResolve, abortController)
+        if (imageListIndex - 2 >= 0 && !imageParams[imageListIndex - 2])
+            onParamsRequest(imageList[imageListIndex - 2], imageListIndex - 2, handleParamsResolve, abortController)
+        if (imageListIndex - 1 >= 0 && !imageParams[imageListIndex - 1])
+            onParamsRequest(imageList[imageListIndex - 1], imageListIndex - 1, handleParamsResolve, abortController)
+        if (imageListIndex + 1 < imageList.length && !imageParams[imageListIndex + 1])
+            onParamsRequest(imageList[imageListIndex + 1], imageListIndex + 1, handleParamsResolve, abortController)
+        if (imageListIndex + 2 < imageList.length && !imageParams[imageListIndex + 2])
+            onParamsRequest(imageList[imageListIndex + 2], imageListIndex + 2, handleParamsResolve, abortController)
+    }, [imageListIndex]);
+
 
     useEffect(() => {
         const resizeObserver = new ResizeObserver(handleResize);
@@ -95,13 +269,40 @@ const ImagePreviewer = () => {
                             width: '100%',
                             height: '100vh',
                             overflow: 'hidden',
+                            userSelect: 'none'
                         }}
                     >
-                        <Image.Preview
-                            src='https://obj.glcn.top/wa-image/1718357537691.png?imageMogr2/auto-orient/thumbnail/1536x1536%3E/format/webp/blur/1x0/quality/100'
+                        <Image.PreviewGroup
+                            srcList={imageList.map((item) => item.url)}
+                            current={imageListIndex}
                             visible={true}
                             closable={false}
+                            resetTranslate={false}
+                            onChange={(index) => {
+                                setImageListIndex(index)
+                            }}
                             getPopupContainer={() => imageContainer.current}
+                            actions={[
+                                {
+                                    key: 'count',
+                                    content: (
+                                        <span style={{fontSize: '13px'}}>
+                                            {`第 ${imageListIndex + 1}/${imageList.length} 张`}
+                                        </span>
+                                    )
+                                },
+                                {
+                                    key: 'thumbUp',
+                                    content: <IconThumbUp/>
+                                },
+                                {
+                                    key: 'favourite',
+                                    content: <IconStar/>
+                                },
+                            ]}
+                            actionsLayout={[
+                                'fullScreen', 'zoomIn', 'zoomOut', 'originalSize', 'count', 'thumbUp', 'favourite'
+                            ]}
                         />
                     </div>
                 </Grid.Col>
@@ -126,15 +327,19 @@ const ImagePreviewer = () => {
                                             shape={'square'}
                                             size={40}
                                         >
-                                            WA
+                                            {
+                                                imageUser.avatarUrl
+                                                    ? <img alt={'avatar'} src={imageUser.avatarUrl}/>
+                                                    : 'WA'
+                                            }
                                         </Avatar>
                                         <Space direction={'vertical'} size={1}>
-                                        <span style={{color: 'var(--color-text-1)'}}>
-                                            author
-                                        </span>
                                             <span style={{color: 'var(--color-text-1)'}}>
-                                            2024年6月14日 20:43:21 创建
-                                        </span>
+                                                {imageUser.nickName}
+                                            </span>
+                                            <span style={{color: 'var(--color-text-1)'}}>
+                                                {convertUTCTime(imageExtra.updateTime)}
+                                            </span>
                                         </Space>
                                     </Space>
                                 </Grid.Col>
@@ -164,150 +369,7 @@ const ImagePreviewer = () => {
                                 </Grid.Row>
                             </Card>
 
-                            {/*prompt*/}
-                            <Card
-                                title={'提示词'}
-                                bordered={true}
-                            >
-                                <Grid.Row gutter={[0, 8]}>
-                                    <Grid.Col flex={'shrink'}>
-                                        <Tag size={'medium'} color={'arcoblue'}>正向提示词</Tag>
-                                    </Grid.Col>
-                                    <Grid.Col flex={'1'}/>
-                                    <Grid.Col flex={'shrink'}>
-                                        <Button size={'small'} icon={<IconCopy/>}/>
-                                    </Grid.Col>
-                                    <Grid.Col span={24}>
-                                        <Typography.Ellipsis
-                                            rows={3}
-                                            expandable={true}
-                                        >
-                                            <span>
-                                                {'1girl, (mature female), solo, medium full shot, long hair, hair ornament, grey hair, hair between eyes, black hairband, blue eyes, blush, bangs, smile, t-shirt, off shoulder, medium breasts, cleavage, thighhighs, zettai ryouiki, miniskirt, standing, fighting stance,, <lora:firefly_firefly _(honkai_ star rail_), 1girl, solo, long hair, blue eyes, bangs, dress, long sleeves, hair ornament, grey hair,black hairband, medium breasts, hair between eyes:1>, <lora:$5_fixhands:0.2>'}
-                                            </span>
-                                        </Typography.Ellipsis>
-                                    </Grid.Col>
-                                    <Grid.Col flex={'shrink'}>
-                                        <Tag size={'medium'} color={'arcoblue'}>反向提示词</Tag>
-                                    </Grid.Col>
-                                    <Grid.Col flex={'1'}/>
-                                    <Grid.Col flex={'shrink'}>
-                                        <Button size={'small'} icon={<IconCopy/>}/>
-                                    </Grid.Col>
-                                    <Grid.Col span={24}>
-                                        <Typography.Ellipsis
-                                            rows={3}
-                                            expandable={true}
-                                        >
-                                            <span>
-                                                {'lowres,bad anatomy,bad hands,text,error,missing fingers,extra digit,fewer digits,cropped,worst quality,low quality,normal quality,jpeg artifacts,signature,watermark,username,blurry,missing fingers,bad hands,missing arms'}
-                                            </span>
-                                        </Typography.Ellipsis>
-                                    </Grid.Col>
-                                </Grid.Row>
-                            </Card>
-
-                            {/*main metadata*/}
-                            <Card
-                                title={'主要参数'}
-                                bordered={true}
-                            >
-                                <Descriptions
-                                    column={1}
-                                    data={
-                                        [
-                                            {
-                                                label: 'steps',
-                                                value: '28'
-                                            },
-                                            {
-                                                label: 'seed',
-                                                value: '1995474192'
-                                            },
-                                            {
-                                                label: 'sampler_name',
-                                                value: 'Euler a'
-                                            },
-                                            {
-                                                label: 'cfg_scale',
-                                                value: '7'
-                                            },
-                                            {
-                                                label: 'width',
-                                                value: '512'
-                                            },
-                                            {
-                                                label: 'height',
-                                                value: '768'
-                                            },
-                                            {
-                                                label: 'sd_model_name',
-                                                value: 'firefly_firefly',
-                                                span: 2
-                                            },
-                                            {
-                                                label: 'sd_vae_name',
-                                                value: 'firefly_firefly',
-                                                span: 2
-                                            }
-                                        ]
-                                    }
-                                    style={{paddingTop: '12px'}}
-                                    labelStyle={{paddingRight: 24}}
-                                    valueStyle={{wordBreak: 'break-all'}}
-                                />
-                            </Card>
-
-                            {/*other metadata*/}
-                            <Card
-                                title={'其他参数'}
-                                bordered={true}
-                            >
-                                <Descriptions
-                                    column={1}
-                                    data={
-                                        [
-                                            {
-                                                label: 'steps',
-                                                value: '28'
-                                            },
-                                            {
-                                                label: 'seed',
-                                                value: '1995474192'
-                                            },
-                                            {
-                                                label: 'sampler_name',
-                                                value: 'Euler a'
-                                            },
-                                            {
-                                                label: 'cfg_scale',
-                                                value: '7'
-                                            },
-                                            {
-                                                label: 'width',
-                                                value: '512'
-                                            },
-                                            {
-                                                label: 'height',
-                                                value: '768'
-                                            },
-                                            {
-                                                label: 'sd_model_name',
-                                                value: 'firefly_firefly',
-                                                span: 2
-                                            },
-                                            {
-                                                label: 'sd_vae_name',
-                                                value: 'firefly_firefly',
-                                                span: 2
-                                            }
-                                        ]
-                                    }
-                                    style={{paddingTop: '12px'}}
-                                    labelStyle={{paddingRight: 24}}
-                                    valueStyle={{wordBreak: 'break-all'}}
-                                />
-                            </Card>
+                            <ParamsRender params={imageParams} index={imageListIndex}/>
 
                         </Space>
                     </Card>

@@ -19,6 +19,8 @@ import useDragSelect from "@/utils/useDragSelect";
 import {IWorkbenchSetting, useWorkbenchSetting} from "@/store/workbench";
 import ImagePreviewer from "@/components/imagePreviewer";
 import LoginManagement from "@/utils/loginManagement";
+import {IUser, useUser} from "@/store/user";
+import lazyload from "@/utils/lazyload";
 
 function App() {
     const [lang, setLang] = useStorage('arco-lang', 'zh-CN');
@@ -26,13 +28,13 @@ function App() {
     const [bodyDragSelect, setBodyDragSelect] = useState(false)
     const [imageViewerVisible, setImageViewerVisible] = useState(false);
     const [workbenchVisible, setWorkbenchVisible] = useState(false);
-
+    const userPermission = useUser((state: IUser) => state.userPerms)
 
     const workbenchWrapperInDrawer = useWorkbenchSetting(
         (state: IWorkbenchSetting) => state.wrapperInDrawer
     )
 
-    const [routes, defaultRoute] = useRoute();
+    const [routes, defaultRoute] = useRoute(userPermission);
     const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
 
 
@@ -92,7 +94,7 @@ function App() {
             >
                 <GlobalContext.Provider value={contextValue}>
                     <Background/>
-                    <LoginManagement />
+                    <LoginManagement/>
                     <ResizeBox.Split
                         panes={[
                             <div
@@ -117,9 +119,13 @@ function App() {
                                             )
                                         })
                                     }
-                                    <Route path="/">
+                                    <Route exact path="/">
                                         <Redirect to={`/${defaultRoute}`}/>
                                     </Route>
+                                    <Route
+                                        path="*"
+                                        component={lazyload(() => import('@/pages/exception/index'))}
+                                    />
                                 </Switch>
                                 <Footer/>
                                 <ImagePreviewer/>

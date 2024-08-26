@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {ReactNode, useEffect, useRef, useState} from "react";
 import {MasonryInfiniteGrid} from "@egjs/react-infinitegrid";
 import {Grid, Space, Spin} from "@arco-design/web-react";
 import GridExt from "@/components/gridExt";
@@ -13,16 +13,15 @@ export type IImageWaterfallProps = {
         groupKey: number,
         [key: string]: any
     }[],
-    dataItemElement: (data: any) => JSX.Element,
+    dataItemElement: (data: any) => ReactNode,
     hasNoMore: boolean,
-    onAppend: (nextGroupKey: number) => Promise<void>;
+    onAppend: (nextGroupKey: number, resolve: () => void) => void;
     scrollContainer: any,
 }
 
 const Item = ({num, itemWidth, item, render}: any) => (
     <div style={{width: itemWidth - 1,}}>
         {render(item)}
-        <div>num {num}</div>
     </div>
 )
 
@@ -32,7 +31,6 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
     const [itemWidth, setItemWidth] = useState(0);
     const [rendering, setRendering] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState(null);
 
 
     const handleScroll = () => {
@@ -45,23 +43,51 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
         setRendering(false);
     }
 
-    const handleRequestAppend = async (e: any) => {
+    const handleRequestAppend = (e: any) => {
         if (props.hasNoMore || itemWidth === 0) return;
         const nextGroupKey = (+e.groupKey! || 0) + 1;
 
+        const handleResolve = () => {
+            setLoading(false);
+            e.ready();
+        }
+
         e.wait();
         setLoading(true);
-        await props.onAppend(nextGroupKey);
-        setLoading(false);
-        e.ready();
+        props.onAppend(nextGroupKey, handleResolve);
+
     }
 
     useEffect(() => {
+        const delayHandleResize = () => {
+            if (referenceBoxRef.current) {
+                const width = Math.floor(referenceBoxRef.current.getBoundingClientRect().width);
+                setItemWidth(width)
+                masonryRef.current.renderItems();
+            }
+        }
+
+        let delayCount = 0;
+        let delayResizer = setInterval(() => {
+            if (delayCount > 0) {
+                delayHandleResize()
+                delayCount--
+                if (delayCount < 0) {
+                    delayCount = 0
+                }
+            }
+        }, 300)
+
+
         const handleResize = () => {
             if (referenceBoxRef.current) {
                 const width = Math.floor(referenceBoxRef.current.getBoundingClientRect().width);
                 setItemWidth(width)
                 masonryRef.current.renderItems();
+            }
+
+            if (delayCount === 0) {
+                delayCount = 6
             }
         }
 
@@ -73,11 +99,16 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
 
         return () => {
             resizeObserver.disconnect();
+            clearInterval(delayResizer)
         }
     }, [referenceBoxRef.current])
 
     useEffect(() => {
-        const scroller = props.scrollContainer;
+        let scroller = props.scrollContainer;
+
+        if (typeof scroller === 'string') {
+            scroller = document.getElementById(scroller)
+        }
 
         if (scroller) {
             scroller.addEventListener('scroll', handleScroll);
@@ -116,8 +147,8 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                 }}
                 useTransform={false}
                 useResizeObserver={false}
-                observeChildren={false}
-                resizeDebounce={0}
+                observeChildren={true}
+                columnSize={itemWidth}
                 onRequestAppend={handleRequestAppend}
                 onRenderComplete={handleRenderComplete}
             >

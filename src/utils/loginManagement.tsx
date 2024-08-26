@@ -2,7 +2,9 @@ import api from "@/services/export";
 import {initialUserInfo, IUser, IUserInfo, useUser} from "@/store/user";
 import eventbus from "@/eventbus";
 import {useEffect} from "react";
-import {GuestPerm, UserPerm} from "@/constants/permissions";
+import {AdminPerm, GuestPerm, UserPerm} from "@/constants/permissions";
+import {Message} from "@arco-design/web-react";
+import {getUserAvatar} from "@/services/utils/account";
 
 
 const LoginManagement = () => {
@@ -26,29 +28,29 @@ const LoginManagement = () => {
                     if (isLoginRes.data.data) {
                         // 设置用户已登录状态为true
                         setUserLogged(true)
-                        // 设置用户权限
-                        setUserPerms(UserPerm)
+                        // 调用API获取用户权限
+                        api.account.authTest()
+                            .then((permRes) => {
+                                if (permRes.data.data[0] === 'administrator') {
+                                    setUserPerms(AdminPerm)
+                                } else {
+                                    setUserPerms(UserPerm)
+                                }
+                            })
                         // 调用API获取用户详细信息
                         api.account.info()
                             .then((infoRes) => {
                                 // 处理并更新用户信息
                                 let newUserInfo: IUserInfo = {...infoRes.data.data}
-                                // 重置头像URL
-                                newUserInfo.avatarUrl = null
-                                // 如果用户信息和头像存在，获取头像URL
-                                if (newUserInfo && newUserInfo.avatar) {
-                                    // 通过头像ID获取头像URL
-                                    api.staticImage.getUrlByStaticImageId(newUserInfo.avatar)
-                                        .then((avatarRes) => {
-                                            // 更新用户信息中的头像URL
-                                            newUserInfo.avatarUrl = avatarRes.data.data.url
-                                            // 设置用户信息
-                                            setUserInfo(newUserInfo)
-                                        })
-                                } else {
-                                    // 如果不存在头像，直接设置用户信息
-                                    setUserInfo(newUserInfo)
-                                }
+
+                                // 获取用户头像
+                                getUserAvatar(
+                                    newUserInfo,
+                                    (u) => {
+                                        setUserInfo(u)
+                                        Message.success(`欢迎回来，${newUserInfo.nickName}`)
+                                    }
+                                )
                             })
                     } else { // 如果未登录
                         // 设置用户已登录状态为false

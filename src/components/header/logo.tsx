@@ -1,10 +1,13 @@
 import {Space} from "@arco-design/web-react";
 import {useHistory} from "react-router-dom";
 import useRoute from "@/routes";
+import {IUser, useUser} from "@/store/user";
 
 const Logo = () => {
+    const userPermission = useUser((state: IUser) => state.userPerms)
+
     const history = useHistory();
-    const [defaultRoute] = useRoute();
+    const [permissionRoute, defaultRoute] = useRoute(userPermission);
 
     return (
         <Space style={{cursor: 'pointer', transform: 'translate(0, -1px)', marginLeft: '12px'}}>

@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 
 import './styles/index.css'
 import {Avatar, Button, Skeleton, Space, Typography} from "@arco-design/web-react";
+import {getQiniuImageWithParams} from "@/utils/qiniuImage";
 
 export interface IBottomBarProps {
     name: string,
@@ -11,14 +12,17 @@ export interface IBottomBarProps {
 }
 
 export interface IImageCardProps {
+    id: string | number,
     src: string,
     author: string,
     authorAvatar?: string,
     title: string,
     time?: string,
     fit?: boolean,
+    children?: React.ReactNode,
+    maskContent?: React.ReactNode,
     bottomBar?: IBottomBarProps[],
-    onImageClick?: () => void
+    onImageClick?: (id: string | number) => void
 }
 
 
@@ -26,6 +30,10 @@ const ImageCard = (props: IImageCardProps | any) => {
     const [maskMouseOver, setMaskMouseOver] = useState(false);
 
     const [onLoaded, setOnLoaded] = useState(false)
+
+    const handleImageOnClick = () => {
+        props.onImageClick && props.onImageClick(props.id)
+    }
 
     const handleMaskMouseOver = () => {
         setMaskMouseOver(true)
@@ -43,7 +51,21 @@ const ImageCard = (props: IImageCardProps | any) => {
         <div className={'image-container'}>
             {/*image*/}
             <img
-                src={props.src}
+                src={
+                    onLoaded
+                        ? getQiniuImageWithParams({
+                            imageUrl: props.src,
+                            width: 768,
+                            height: 768,
+                            quality: 60,
+                        })
+                        : getQiniuImageWithParams({
+                            imageUrl: props.src,
+                            width: 128,
+                            height: 128,
+                            quality: 10,
+                        })
+                }
                 className={'image-box' + (props.fit ? ' fit-cover' : '')}
                 alt={'img'}
                 onLoad={handleImageLoaded}
@@ -125,10 +147,13 @@ const ImageCard = (props: IImageCardProps | any) => {
                 className={'image-box-mask' + (maskMouseOver ? ' on-hover' : '')}
                 onMouseOver={handleMaskMouseOver}
                 onMouseOut={handleMaskMouseOut}
-                onClick={props.onImageClick}
+                onClick={handleImageOnClick}
             >
-
+                {props.maskContent}
             </div>
+
+            {/*children*/}
+            {props.children}
         </div>
     )
 }
