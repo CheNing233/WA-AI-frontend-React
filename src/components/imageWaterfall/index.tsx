@@ -2,6 +2,7 @@ import {ReactNode, useEffect, useRef, useState} from "react";
 import {MasonryInfiniteGrid} from "@egjs/react-infinitegrid";
 import {Grid, Space, Spin} from "@arco-design/web-react";
 import GridExt from "@/components/gridExt";
+import {IconCheckCircle} from "@arco-design/web-react/icon";
 
 
 export type IImageWaterfallProps = {
@@ -141,6 +142,7 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                 ref={masonryRef}
                 // status={status ? status : undefined}
                 style={{width: "100%"}}
+                align={'start'}
                 gap={{
                     vertical: props.rowGap,
                     horizontal: props.colGap,
@@ -173,6 +175,14 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
                 <Space style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'absolute'}}>
                     <Spin/>
                     <span>正在加载喵...</span>
+                </Space>
+            </div>}
+            {props.hasNoMore && <div
+                style={{width: '100%', height: '128px', position: 'relative'}}
+            >
+                <Space style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'absolute'}}>
+                    <IconCheckCircle />
+                    <span>已经没东西了喵...</span>
                 </Space>
             </div>}
         </div>

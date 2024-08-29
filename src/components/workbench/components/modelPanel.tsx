@@ -1,7 +1,7 @@
 import {IconClose, IconMoreVertical} from "@arco-design/web-react/icon";
 import {Button, Collapse, Grid, Message, Space} from "@arco-design/web-react";
 import ModelCard from "@/components/workbench/components/modelCard";
-import {AddIcon, ImageIcon, TextboxIcon} from "tdesign-icons-react";
+import {AddIcon} from "tdesign-icons-react";
 import {IWorkbenchModel, useWorkbenchModels} from "@/store/workbench";
 import {getModelBannerUrl} from "@/services/utils/models";
 import {useEffect, useState} from "react";
@@ -11,7 +11,7 @@ import DialogFrame from "@/components/dialogFrame";
 import {ModelDataRender} from "@/pages/models/dataRender";
 import ImageCard from "@/components/imageCard";
 import {convertUTCTime} from "@/utils/time";
-import {HoverButton} from "@/components/button/hoverButton";
+import useWorkbench from "@/components/workbench/useWorkbench";
 
 
 const ModelPanel = (
@@ -31,6 +31,8 @@ const ModelPanel = (
         ]
     })
     const [modelSelectableBoxVisible, setModelSelectableBoxVisible] = useState(false)
+    const [modelSelectableBoxSearchValue, setModelSelectableBoxSearchValue] = useState([])
+    const {authWorkbench} = useWorkbench()
 
 
     useEffect(() => {
@@ -68,32 +70,42 @@ const ModelPanel = (
                 title={data.title}
                 time={convertUTCTime(data.updateTime)}
                 src={data.bannerUrl}
+                maskContent={(
+                    <Space
+                        align={'center'}
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            userSelect: 'none'
+                        }}
+                        direction={'vertical'}
+                    >
+                        <AddIcon
+                            style={{
+                                color: 'white',
+                            }}
+                            size={48}
+                        />
+                        <span
+                            style={{
+                                color: 'white',
+                                fontSize: '20px',
+                                textShadow: '0 0 6px rgba(0, 0, 0, 1)'
+                            }}
+                        >
+                            添加到工作台
+                        </span>
+                    </Space>
+                )}
+                onImageClick={() => {
+                    authWorkbench(() => {
+                        setModel(data, props.target)
+                        Message.success(`已添加 ${data.type} 「${data.title}」`)
+                    })
+                }}
             >
-                <Space style={{position: "absolute", top: '12px', right: '12px'}}
-                       direction={'vertical'}
-                       align={'end'}
-                >
-                    <HoverButton
-                        icon={<TextboxIcon/>}
-                        type={'secondary'}
-                        size={'large'}
-                        onClick={() => {
-
-                        }}
-                    >
-                        运行 文生图
-                    </HoverButton>
-                    <HoverButton
-                        icon={<ImageIcon/>}
-                        type={'secondary'}
-                        size={'large'}
-                        onClick={() => {
-
-                        }}
-                    >
-                        运行 图生图
-                    </HoverButton>
-                </Space>
             </ImageCard>
         )
     }
@@ -134,6 +146,7 @@ const ModelPanel = (
                         waterfallProps={{
                             scrollContainer: 'model-selectable-box'
                         }}
+                        initialSearchValues={modelSelectableBoxSearchValue}
                     />
                 </DialogFrame>
 
@@ -144,6 +157,7 @@ const ModelPanel = (
                     type={props.checkpoint.type}
                     allowSwitch={true}
                     onSwitch={() => {
+                        setModelSelectableBoxSearchValue(['filter:Checkpoint'])
                         setModelSelectableBoxVisible(true)
                     }}
                     allowDelete={false}
@@ -155,7 +169,8 @@ const ModelPanel = (
                     type={props.vae.type}
                     allowSwitch={true}
                     onSwitch={() => {
-
+                        setModelSelectableBoxSearchValue(['filter:VAE'])
+                        setModelSelectableBoxVisible(true)
                     }}
                     allowDelete={false}
                 />
@@ -209,17 +224,32 @@ const ModelPanel = (
 
                 <Grid.Row gutter={[8, 8]}>
                     <Grid.Col flex={'1'}>
-                        <Button type={'primary'} icon={<AddIcon/>} long>
+                        <Button type={'primary'} icon={<AddIcon/>} long
+                                onClick={() => {
+                                    setModelSelectableBoxSearchValue(['filter:LoRA'])
+                                    setModelSelectableBoxVisible(true)
+                                }}
+                        >
                             添加LoRa
                         </Button>
                     </Grid.Col>
                     <Grid.Col flex={'1'}>
-                        <Button type={'primary'} icon={<AddIcon/>} long>
+                        <Button type={'primary'} icon={<AddIcon/>} long
+                                onClick={() => {
+                                    setModelSelectableBoxSearchValue(['filter:Embedding'])
+                                    setModelSelectableBoxVisible(true)
+                                }}
+                        >
                             添加Embedding
                         </Button>
                     </Grid.Col>
                     <Grid.Col flex={'1'}>
-                        <Button icon={<AddIcon/>} long>
+                        <Button icon={<AddIcon/>} long
+                                onClick={() => {
+                                    setModelSelectableBoxSearchValue([])
+                                    setModelSelectableBoxVisible(true)
+                                }}
+                        >
                             添加其他...
                         </Button>
                     </Grid.Col>

@@ -16,8 +16,9 @@ export type ITagWaterfallProps = {
 const Item = ({num, data}: any) => (
     <Card style={{width: '100%'}} key={num} title={`TOP ${(num + 1) * 100}`} bordered={true}>
         <Grid.Row
+            align={'start'}
             gutter={[16, 16]}
-            style={{width: '100%', justifyContent: 'space-evenly'}}
+            style={{width: '100%', justifyContent: 'flex-start'}}
         >
             {data.map((item: any, index: number) => {
                 return (
