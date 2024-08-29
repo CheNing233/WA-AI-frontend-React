@@ -6,7 +6,7 @@ import * as dashboard from './modules/dashboard'
 import * as images from './modules/images'
 import * as posts from './modules/posts'
 import * as models from './modules/models'
-
+import * as tasks from './modules/tasks'
 
 const api = {
     account,
@@ -14,6 +14,7 @@ const api = {
     images,
     posts,
     models,
+    tasks,
     staticImage,
     dashboard
 }

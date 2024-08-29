@@ -2,6 +2,8 @@ import api from "@/services/export";
 import {IImageListItem} from "@/store/imagePreviewer";
 
 
+
+
 // 将图片ID数组转换为图片对象数组的函数
 // 此函数用于将一系列静态图片ID转换成对应的图片URL，并以对象的形式存储这些图片信息
 export const sdImageIdList2objList = (

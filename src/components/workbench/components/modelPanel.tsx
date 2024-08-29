@@ -123,33 +123,6 @@ const ModelPanel = (
                 style={{width: '100%', padding: '12px 0 16px 0', transform: 'translateX(-12px)'}}
                 size={16}
             >
-                <DialogFrame
-                    id={'model-selectable-box'}
-                    visible={modelSelectableBoxVisible}
-                    onClose={() => {
-                        setModelSelectableBoxVisible(false)
-                    }}
-                >
-                    <ModelDataRender
-                        dataElement={dataElement}
-                        searcherProps={{
-                            popupPosition: 'bottom',
-                            stickyContainer: () => document.getElementById('model-selectable-box'),
-                            rightChildren: (
-                                <Button type={'secondary'} icon={<IconClose/>} status={'danger'}
-                                        onClick={() => {
-                                            setModelSelectableBoxVisible(false)
-                                        }}
-                                />
-                            )
-                        }}
-                        waterfallProps={{
-                            scrollContainer: 'model-selectable-box'
-                        }}
-                        initialSearchValues={modelSelectableBoxSearchValue}
-                    />
-                </DialogFrame>
-
                 <ModelCard
                     id={props.checkpoint.id}
                     name={props.checkpoint.title}
@@ -254,8 +227,36 @@ const ModelPanel = (
                         </Button>
                     </Grid.Col>
                 </Grid.Row>
-
             </Space>
+
+            <div style={{position: 'absolute'}}>
+                <DialogFrame
+                    id={'model-selectable-box'}
+                    visible={modelSelectableBoxVisible}
+                    onClose={() => {
+                        setModelSelectableBoxVisible(false)
+                    }}
+                >
+                    <ModelDataRender
+                        dataElement={dataElement}
+                        searcherProps={{
+                            popupPosition: 'bottom',
+                            stickyContainer: () => document.getElementById('model-selectable-box'),
+                            rightChildren: (
+                                <Button type={'secondary'} icon={<IconClose/>} status={'danger'}
+                                        onClick={() => {
+                                            setModelSelectableBoxVisible(false)
+                                        }}
+                                />
+                            )
+                        }}
+                        waterfallProps={{
+                            scrollContainer: 'model-selectable-box'
+                        }}
+                        initialSearchValues={modelSelectableBoxSearchValue}
+                    />
+                </DialogFrame>
+            </div>
         </Collapse.Item>
     )
 }
