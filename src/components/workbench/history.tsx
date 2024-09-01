@@ -4,15 +4,18 @@ import {useRef, useState} from "react";
 import ImageCard from "@/components/imageCard";
 import api from "@/services/export";
 import {convertUTCTime} from "@/utils/time";
-import {getTasksExtraInfo} from "@/services/utils/tasks";
+import {convertTask2Post, getTasksExtraInfo} from "@/services/utils/tasks";
 import useWorkbench from "@/components/workbench/useWorkbench";
 import {TaskStatus} from "@/services/modules/tasks";
+import useImagePreviewerTools from "@/components/imagePreviewer/useImagePreviewerTools";
 
 const History = () => {
     const {workbenchShow} = useWorkbench();
     const containerRef = useRef(null);
     const [data, setData] = useState([]);
     const [dataFinished, setDataFinished] = useState(false);
+
+    const {openPost} = useImagePreviewerTools()
 
     const dataItemElement = (data: any) => {
         const renderStatus = (status: number) => {
@@ -52,7 +55,7 @@ const History = () => {
                 time={convertUTCTime(data.updateTime)}
                 src={data.bannerUrl}
                 onImageClick={() => {
-
+                    openPost(convertTask2Post(data))
                 }}
             >
                 <Space style={{position: "absolute", top: '12px', left: '12px'}}

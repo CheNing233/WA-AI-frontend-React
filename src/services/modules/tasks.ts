@@ -12,7 +12,7 @@ export enum TaskStatus {
 
 export interface ITask {
     id?: string | number,
-    userId?: string | number,
+    userId?: number,
     nickName?: string,
     type?: string,
     priority?: number,

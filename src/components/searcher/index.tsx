@@ -34,6 +34,7 @@ export type ISearcherProps = {
     allowDate?: boolean;
     popupPosition?: 'top' | 'bottom',
     stickyContainer?: () => any,
+    size?: 'small' | 'medium' | 'large' | any,
     values?: string[],
     onChange?: (values: string[]) => void,
     onSearch?: () => void,
@@ -243,7 +244,7 @@ const Searcher = (props: ISearcherProps) => {
                                 </Space>
                             }
                         >
-                            <Button icon={<IconFilter/>}>
+                            <Button icon={<IconFilter/>} size={props.size}>
                                 筛选<IconDown/>
                             </Button>
                         </Popover>
@@ -256,6 +257,7 @@ const Searcher = (props: ISearcherProps) => {
                             allowClear={true}
                             animation={false}
                             value={getValues()}
+                            size={props.size}
                             onChange={(values) => {
                                 setValues(values)
                             }}
@@ -279,6 +281,7 @@ const Searcher = (props: ISearcherProps) => {
                                                     left: '0',
                                                     top: '0',
                                                 }}
+                                                size={props.size}
                                             >
                                                 自动搜索
                                             </Button>)
@@ -295,6 +298,7 @@ const Searcher = (props: ISearcherProps) => {
                             style={{width: '118px'}}
                             placeholder={'第几周'}
                             value={week ? week : ''}
+                            size={props.size}
                             onChange={(dateString, date) => {
                                 setWeek(date)
                                 updateWeekToSearch(dateString)
@@ -307,6 +311,7 @@ const Searcher = (props: ISearcherProps) => {
                             icon={<IconSearch/>}
                             type={'primary'}
                             onClick={props.onSearch}
+                            size={props.size}
                         >
                             搜索
                         </Button>

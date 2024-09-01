@@ -60,7 +60,6 @@ const ImageWaterfall = (props: IImageWaterfallProps) => {
         e.wait();
         setLoading(true);
         props.onAppend(nextGroupKey, handleResolve);
-
     }
 
     useEffect(() => {

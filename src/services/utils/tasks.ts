@@ -59,3 +59,22 @@ export const getTasksExtraInfo = (
         return null
     }
 }
+
+export const convertTask2Post = (task: ITask) => {
+    return {
+        id: task.id,
+        title: `${task.id}`,
+        userId: task.userId,
+        userNickName: task.nickName,
+        updateTime: task.updateTime,
+        sdimageIdList: [task.imageId],
+
+        favours: false,
+        numFavours: 0,
+        liked: false,
+        numLiked: 0,
+        numComment: 0,
+
+        bannerUrl: task.bannerUrl || null,
+    }
+}

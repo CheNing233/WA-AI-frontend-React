@@ -134,25 +134,22 @@ const Home = () => {
                 {posts && posts.map((post, index) => {
                     return (
                         <GridItem span={3} key={`home-posts-${index}`}>
-                            <div style={{
-                                position: 'relative',
-                                width: '100%',
-                                aspectRatio: '3/4.14',
-                                overflow: 'hidden'
-                            }}>
-                                <ImageCard
-                                    width={'100%'}
-                                    id={post.id}
-                                    author={post.userNickName}
-                                    authorAvatar={post.userAvatarUrl}
-                                    title={post.title}
-                                    time={convertUTCTime(post.updateTime)}
-                                    src={post.bannerUrl}
-                                    onImageClick={() => {
-                                        handleImageClick(post)
-                                    }}
-                                />
-                            </div>
+                            <ImageCard
+                                width={'100%'}
+                                id={post.id}
+                                author={post.userNickName}
+                                authorAvatar={post.userAvatarUrl}
+                                title={post.title}
+                                time={convertUTCTime(post.updateTime)}
+                                fit={true}
+                                src={post.bannerUrl}
+                                onImageClick={() => {
+                                    handleImageClick(post)
+                                }}
+                                style={{
+                                    aspectRatio: '3/4.14',
+                                }}
+                            />
                         </GridItem>
                     )
                 })}

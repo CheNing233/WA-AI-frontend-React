@@ -60,10 +60,8 @@ const useImagePreviewerTools = (): IUseImagePreviewerTools => {
                 api.images.getById(imageItem.id)
                     .then(imageInfoRes => {
                         if (!abortController.signal.aborted) {
-                            if (imageInfoRes.data?.data?.params) {
-                                const paramsObj = JSON.parse(imageInfoRes.data.data.params)
-                                resolve(paramsObj, imageIndex)
-                            }
+                            const paramsObj = JSON.parse(imageInfoRes.data.data.params)
+                            resolve(paramsObj, imageIndex)
                         }
                     })
             }

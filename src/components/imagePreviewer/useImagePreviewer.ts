@@ -85,6 +85,7 @@ const useImagePreviewer = (): IWorkbench => {
 
         // 设置图片预览器的可见性
         setImageViewerVisible(visible);
+        console.log('setImageViewerVisible', visible, imageViewerVisible)
 
         // 如果预览器不显示，则中止当前请求并设置新的AbortController
         if (!visible) {
