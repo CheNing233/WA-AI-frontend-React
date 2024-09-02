@@ -1,29 +1,9 @@
-import {Affix, Button, Card, Popover, Radio, Space} from "@arco-design/web-react";
+import {Button, Space} from "@arco-design/web-react";
 import ContentWrapper from "@/components/contentWrapper";
 import Banner from "@/components/banner";
-import Searcher from "@/components/searcher";
-import {useState} from "react";
-import TagWaterfall from "@/components/tagWaterfall";
-import {IconCopy, IconDelete, IconDown, IconLaunch} from "@arco-design/web-react/icon";
+import PromptDataRender from "@/pages/prompts/dataRender";
 
 const Prompts = () => {
-
-    const [data, setData] = useState([]);
-
-    const getItems = async (nextGroupKey: number) => {
-        const nextKey = (nextGroupKey - 1);
-        let nextItems = {groupKey: nextGroupKey, key: nextKey, data: []};
-
-        for (let i = 0; i < 100; ++i) {
-            nextItems.data.push({label: `${nextKey}-${i}`})
-        }
-
-        setData([
-            ...data,
-            nextItems,
-        ]);
-    }
-
     return (
         <ContentWrapper>
             <Space
@@ -48,74 +28,10 @@ const Prompts = () => {
                     />
                 </div>
 
-                <Searcher
-                />
-
-                <Affix
-                    offsetTop={60}
-                    target={() => document.getElementById('left-main-wrapper')}
-                >
-                    <Card
-                        bordered={true}
-                        title={'购物车'}
-                        extra={
-                            <Space>
-                                <Button.Group>
-                                    <Button icon={<IconLaunch/>} size={'small'}
-                                            shape={'round'} type={'primary'}
-                                    >
-                                        推到工作台</Button>
-                                    <Popover
-                                        unmountOnExit={false}
-                                        position={'bottom'}
-                                        content={
-                                            <Radio.Group defaultValue={'merge'}>
-                                                <Radio value={'merge'}>合并</Radio>
-                                                <Radio value={'replace'}>替换</Radio>
-                                            </Radio.Group>
-                                        }
-                                    >
-                                        <Button icon={<IconDown/>} size={'small'}
-                                                shape={'round'} type={'primary'}/>
-                                    </Popover>
-                                </Button.Group>
-                                <Button icon={<IconCopy/>} size={'small'}
-                                        shape={'round'}
-                                >
-                                    复制
-                                </Button>
-                                <Button icon={<IconDelete/>} size={'small'}
-                                        shape={'round'} status={'danger'}
-                                />
-                            </Space>
-                        }
-                    >
-                        <p>单击下面的提示词，将其加入到购物车中；单击 + 按钮即可增加权重，单击 - 按钮减少权重，单击 ×
-                            按钮删除；使用右上方的“推到工作台”和“复制”按钮获得提示词进行绘图。</p>
-                    </Card>
-                </Affix>
                 <div style={{position: 'relative'}}>
-                    <TagWaterfall
-                        key={'tag-waterfall'}
-                        cols={{
-                            xs: 1,
-                            sm: 2,
-                            md: 3,
-                            lg: 4,
-                            xl: 4,
-                            xxl: 4,
-                            xxxl: 5,
-                        }}
-                        rowGap={16}
-                        colGap={8}
-                        data={data}
-                        hasNoMore={false}
-                        onAppend={getItems}
-                        scrollContainer={
-                            document.getElementById('left-main-wrapper')
-                        }
-                    />
+                    <PromptDataRender/>
                 </div>
+
             </Space>
         </ContentWrapper>
     )

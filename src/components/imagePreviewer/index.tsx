@@ -51,6 +51,10 @@ const ParamsRender = (props: { params?: Map<any, any>, index?: number | string }
                 setMainBox(main)
             if (others)
                 setOtherBox(others)
+        } else {
+            setPromptBox(null)
+            setMainBox(null)
+            setOtherBox(null)
         }
     }, [props.params, props.index]);
 

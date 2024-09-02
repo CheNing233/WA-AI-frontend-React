@@ -1,22 +1,70 @@
-import {Card, Link, Space} from "@arco-design/web-react";
+import {Card, Link, Space, Tag} from "@arco-design/web-react";
 import ImageWaterfall from "@/components/imageWaterfall";
 import {useRef, useState} from "react";
 import ImageCard from "@/components/imageCard";
+import api from "@/services/export";
+import {convertUTCTime} from "@/utils/time";
+import {convertTask2Post, getTasksExtraInfo} from "@/services/utils/tasks";
+import useWorkbench from "@/components/workbench/useWorkbench";
+import {TaskStatus} from "@/services/modules/tasks";
+import useImagePreviewerTools from "@/components/imagePreviewer/useImagePreviewerTools";
 
 const History = () => {
-
+    const {workbenchShow} = useWorkbench();
     const containerRef = useRef(null);
     const [data, setData] = useState([]);
+    const [dataFinished, setDataFinished] = useState(false);
+
+    const {openPost} = useImagePreviewerTools()
 
     const dataItemElement = (data: any) => {
+        const renderStatus = (status: number) => {
+            switch (status) {
+                case TaskStatus.created:
+                    return (<Tag bordered={true}>
+                        创建中
+                    </Tag>)
+                case TaskStatus.running:
+                    return (<Tag color={'arcoblue'} bordered={true}>
+                        生成中
+                    </Tag>)
+                case TaskStatus.success:
+                    return (<Tag color={'green'} bordered={true}>
+                        已生成
+                    </Tag>)
+                case TaskStatus.failed:
+                    return (<Tag color={'red'} bordered={true}>
+                        失败
+                    </Tag>)
+                case TaskStatus.deleted:
+                    return (<Tag color={'gray'} bordered={true}>
+                        已删除
+                    </Tag>)
+                default:
+                    return null
+            }
+        }
+
         return (
-            <>
-                <ImageCard
-                    src={`https://naver.github.io/egjs-infinitegrid/assets/image/1.jpg`}
-                    alt="egjs"
-                />
-                {data.key}
-            </>
+            <ImageCard
+                width={'100%'}
+                id={data.id}
+                // author={'data.userNickName'}
+                // authorAvatar={data.userAvatarUrl}
+                title={data.id}
+                time={convertUTCTime(data.updateTime)}
+                src={data.bannerUrl}
+                onImageClick={() => {
+                    openPost(convertTask2Post(data))
+                }}
+            >
+                <Space style={{position: "absolute", top: '12px', left: '12px'}}
+                       direction={'vertical'}
+                       align={'end'}
+                >
+                    {renderStatus(data.status)}
+                </Space>
+            </ImageCard>
         )
     }
 
@@ -24,6 +72,43 @@ const History = () => {
         const count = 20;
         const nextItems = [];
         const nextKey = (nextGroupKey - 1) * count;
+
+        api.tasks.getTaskByUser(
+            nextGroupKey,
+            count,
+        )
+            .then(tasksRes => {
+                const list = tasksRes.data.data.list;
+                const success = tasksRes.data.success;
+
+                if (list.length > 0) {
+                    getTasksExtraInfo(
+                        list,
+                        (finalTasks) => {
+                            const newTasks = []
+
+                            for (let i = 0; i < finalTasks.length; ++i) {
+                                newTasks.push({
+                                    groupKey: nextGroupKey, key: nextKey + i,
+                                    ...finalTasks[i]
+                                });
+                            }
+
+                            setData([
+                                ...data,
+                                ...newTasks,
+                            ]);
+
+                            resolve()
+                        }
+                    )
+                } else if (success) {
+                    setDataFinished(true)
+                    resolve()
+                }
+
+            })
+
 
         for (let i = 0; i < count; ++i) {
             nextItems.push({groupKey: nextGroupKey, key: nextKey + i});
@@ -72,8 +157,10 @@ const History = () => {
                         rowGap={16}
                         colGap={16}
                         data={data}
+                        useObserver={true}
+                        lock={!workbenchShow}
                         dataItemElement={dataItemElement}
-                        hasNoMore={false}
+                        hasNoMore={dataFinished}
                         scrollContainer={containerRef.current}
                         onAppend={getItems}
                     />

@@ -9,6 +9,8 @@ import {useState} from "react";
 import History from "@/components/workbench/history";
 import Work from "@/components/workbench/work";
 
+import './styles/index.css'
+
 const Workbench = () => {
     const {workbenchShow, setWorkbenchShow} = useWorkbench();
     const workbenchSetting: IWorkbenchSetting = useWorkbenchSetting((state) => state);
@@ -115,13 +117,16 @@ const Workbench = () => {
                 closable={false}
                 width={workbenchSetting.width}
                 visible={workbenchShow}
+                wrapClassName={'workbench-wrapper'}
                 onOk={() => {
                     setWorkbenchShow(false)
                 }}
                 onCancel={() => {
                     setWorkbenchShow(false)
                 }}
-                style={{padding: '4px 0 4px 0'}}
+                style={{
+                    padding: '4px 0 4px 0'
+                }}
             >
                 {content()}
             </Drawer>

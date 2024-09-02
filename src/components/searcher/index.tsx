@@ -33,7 +33,11 @@ export type ISearcherProps = {
     filters?: IFilterGroup[];
     allowDate?: boolean;
     popupPosition?: 'top' | 'bottom',
-    stickyContainer?: () => any;
+    stickyContainer?: () => any,
+    size?: 'small' | 'medium' | 'large' | any,
+    values?: string[],
+    onChange?: (values: string[]) => void,
+    onSearch?: () => void,
 }
 
 export type ISearcherChildProps = {
@@ -49,6 +53,23 @@ const Searcher = (props: ISearcherProps) => {
     const [autoSearch, setAutoSearch] = useState(true)
     const searchMethodText = autoSearch ? '并回车' : '并按下「搜索」'
     const [searchValues, setSearchValues] = useState([])
+
+    const setValues = (values: string[]) => {
+        if (props.onChange) {
+            props.onChange(values)
+        } else {
+            setSearchValues(values)
+        }
+    }
+
+    const getValues = () => {
+        if (props.onChange) {
+            return props.values
+        } else {
+            return searchValues
+        }
+    }
+
     const [filters, setFilters] = useState(() => {
         let newFilters = {}
         props.filters?.forEach(group => {
@@ -56,7 +77,7 @@ const Searcher = (props: ISearcherProps) => {
         })
         return newFilters
     })
-    const [allFilters, setAllFilters] = useState(() => {
+    const [allFilters] = useState(() => {
         let newFilters = {}
         props.filters?.forEach(group => {
             newFilters[group.groupName] = [
@@ -92,11 +113,11 @@ const Searcher = (props: ISearcherProps) => {
         })
 
         // 创建一个新的搜索输入数组，排除已有的过滤器条件
-        let newInputToSearch = [...searchValues]
+        let newInputToSearch = [...getValues()]
         newInputToSearch = getListUsePrefix(PREFIX.FILTER, newInputToSearch, true)
 
         // 更新搜索输入数组，包括新的过滤器条件和保留的非过滤器条件
-        setSearchValues([
+        setValues([
             ...newFilterToSearch,
             ...newInputToSearch,
         ])
@@ -111,7 +132,7 @@ const Searcher = (props: ISearcherProps) => {
     const syncFiltersWithSearch = () => {
         // 从搜索值中提取过滤器关键字，去掉前缀
         let newFiltersMerged =
-            getListUsePrefix(PREFIX.FILTER, searchValues)
+            getListUsePrefix(PREFIX.FILTER, getValues())
                 .map(filter => filter.replace(PREFIX.FILTER, ''))
 
         // 初始化一个新的过滤器对象，用于存储解析后的过滤器
@@ -138,23 +159,23 @@ const Searcher = (props: ISearcherProps) => {
 
     const updateWeekToSearch = (date: string) => {
         // 创建一个新的搜索输入数组，排除已有的过滤器条件
-        let newInputToSearch = [...searchValues]
+        let newInputToSearch = [...getValues()]
         newInputToSearch = getListUsePrefix(PREFIX.DATE, newInputToSearch, true)
 
         if (date) {
-            setSearchValues([
+            setValues([
                 `${PREFIX.DATE}${date}`,
                 ...newInputToSearch,
             ])
         } else {
-            setSearchValues([
+            setValues([
                 ...newInputToSearch,
             ])
         }
     }
 
     const syncWeekWithSearch = () => {
-        const dateString = getListUsePrefix(PREFIX.DATE, searchValues)
+        const dateString = getListUsePrefix(PREFIX.DATE, getValues())
         if (dateString.length === 0) {
             setWeek('')
         } else {
@@ -168,12 +189,14 @@ const Searcher = (props: ISearcherProps) => {
             syncFiltersWithSearch()
         if (props.allowDate)
             syncWeekWithSearch()
-    }, [searchValues])
+        if (props.onSearch && autoSearch)
+            props.onSearch()
+    }, [searchValues, props.values])
 
     const handleChildComponentValueSearch = (value: string) => {
-        let newSearchValues = [...searchValues, value]
+        let newSearchValues = [...getValues(), value]
         newSearchValues = Array.from(new Set(newSearchValues))
-        setSearchValues(newSearchValues)
+        setValues(newSearchValues)
     }
 
     const filterGroupItem = (group: IFilterGroup, index: number) => {
@@ -198,13 +221,10 @@ const Searcher = (props: ISearcherProps) => {
         )
     }
 
-    return (
-        <Affix
-            style={{width: '100%'}}
-            offsetTop={0}
-            target={props.stickyContainer}
-        >
-            <Card style={{width: '100%'}} bordered={true}>
+
+    const render = () => {
+        return (
+            <>
                 <Grid.Row gutter={[12, 12]} align={'center'}>
 
                     {props.leftChildren && <Grid.Col flex={'shrink'}>
@@ -224,7 +244,7 @@ const Searcher = (props: ISearcherProps) => {
                                 </Space>
                             }
                         >
-                            <Button icon={<IconFilter/>}>
+                            <Button icon={<IconFilter/>} size={props.size}>
                                 筛选<IconDown/>
                             </Button>
                         </Popover>
@@ -236,9 +256,10 @@ const Searcher = (props: ISearcherProps) => {
                             placeholder={'请输入搜索内容' + searchMethodText}
                             allowClear={true}
                             animation={false}
-                            value={searchValues}
+                            value={getValues()}
+                            size={props.size}
                             onChange={(values) => {
-                                setSearchValues(values)
+                                setValues(values)
                             }}
                             addAfter={
                                 <Tooltip content={'内容变化后立即自动搜索'}
@@ -260,6 +281,7 @@ const Searcher = (props: ISearcherProps) => {
                                                     left: '0',
                                                     top: '0',
                                                 }}
+                                                size={props.size}
                                             >
                                                 自动搜索
                                             </Button>)
@@ -276,6 +298,7 @@ const Searcher = (props: ISearcherProps) => {
                             style={{width: '118px'}}
                             placeholder={'第几周'}
                             value={week ? week : ''}
+                            size={props.size}
                             onChange={(dateString, date) => {
                                 setWeek(date)
                                 updateWeekToSearch(dateString)
@@ -287,6 +310,8 @@ const Searcher = (props: ISearcherProps) => {
                         <Button
                             icon={<IconSearch/>}
                             type={'primary'}
+                            onClick={props.onSearch}
+                            size={props.size}
                         >
                             搜索
                         </Button>
@@ -305,8 +330,35 @@ const Searcher = (props: ISearcherProps) => {
                         });
                     })}
                 </div>
-            </Card>
-        </Affix>
+            </>
+        )
+    }
+
+
+    return (
+        <>
+            {
+                props.stickyContainer ?
+                    <Affix
+                        style={{width: '100%'}}
+                        offsetTop={0}
+                        target={props.stickyContainer}
+                    >
+                        <Card
+                            style={{
+                                width: '100%'
+                            }}
+                            bodyStyle={{
+                                padding: '8px 0 8px 0'
+                            }}
+                            bordered={false}
+                        >
+                            {render()}
+                        </Card>
+                    </Affix>
+                    : render()
+            }
+        </>
     )
 }
 

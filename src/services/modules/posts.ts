@@ -2,7 +2,7 @@ import request from "@/services";
 import {AxiosResponse} from "axios";
 
 export interface IPost {
-    id?: number;
+    id?: number | string;
     title?: string;
     userId?: number;
     userNickName?: string;

@@ -38,7 +38,7 @@ const Banner = (props: IBannerProps) => {
         >
             <h1 style={{color: 'var(--color-text-1)'}}>{props.title}</h1>
             <p style={{color: 'var(--color-text-1)'}}>{props.description}</p>
-            <div style={{width: '100%', marginTop: '20px'}}>
+            <div style={{width: '100%', marginTop: '20px', marginBottom: '16px'}}>
                 {props.extra}
             </div>
         </div>

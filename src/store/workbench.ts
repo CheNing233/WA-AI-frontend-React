@@ -1,5 +1,6 @@
 import {create} from 'zustand'
 import {IModel} from "@/services/modules/models";
+import {removeDuplicateById, removeObjectById, updateObjectInArray} from "@/utils/array";
 
 export type IWorkbenchSetting = {
     width?: string | number | any,
@@ -80,28 +81,6 @@ const initialVae: IWorkbenchModel = {
     filename: 'ClearVAE_NansLess1.safetensors'
 }
 
-const removeDuplicatesById = (array: any[]): any[] => {
-    const map = new Map<number, any>(); // 使用 Map 存储对象，键为 id
-    for (const obj of array) {
-        map.set(obj.id, obj);
-    }
-
-    return Array.from(map.values()); // 返回去重后的对象数组
-};
-
-const removeObjectById = (idToRemove: string | number, array: any[]): any[] => {
-    return array.filter(obj => obj.id !== idToRemove);
-};
-
-const updateObjectInArray = (objects: any[], id: number | string, key: string, value: any): any[] => {
-    return objects.map(obj => {
-        if (obj.id === id) {
-            return {...obj, [key]: value};
-        }
-        return obj;
-    });
-};
-
 export const useWorkbenchModels = create<IWorkbenchModels>((set) => ({
     txt2imgCheckpoint: {...initialCheckpoint},
     img2imgCheckpoint: {...initialCheckpoint},
@@ -136,13 +115,13 @@ export const useWorkbenchModels = create<IWorkbenchModels>((set) => ({
             default:
                 if (target === 'txt2img')
                     return {
-                        txt2imgExtraModel: removeDuplicatesById(
+                        txt2imgExtraModel: removeDuplicateById(
                             [...state.txt2imgExtraModel, fitModel]
                         )
                     }
                 else if (target === 'img2img')
                     return {
-                        img2imgExtraModel: removeDuplicatesById(
+                        img2imgExtraModel: removeDuplicateById(
                             [...state.img2imgExtraModel, fitModel]
                         )
                     }

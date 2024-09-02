@@ -19,6 +19,7 @@ export interface IImageCardProps {
     title: string,
     time?: string,
     fit?: boolean,
+    style?: React.CSSProperties,
     children?: React.ReactNode,
     maskContent?: React.ReactNode,
     bottomBar?: IBottomBarProps[],
@@ -48,7 +49,7 @@ const ImageCard = (props: IImageCardProps | any) => {
     }
 
     return (
-        <div className={'image-container'}>
+        <div className={'image-container'} style={props.style}>
             {/*image*/}
             <img
                 src={
@@ -74,7 +75,10 @@ const ImageCard = (props: IImageCardProps | any) => {
 
             {/*loading*/}
             {!onLoaded && <Skeleton
-                style={{width: '100%', height: '500px', position: 'absolute', zIndex: 66}}
+                style={{
+                    width: '100%', height: '500px', position: 'absolute', zIndex: 66,
+                    left: '0', top: '0'
+                }}
                 animation={true}
                 image={{
                     style: {
