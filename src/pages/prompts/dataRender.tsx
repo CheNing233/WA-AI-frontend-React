@@ -1,14 +1,28 @@
 import TagWaterfall from "@/components/tagWaterfall";
 import {useState} from "react";
 import api from "@/services/export";
-import {Affix, Button, Card, Grid, Popover, Radio, Space} from "@arco-design/web-react";
+import {Affix, Button, Card, Grid, Message, Popover, Radio, Space, Tag} from "@arco-design/web-react";
 import Searcher from "@/components/searcher";
 import {IconClose, IconCopy, IconDelete, IconDown, IconLaunch} from "@arco-design/web-react/icon";
 import {ISdTag} from "@/services/modules/prompts";
+import {removeDuplicateById, removeObjectById} from "@/utils/array";
+import clipboard from "@/utils/clipboard";
 
 export interface IPromptDataRenderProps {
     searchQuery?: string;
 }
+
+const generatePrompt = (tags: ISdTag[]) => {
+    let prompts = '';
+
+    tags.forEach((tag: ISdTag) => {
+        const prompt = tag.weight && tag.weight !== 1 ? `(${tag.nameEn}:${tag.weight})` : tag.nameEn;
+        prompts += `${prompt}, `;
+    })
+
+    return prompts
+}
+
 
 const PromptDataRender = (props: IPromptDataRenderProps) => {
     const [data, setData] = useState([]);
@@ -17,21 +31,7 @@ const PromptDataRender = (props: IPromptDataRenderProps) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [waterfallKey, setWaterfallKey] = useState(0)
 
-    const [selectedTag, setSelectedTag] = useState([
-
-        {
-            "id": 1,
-            "nameEn": "1girl",
-            "nameCn": "1个女孩",
-            "numberRefe": 3663973
-        },
-        {
-            "id": 2,
-            "nameEn": "solo",
-            "nameCn": "独奏",
-            "numberRefe": 3053641
-        },
-    ]);
+    const [selectedTag, setSelectedTag] = useState([]);
 
     const getItems = (nextGroupKey: number, resolve: () => void) => {
         const nextPage = nextGroupKey;
@@ -65,26 +65,47 @@ const PromptDataRender = (props: IPromptDataRenderProps) => {
     }
 
     const handleShopTagClick = (tag: ISdTag) => {
-        setSelectedTag([
-            ...selectedTag,
-            tag
-        ])
+        setSelectedTag(
+            removeDuplicateById([
+                ...selectedTag,
+                tag
+            ])
+        )
     }
 
-    const handleCartTagClick = (e: MouseEvent, tag: ISdTag) => {
-        e.preventDefault()
-        e.stopPropagation()
-        // document.oncontextmenu = (e) => {
-        //     console.log(e)
-        //     return false
-        // }
-        console.log('cancel', e.cancelable)
-        if (e.button === 0) {
-            console.log('Left mouse button clicked');
-        } else if (e.button === 2) {
-            console.log('Right mouse button clicked');
-        }
+    const handleCartTagDrag = (e: any, tag: ISdTag, index: number) => {
+        const startX = e.clientX;
+        const startValue = tag.weight || 1;
+
+        const handleMouseMove = (event: MouseEvent) => {
+            const diff = event.clientX - startX;
+            const newTag: ISdTag[] = [
+                ...selectedTag
+            ];
+            newTag[index].weight = Math.round((startValue + (diff / 2000)) * 100) / 100;
+            setSelectedTag(newTag);
+        };
+
+        const handleMouseUp = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
     }
+
+    const handleCartTagDelete = (e: MouseEvent, tagId: number) => {
+        e.stopPropagation();
+        setSelectedTag(
+            removeObjectById(tagId, selectedTag)
+        )
+    }
+
+    const handleClearCart = () => {
+        setSelectedTag([])
+    }
+
 
     return (
         <Space direction={'vertical'} style={{width: '100%'}} size={36}>
@@ -127,44 +148,64 @@ const PromptDataRender = (props: IPromptDataRenderProps) => {
                             </Button.Group>
                             <Button icon={<IconCopy/>} size={'small'}
                                     shape={'round'}
+                                    onClick={() => {
+                                        const prompt = generatePrompt(selectedTag);
+                                        if (prompt !== '') {
+                                            clipboard(prompt)
+                                                .then(() => {
+                                                    Message.success(`复制成功: ${prompt}`)
+                                                })
+                                                .catch(() => {
+                                                    Message.error('复制失败')
+                                                })
+                                        } else {
+                                            Message.warning('请先选择几个提示词进购物车喵~')
+                                        }
+                                    }}
                             >
                                 复制
                             </Button>
                             <Button icon={<IconDelete/>} size={'small'}
                                     shape={'round'} status={'danger'}
+                                    onClick={handleClearCart}
                             />
                         </Space>
                     }
                 >
                     {selectedTag.length === 0
-                        ? <p>单击下面的提示词，将其加入到购物车中；单击 + 按钮即可增加权重，单击 - 按钮减少权重，单击 ×
+                        ? <p>单击下面的提示词，将其加入到购物车中；按住标签左右拖拽可调整权重，单击 ×
                             按钮删除；使用右上方的“推到工作台”和“复制”按钮获得提示词进行绘图。</p>
                         : <Grid.Row gutter={[20, 24]}>
                             {selectedTag.map((tag: ISdTag, index: number) => {
                                 return (
                                     <Grid.Col key={index} flex={'shrink'}>
                                         <Button
-                                            style={{height: 'auto', padding: '8px 16px', position: 'relative'}}
-                                            type={'dashed'}
-                                            onClick={(e: MouseEvent) => {
-                                                handleCartTagClick(e, tag)
+                                            style={{
+                                                height: 'auto', padding: '8px 16px', position: 'relative',
+                                                cursor: 'ew-resize'
+                                            }}
+                                            type={'secondary'}
+                                            onMouseDown={(e) => {
+                                                handleCartTagDrag(e, tag, index)
                                             }}
                                         >
-                                            {tag.nameEn} <br/>
+                                            {tag.weight && tag.weight !== 1 ? '(' : null}{tag.nameEn}
+                                            {tag.weight && tag.weight !== 1
+                                                ? <Tag color={'arcoblue'}
+                                                       size={'small'}
+                                                       style={{padding: '0 3px'}}>{`:${tag.weight}`}</Tag>
+                                                : null}
+                                            {tag.weight && tag.weight !== 1 ? ')' : null}
+                                            <br/>
                                             {tag.nameCn}
 
                                             <div style={{position: 'absolute', top: '-12px', right: '-12px'}}>
                                                 <Button shape={'circle'} status={'danger'} size={'mini'}
                                                         icon={<IconClose/>}
+                                                        onClick={(e: MouseEvent) => {
+                                                            handleCartTagDelete(e, tag.id)
+                                                        }}
                                                 />
-                                            </div>
-
-                                            <div style={{position: 'absolute', bottom: '-12px', right: '-12px'}}>
-                                                <Button shape={'round'} size={'mini'}
-                                                        status={'success'}
-                                                >
-                                                    {tag.weight || '1.0'}
-                                                </Button>
                                             </div>
                                         </Button>
                                     </Grid.Col>
