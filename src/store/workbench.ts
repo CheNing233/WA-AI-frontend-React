@@ -9,8 +9,8 @@ export type IWorkbenchSetting = {
     setWrapperInDrawer?: (wrapperInDrawer: boolean) => void,
     activeTab?: string,
     setActiveTab?: (activeTab: string) => void,
-    txt2imgActivePanel?: string[],
-    setTxt2imgActivePanel?: (txt2imgActivePanel: string[]) => void,
+    activePanel?: string[],
+    setActivePanel?: (activePanel: string[]) => void,
 }
 
 
@@ -21,15 +21,21 @@ export const useWorkbenchSetting = create<IWorkbenchSetting>((set) => ({
     setWrapperInDrawer: (wrapperInDrawer: boolean) => set(() => ({wrapperInDrawer})),
     activeTab: 'txt2img',
     setActiveTab: (activeTab: string) => set(() => ({activeTab})),
-    txt2imgActivePanel: [
+    activePanel: [
         'txt2img-model',
         'txt2img-prompt',
         'txt2img-settings',
-        'txt2img-hires'
+        'txt2img-hires',
+
+        'img2img-image',
+        'img2img-model',
+        'img2img-prompt',
+        'img2img-settings',
+        'img2img-hires',
     ],
-    setTxt2imgActivePanel: (txt2imgActivePanel: string[]) => set(() => (
-        {txt2imgActivePanel: Array.from(new Set(txt2imgActivePanel))}
-    ))
+    setActivePanel: (activePanel: string[]) => set(() => (
+        {activePanel: Array.from(new Set(activePanel))}
+    )),
 }))
 
 export type IWorkbenchModel = {
@@ -192,6 +198,10 @@ type IImg2ImgParams = {
     inpaint_full_res_padding: number;
     inpainting_mask_invert: number;
     init_images: string;
+
+    scaleByOriginal?: boolean;
+    scaleNumber?: number;
+    allowMask?: boolean;
 };
 
 type IExtraParams = {
@@ -272,6 +282,10 @@ export const useWorkbenchParams = create<IWorkbenchParams>((set) => ({
         inpaint_full_res_padding: 32,
         inpainting_mask_invert: 0,
         init_images: "",
+
+        scaleByOriginal: true,
+        scaleNumber: 1,
+        allowMask: false,
     },
     setImg2imgParams: (img2imgParams: IImg2ImgParams) => set(() => ({img2imgParams})),
     extraParams: {

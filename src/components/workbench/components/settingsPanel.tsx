@@ -1,12 +1,17 @@
 import {IconMoreVertical} from "@arco-design/web-react/icon";
 import {Collapse, Space} from "@arco-design/web-react";
 import ParamsRender from "@/components/workbench/components/paramsRender";
-import {IWorkbenchParams, useWorkbenchParams} from "@/store/workbench";
 
-const SettingsPanel = (props: { name: string }) => {
-    const [txt2imgParams, setTxt2imgParams] = useWorkbenchParams(
-        (state: IWorkbenchParams) => [state.txt2imgParams, state.setTxt2imgParams]
-    )
+export interface ISettingsPanelProps {
+    name: string,
+    params: any,
+    setParams: (params: any) => void,
+    allowWidthHeight?: boolean,
+}
+
+const SettingsPanel = (props: ISettingsPanelProps) => {
+    const params = props.params
+    const setParams = props.setParams
 
     return (
         <Collapse.Item
@@ -24,29 +29,30 @@ const SettingsPanel = (props: { name: string }) => {
                     {
                         name: '图片大小',
                         type: 'buttons',
+                        hide: !props.allowWidthHeight,
                         settings: {
                             buttons: [
                                 {
                                     name: '768x768', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, width: 768, height: 768})
+                                        setParams({...params, width: 768, height: 768})
                                     }
                                 },
                                 {
                                     name: '1024x768', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, width: 1024, height: 768})
+                                        setParams({...params, width: 1024, height: 768})
                                     }
                                 },
                                 {
                                     name: '768x1024', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, width: 768, height: 1024})
+                                        setParams({...params, width: 768, height: 1024})
                                     }
                                 },
                                 {
                                     name: '交换', onClick: () => {
-                                        setTxt2imgParams({
-                                            ...txt2imgParams,
-                                            width: txt2imgParams.height,
-                                            height: txt2imgParams.width
+                                        setParams({
+                                            ...params,
+                                            width: params.height,
+                                            height: params.width
                                         })
                                     }
                                 },
@@ -57,13 +63,14 @@ const SettingsPanel = (props: { name: string }) => {
                         name: '宽度',
                         type: 'slider',
                         subItem: true,
+                        hide: !props.allowWidthHeight,
                         settings: {
                             min: 32,
                             max: 4096,
                             step: 8,
-                            value: txt2imgParams.width,
+                            value: params.width,
                             onChange: (value: number) => {
-                                setTxt2imgParams({...txt2imgParams, width: value})
+                                setParams({...params, width: value})
                             }
                         }
                     },
@@ -71,13 +78,14 @@ const SettingsPanel = (props: { name: string }) => {
                         name: '高度',
                         type: 'slider',
                         subItem: true,
+                        hide: !props.allowWidthHeight,
                         settings: {
                             min: 32,
                             max: 4096,
                             step: 8,
-                            value: txt2imgParams.height,
+                            value: params.height,
                             onChange: (value: number) => {
-                                setTxt2imgParams({...txt2imgParams, height: value})
+                                setParams({...params, height: value})
                             }
                         }
                     },
@@ -118,9 +126,9 @@ const SettingsPanel = (props: { name: string }) => {
                                 {label: 'UniPC', value: 'UniPC'},
                                 {label: 'LCM', value: 'LCM'},
                             ],
-                            value: txt2imgParams.sampler_name,
+                            value: params.sampler_name,
                             onChange: (value: string) => {
-                                setTxt2imgParams({...txt2imgParams, sampler_name: value})
+                                setParams({...params, sampler_name: value})
                             }
                         },
 
@@ -132,9 +140,9 @@ const SettingsPanel = (props: { name: string }) => {
                             min: 1,
                             max: 150,
                             step: 1,
-                            value: txt2imgParams.steps,
+                            value: params.steps,
                             onChange: (value: number) => {
-                                setTxt2imgParams({...txt2imgParams, steps: value})
+                                setParams({...params, steps: value})
                             }
                         }
                     },
@@ -145,9 +153,9 @@ const SettingsPanel = (props: { name: string }) => {
                             min: 0,
                             max: 30,
                             step: 0.1,
-                            value: txt2imgParams.cfg_scale,
+                            value: params.cfg_scale,
                             onChange: (value: number) => {
-                                setTxt2imgParams({...txt2imgParams, cfg_scale: value})
+                                setParams({...params, cfg_scale: value})
                             }
                         }
                     },
@@ -156,7 +164,7 @@ const SettingsPanel = (props: { name: string }) => {
                         type: 'input',
                         settings: {
                             placeholder: '留空和-1均为随机',
-                            value: txt2imgParams.seed.toString(),
+                            value: params.seed.toString(),
                             onChange: (value: string) => {
                                 console.log(value)
                                 let parsedValue: number = parseInt(value);
@@ -164,7 +172,7 @@ const SettingsPanel = (props: { name: string }) => {
                                     // 如果无法解析为数字，则将 value 设置为 -1
                                     parsedValue = -1;
                                 }
-                                setTxt2imgParams({...txt2imgParams, seed: parsedValue});
+                                setParams({...params, seed: parsedValue});
                             }
                         }
                     },
@@ -177,12 +185,12 @@ const SettingsPanel = (props: { name: string }) => {
                                 {label: '1', value: '1'},
                                 {label: '2', value: '2'},
                             ],
-                            value: txt2imgParams.override_settings.CLIP_stop_at_last_layers.toString(),
+                            value: params.override_settings.CLIP_stop_at_last_layers.toString(),
                             onChange: (value: string) => {
-                                setTxt2imgParams(
+                                setParams(
                                     {
-                                        ...txt2imgParams, override_settings: {
-                                            ...txt2imgParams.override_settings,
+                                        ...params, override_settings: {
+                                            ...params.override_settings,
                                             CLIP_stop_at_last_layers: parseInt(value)
                                         }
                                     }
@@ -198,11 +206,11 @@ const SettingsPanel = (props: { name: string }) => {
                                 {label: '0', value: '0'},
                                 {label: '31337', value: '31337'},
                             ],
-                            value: txt2imgParams.override_settings.eta_noise_seed_delta.toString(),
+                            value: params.override_settings.eta_noise_seed_delta.toString(),
                             onChange: (value: string) => {
-                                setTxt2imgParams({
-                                    ...txt2imgParams, override_settings: {
-                                        ...txt2imgParams.override_settings,
+                                setParams({
+                                    ...params, override_settings: {
+                                        ...params.override_settings,
                                         eta_noise_seed_delta: parseInt(value)
                                     }
                                 })

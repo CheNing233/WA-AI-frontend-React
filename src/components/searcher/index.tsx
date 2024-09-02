@@ -257,7 +257,7 @@ const Searcher = (props: ISearcherProps) => {
                             allowClear={true}
                             animation={false}
                             value={getValues()}
-                            size={props.size}
+                            size={props.size || 'default'}
                             onChange={(values) => {
                                 setValues(values)
                             }}

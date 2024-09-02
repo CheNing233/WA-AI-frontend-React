@@ -3,6 +3,7 @@ import {MasonryInfiniteGrid} from "@egjs/react-infinitegrid";
 
 import {Button, Divider, Grid, Space, Spin} from "@arco-design/web-react";
 import {ISdTag} from "@/services/modules/prompts";
+import {IconCheckCircle} from "@arco-design/web-react/icon";
 
 export type ITagWaterfallProps = {
     cols: { xxxl?: number, xxl?: number, xl?: number, lg?: number, md?: number, sm?: number, xs?: number },
@@ -56,7 +57,7 @@ const Item = ({num, data, onTagClick}: any) => (
                         {/*>*/}
                         <Button
                             style={{height: 'auto', padding: '8px 16px'}}
-                            onClick={()=>{
+                            onClick={() => {
                                 onTagClick && onTagClick(item)
                             }}
                         >
@@ -156,6 +157,14 @@ const TagWaterfall = (props: ITagWaterfallProps) => {
                 <Space style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'absolute'}}>
                     <Spin/>
                     <span>正在加载喵...</span>
+                </Space>
+            </div>}
+            {props.hasNoMore && <div
+                style={{width: '100%', height: '128px', position: 'relative'}}
+            >
+                <Space style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'absolute'}}>
+                    <IconCheckCircle/>
+                    <span>已经没东西了喵...</span>
                 </Space>
             </div>}
         </div>
