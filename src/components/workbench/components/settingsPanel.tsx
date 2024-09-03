@@ -1,6 +1,7 @@
 import {IconMoreVertical} from "@arco-design/web-react/icon";
 import {Collapse, Space} from "@arco-design/web-react";
 import ParamsRender from "@/components/workbench/components/paramsRender";
+import {SdSamplers} from "@/constants/sd";
 
 export interface ISettingsPanelProps {
     name: string,
@@ -94,44 +95,13 @@ const SettingsPanel = (props: ISettingsPanelProps) => {
                         type: 'select',
                         settings: {
                             selectOptions: [
-                                {label: 'Euler a', value: 'Euler a'},
-                                {label: 'Euler', value: 'Euler'},
-                                {label: 'DPM++ 2M Karras', value: 'DPM++ 2M Karras'},
-                                {label: 'DPM++ SDE Karras', value: 'DPM++ SDE Karras'},
-                                {label: 'DPM++ 2M SDE Exponential', value: 'DPM++ 2M SDE Exponential'},
-                                {label: 'DPM++ 2M SDE Karras', value: 'DPM++ 2M SDE Karras'},
-                                {label: 'LMS', value: 'LMS'},
-                                {label: 'Heun', value: 'Heun'},
-                                {label: 'DPM2', value: 'DPM2'},
-                                {label: 'DPM2 a', value: 'DPM2 a'},
-                                {label: 'DPM++ 2S a', value: 'DPM++ 2S a'},
-                                {label: 'DPM++ 2M', value: 'DPM++ 2M'},
-                                {label: 'DPM++ SDE', value: 'DPM++ SDE'},
-                                {label: 'DPM++ 2M SDE', value: 'DPM++ 2M SDE'},
-                                {label: 'DPM++ 2M SDE Heun', value: 'DPM++ 2M SDE Heun'},
-                                {label: 'DPM++ 2M SDE Heun Karras', value: 'DPM++ 2M SDE Heun Karras'},
-                                {label: 'DPM++ 2M SDE Heun Exponential', value: 'DPM++ 2M SDE Heun Exponential'},
-                                {label: 'DPM++ 3M SDE', value: 'DPM++ 3M SDE'},
-                                {label: 'DPM++ 3M SDE Karras', value: 'DPM++ 3M SDE Karras'},
-                                {label: 'DPM++ 3M SDE Exponential', value: 'DPM++ 3M SDE Exponential'},
-                                {label: 'DPM fast', value: 'DPM fast'},
-                                {label: 'DPM adaptive', value: 'DPM adaptive'},
-                                {label: 'LMS Karras', value: 'LMS Karras'},
-                                {label: 'DPM2 Karras', value: 'DPM2 Karras'},
-                                {label: 'DPM2 a Karras', value: 'DPM2 a Karras'},
-                                {label: 'DPM++ 2S a Karras', value: 'DPM++ 2S a Karras'},
-                                {label: 'Restart', value: 'Restart'},
-                                {label: 'DDIM', value: 'DDIM'},
-                                {label: 'PLMS', value: 'PLMS'},
-                                {label: 'UniPC', value: 'UniPC'},
-                                {label: 'LCM', value: 'LCM'},
+                                ...SdSamplers
                             ],
                             value: params.sampler_name,
                             onChange: (value: string) => {
                                 setParams({...params, sampler_name: value})
                             }
                         },
-
                     },
                     {
                         name: '采样步数',

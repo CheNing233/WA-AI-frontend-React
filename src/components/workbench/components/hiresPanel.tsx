@@ -1,6 +1,7 @@
 import {IconMoreVertical} from "@arco-design/web-react/icon";
 import {Collapse, Space} from "@arco-design/web-react";
 import ParamsRender from "@/components/workbench/components/paramsRender";
+import {SdHiresUpScalers} from "@/constants/sd";
 
 export interface IHiresPanelProps {
     name: string
@@ -77,22 +78,7 @@ const HiresPanel = (props: IHiresPanelProps) => {
                         type: 'select',
                         settings: {
                             selectOptions: [
-                                {label: 'Latent', value: 'Latent'},
-                                {label: 'Latent (antialiased)', value: 'Latent (antialiased)'},
-                                {label: 'Latent (bicubic)', value: 'Latent (bicubic)'},
-                                {label: 'Latent (bicubic antialiased)', value: 'Latent (bicubic antialiased)'},
-                                {label: 'Latent (nearest)', value: 'Latent (nearest)'},
-                                {label: 'Latent (nearest-exact)', value: 'Latent (nearest-exact)'},
-                                {label: 'None', value: 'None'},
-                                {label: 'Lanczos', value: 'Lanczos'},
-                                {label: 'Nearest', value: 'Nearest'},
-                                {label: 'ESRGAN_4x', value: 'ESRGAN_4x'},
-                                {label: 'LDSR', value: 'LDSR'},
-                                {label: 'R-ESRGAN 4x+', value: 'R-ESRGAN 4x+'},
-                                {label: 'R-ESRGAN 4x+ Anime6B', value: 'R-ESRGAN 4x+ Anime6B'},
-                                {label: 'ScuNET GAN', value: 'ScuNET GAN'},
-                                {label: 'ScuNET PSNR', value: 'ScuNET PSNR'},
-                                {label: 'SwinIR 4x', value: 'SwinIR 4x'},
+                                ...SdHiresUpScalers
                             ],
                             value: params.hr_upscaler,
                             onChange: (value: string) => {

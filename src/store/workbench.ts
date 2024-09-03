@@ -32,6 +32,9 @@ export const useWorkbenchSetting = create<IWorkbenchSetting>((set) => ({
         'img2img-prompt',
         'img2img-settings',
         'img2img-hires',
+
+        'extra-image',
+        'extra-setting'
     ],
     setActivePanel: (activePanel: string[]) => set(() => (
         {activePanel: Array.from(new Set(activePanel))}
@@ -70,7 +73,7 @@ export type IWorkbenchModels = {
         target: 'txt2img' | 'img2img',
         key: string,
         value: any
-    ) => void
+    ) => void,
 }
 
 const initialCheckpoint: IWorkbenchModel = {
@@ -144,7 +147,7 @@ export const useWorkbenchModels = create<IWorkbenchModels>((set) => ({
             return {txt2imgExtraModel: updateObjectInArray(state.txt2imgExtraModel, modelId, key, value)}
         else if (target === 'img2img')
             return {img2imgExtraModel: updateObjectInArray(state.img2imgExtraModel, modelId, key, value)}
-    })
+    }),
 }))
 
 
@@ -197,7 +200,7 @@ type IImg2ImgParams = {
     inpaint_full_res: boolean;
     inpaint_full_res_padding: number;
     inpainting_mask_invert: number;
-    init_images: string;
+    init_images: string | string[];
 
     scaleByOriginal?: boolean;
     scaleNumber?: number;
@@ -228,6 +231,8 @@ export type IWorkbenchParams = {
     setImg2imgParams: (img2imgParams: IImg2ImgParams) => void;
     extraParams: IExtraParams;
     setExtraParams: (extraParams: IExtraParams) => void;
+    generateCount: number,
+    setGenerateCount: (generateCount: number) => void,
 };
 
 
@@ -305,6 +310,8 @@ export const useWorkbenchParams = create<IWorkbenchParams>((set) => ({
         image: ''
     },
     setExtraParams: (extraParams: IExtraParams) => set(() => ({extraParams})),
+    generateCount: 1,
+    setGenerateCount: (generateCount) => set(() => ({generateCount}))
 }))
 
 

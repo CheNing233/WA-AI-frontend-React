@@ -21,6 +21,12 @@ import {
     useWorkbenchSetting
 } from "@/store/workbench";
 import ImagePanel from "@/components/workbench/components/imagePanel";
+import ExtraImagePanel from "@/components/workbench/components/extraImagePanel";
+import ExtraSettingPanel from "@/components/workbench/components/extraSettingPanel";
+import {packParams} from "@/components/workbench/utils/sd";
+import api from "@/services/export";
+import {loadingMessage} from "@/utils/loadingMessage";
+import {useState} from "react";
 
 const Work = () => {
     const [activeTab, setActiveTab] = useWorkbenchSetting(
@@ -58,10 +64,93 @@ const Work = () => {
         return [state.setModel, state.deleteModel, state.changeModel]
     })
 
+    const [extraParams, setExtraParams] = useWorkbenchParams(
+        (state: IWorkbenchParams) => [state.extraParams, state.setExtraParams]
+    )
+
+    const [generateCount, setGenerateCount] = useWorkbenchParams(
+        (state: IWorkbenchParams) => [state.generateCount, state.setGenerateCount]
+    )
+    const [generateLoading, setGenerateLoading] = useState(false)
+
+    const handleDraw = () => {
+        let paramsToPost: any = null
+
+        switch (activeTab) {
+            case 'txt2img':
+                paramsToPost = packParams(txt2imgParams, txt2imgCheckpoint, txt2imgVae, txt2imgExtraModel)
+
+                loadingMessage(
+                    'txt2img-process',
+                    '正在请求喵~',
+                    (resolve) => {
+                        setGenerateLoading(true)
+                        api.sd.txt2Image({txt2ImageOptions: paramsToPost, count: generateCount})
+                            .then((res) => {
+                                resolve(true, `成功压入队列喵，ID：${res.data.data}`)
+                            })
+                            .catch((err) => {
+                                resolve(false, `请求失败喵，${err}`)
+                            })
+                            .finally(() => {
+                                setGenerateLoading(false)
+                            })
+                    }
+                )
+                return;
+            case 'img2img':
+                paramsToPost = packParams(img2imgParams, img2imgCheckpoint, img2imgVae, img2imgExtraModel)
+
+                loadingMessage(
+                    'img2img-process',
+                    '正在请求喵~',
+                    (resolve) => {
+                        setGenerateLoading(true)
+                        api.sd.img2img(paramsToPost)
+                            .then((res) => {
+                                resolve(true, `成功压入队列喵，ID：${res.data.data}`)
+                            })
+                            .catch((err) => {
+                                resolve(false, `请求失败喵，${err}`)
+                            })
+                            .finally(() => {
+                                setGenerateLoading(false)
+                            })
+                    }
+                )
+                return;
+            case 'extra':
+                paramsToPost = extraParams
+
+                loadingMessage(
+                    'extra-process',
+                    '正在请求喵~',
+                    (resolve) => {
+                        setGenerateLoading(true)
+                        api.sd.extraImage(paramsToPost)
+                            .then((res) => {
+                                resolve(true, `成功压入队列喵，ID：${res.data.data}`)
+                            })
+                            .catch((err) => {
+                                resolve(false, `请求失败喵，${err}`)
+                            })
+                            .finally(() => {
+                                setGenerateLoading(false)
+                            })
+                    }
+                )
+                return;
+        }
+    }
+
+
     return (
         <Space style={{top: '0', width: '100%'}} direction={'vertical'}>
             <Tabs
-                defaultActiveTab={'txt2img'}
+                activeTab={activeTab}
+                onChange={(key: string) => {
+                    setActiveTab(key)
+                }}
             >
                 <Tabs.TabPane key={'txt2img'} title={'文生图'}>
 
@@ -199,7 +288,6 @@ const Work = () => {
                                     setParams={(params: any) => {
                                         setImg2imgParams(params)
                                     }}
-                                    allowMask={true}
                                 />
                             </div>
                             <div key={'model'}>
@@ -246,15 +334,64 @@ const Work = () => {
 
                 </Tabs.TabPane>
                 <Tabs.TabPane key={'extra'} title={'超分放大'}>
+
+                    <Collapse
+                        style={{width: 'calc(100% - 2px)', overflow: 'visible'}}
+                        bordered={true}
+                        destroyOnHide={false}
+                        activeKey={activePanel}
+                        defaultActiveKey={activePanel}
+                        onChange={(activePanel, activePanels) => {
+                            setActivePanel(activePanels)
+                        }}
+                    >
+                        <SidebarWrapper
+                            menu={[
+                                {
+                                    key: 'image',
+                                    title: '图片',
+                                    icon: <ImageIcon/>
+                                },
+                                {
+                                    key: 'settings',
+                                    title: '超分设置',
+                                    icon: <AdjustmentIcon/>
+                                }
+                            ]}
+                            onMenuClick={handleMenuClick}
+                            style={{width: '100%', padding: '12px 0 12px 0'}}
+                        >
+                            <div key={'image'}>
+                                <ExtraImagePanel
+                                    name={'extra-image'}
+                                    params={extraParams}
+                                    setParams={setExtraParams}
+                                />
+                            </div>
+                            <div key={'settings'}>
+                                <ExtraSettingPanel
+                                    name={'extra-setting'}
+                                    params={extraParams}
+                                    setParams={(params: any) => {
+                                        setExtraParams(params)
+                                    }}
+                                />
+                            </div>
+                        </SidebarWrapper>
+                    </Collapse>
+
                 </Tabs.TabPane>
             </Tabs>
             <Card
                 bordered={true}
                 style={{width: '100%', height: '64px'}}
+                loading={generateLoading}
             >
                 <Grid.Row gutter={[8, 8]}>
                     <Grid.Col flex={'1'}>
-                        <Button icon={<ControlPlatformIcon/>} type={'primary'} long>
+                        <Button icon={<ControlPlatformIcon/>} type={'primary'} long
+                                onClick={handleDraw}
+                        >
                             立即生成
                         </Button>
                     </Grid.Col>
@@ -262,7 +399,10 @@ const Work = () => {
                         <Space direction={'vertical'} size={0}>
                             <InputNumber
                                 mode='button'
-                                defaultValue={1}
+                                value={generateCount}
+                                onChange={(value) => {
+                                    setGenerateCount(value)
+                                }}
                                 max={10}
                                 min={1}
                                 size={'mini'}
