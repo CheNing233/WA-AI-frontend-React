@@ -5,10 +5,10 @@ FROM node:latest
 WORKDIR /usr/src/app
 
 # 复制 package.json 和 package-lock.json（如果存在）到工作目录
-COPY package.json package-lock.json ./
+# COPY package.json package-lock.json ./
 
 # 安装依赖
-RUN npm install
+# RUN npm install
 
 # 复制 React npm build 项目到工作目录
 COPY build/ ./build
