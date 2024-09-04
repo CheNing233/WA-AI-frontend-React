@@ -11,10 +11,10 @@ WORKDIR /usr/src/app
 # RUN npm install
 
 # 复制 React npm build 项目到工作目录
-COPY build/ ./build
+COPY ./build/ ./build/
 
 # 将主机的 6667 端口映射到容器的 16666 端口
-EXPOSE 16666
+#EXPOSE 16666
 
 # 设置 Node.js 监听 16666 端口
 CMD ["node", "build/index.js", "16666"]
