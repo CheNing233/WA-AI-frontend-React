@@ -101,6 +101,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/crypto-js": "^4.2.2",
     "@types/loadable__component": "^5.13.9",
     "@types/react-router-dom": "^5.3.3",
