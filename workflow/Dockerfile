@@ -11,6 +11,8 @@ WORKDIR /usr/src/app
 # RUN npm install
 
 # 复制 React npm build 项目到工作目录
+RUN ls -a
+RUN mkdir build
 COPY ./build/ ./build/
 
 # 将主机的 6667 端口映射到容器的 16666 端口
