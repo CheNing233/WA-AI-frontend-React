@@ -21,10 +21,6 @@ const useWorkbench = (): IWorkbench => {
     })
     const history = useHistory()
 
-    const setWorkbenchShow = (visible: boolean) => {
-        setWorkbenchVisible(visible);
-    }
-
     const authWorkbench = (
         protectFunction: () => void,
         actions: string[] = ['txt2img', 'img2img', 'extra']
@@ -40,6 +36,12 @@ const useWorkbench = (): IWorkbench => {
             Message.info('请先登录喵~')
             history.push('/login')
         }
+    }
+
+    const setWorkbenchShow = (visible: boolean) => {
+        authWorkbench(() => {
+            setWorkbenchVisible(visible)
+        })
     }
 
     return {

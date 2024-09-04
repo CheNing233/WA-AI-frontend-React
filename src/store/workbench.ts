@@ -194,12 +194,13 @@ type IImg2ImgParams = {
     restore_faces: boolean;
     tiling: boolean;
     resize_mode: number;
-    mask: string;
+    mask: string | null;
     mask_blur: number;
     inpainting_fill: number;
     inpaint_full_res: boolean;
     inpaint_full_res_padding: number;
     inpainting_mask_invert: number;
+    initial_noise_multiplier: 1 | number;
     init_images: string | string[];
 
     scaleByOriginal?: boolean;
@@ -280,13 +281,14 @@ export const useWorkbenchParams = create<IWorkbenchParams>((set) => ({
         restore_faces: false,
         tiling: false,
         resize_mode: 0,
-        mask: "",
+        mask: null,
         mask_blur: 4,
         inpainting_fill: 1,
         inpaint_full_res: false,
         inpaint_full_res_padding: 32,
         inpainting_mask_invert: 0,
-        init_images: "",
+        initial_noise_multiplier: 1,
+        init_images: [],
 
         scaleByOriginal: true,
         scaleNumber: 1,

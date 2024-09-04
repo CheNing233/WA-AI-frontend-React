@@ -27,6 +27,20 @@ import {packParams} from "@/components/workbench/utils/sd";
 import api from "@/services/export";
 import {loadingMessage} from "@/utils/loadingMessage";
 import {useState} from "react";
+import eventbus from "@/eventbus";
+
+const removeObjectKey = (objectToModify: Record<string, any>, keysToRemove: string[]): Record<string, any> => {
+    const {...updatedObject} = objectToModify;
+
+    keysToRemove.forEach(key => {
+        if (key in updatedObject) {
+            delete updatedObject[key];
+        }
+    });
+
+    return updatedObject;
+}
+
 
 const Work = () => {
     const [activeTab, setActiveTab] = useWorkbenchSetting(
@@ -75,6 +89,7 @@ const Work = () => {
 
     const handleDraw = () => {
         let paramsToPost: any = null
+        const refreshTime = 1000
 
         switch (activeTab) {
             case 'txt2img':
@@ -94,12 +109,23 @@ const Work = () => {
                             })
                             .finally(() => {
                                 setGenerateLoading(false)
+
+                                setTimeout(() => {
+                                    eventbus.emit('workbench.history.refresh')
+                                }, refreshTime)
                             })
                     }
                 )
                 return;
             case 'img2img':
                 paramsToPost = packParams(img2imgParams, img2imgCheckpoint, img2imgVae, img2imgExtraModel)
+
+                if (!paramsToPost.allowMask)
+                    paramsToPost.mask = null
+
+                paramsToPost = removeObjectKey(paramsToPost, [
+                    'scaleByOriginal', 'scaleNumber', 'allowMask'
+                ])
 
                 loadingMessage(
                     'img2img-process',
@@ -115,6 +141,10 @@ const Work = () => {
                             })
                             .finally(() => {
                                 setGenerateLoading(false)
+
+                                setTimeout(() => {
+                                    eventbus.emit('workbench.history.refresh')
+                                }, refreshTime)
                             })
                     }
                 )
@@ -136,6 +166,10 @@ const Work = () => {
                             })
                             .finally(() => {
                                 setGenerateLoading(false)
+
+                                setTimeout(() => {
+                                    eventbus.emit('workbench.history.refresh')
+                                }, refreshTime)
                             })
                     }
                 )
