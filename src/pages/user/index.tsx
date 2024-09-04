@@ -1,12 +1,20 @@
 import ContentWrapper from "@/components/contentWrapper";
 import GridExt from "@/components/gridExt";
-import {Avatar, Button, Card, Descriptions, Divider, Grid, Link, Space, Tabs, Tag} from "@arco-design/web-react";
+import {Alert, Avatar, Button, Card, Descriptions, Divider, Grid, Link, Space, Tabs, Tag} from "@arco-design/web-react";
 import {IconEdit} from "@arco-design/web-react/icon";
 import Updates from "@/pages/user/component/updates";
 
 const User = () => {
     return (
         <ContentWrapper>
+            <Alert
+                banner
+                type='warning'
+                showIcon
+                title='本页正在施工中'
+                content='点「关于」页联系我们，加入我们的开发喵~'
+                style={{ marginBottom: 20 }}
+            />
             <GridExt
                 cols={{xs: 1, sm: 1, md: 15, lg: 15, xl: 15, xxl: 15}}
                 refContainerWidth={true}

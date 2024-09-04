@@ -16,7 +16,7 @@ const Updates = () => {
         )
     }
 
-    const getItems = async (nextGroupKey: number) => {
+    const getItems = async (nextGroupKey: number, resolve: () => void) => {
         const count = 5;
         const nextItems = [];
         const nextKey = (nextGroupKey - 1) * count;
@@ -31,6 +31,8 @@ const Updates = () => {
             ...data,
             ...nextItems,
         ]);
+
+        resolve();
     }
 
 

@@ -1,4 +1,4 @@
-import {Card, Link, Space, Tag} from "@arco-design/web-react";
+import {Card, Link, Message, Space, Tag} from "@arco-design/web-react";
 import ImageWaterfall from "@/components/imageWaterfall";
 import {useRef, useState} from "react";
 import ImageCard from "@/components/imageCard";
@@ -8,6 +8,7 @@ import {convertTask2Post, getTasksExtraInfo} from "@/services/utils/tasks";
 import useWorkbench from "@/components/workbench/useWorkbench";
 import {TaskStatus} from "@/services/modules/tasks";
 import useImagePreviewerTools from "@/components/imagePreviewer/useImagePreviewerTools";
+import {require} from "ace-builds";
 
 const History = () => {
     const {workbenchShow} = useWorkbench();
@@ -49,12 +50,17 @@ const History = () => {
             <ImageCard
                 width={'100%'}
                 id={data.id}
-                // author={'data.userNickName'}
-                // authorAvatar={data.userAvatarUrl}
                 title={data.id}
                 time={convertUTCTime(data.updateTime)}
-                src={data.bannerUrl}
+                src={data.status !== TaskStatus.success
+                    ? require('@/assets/placeholder/noPreview.png')
+                    : data.bannerUrl
+                }
                 onImageClick={() => {
+                    if (data.status !== TaskStatus.success) {
+                        Message.warning('打不开喵')
+                        return
+                    }
                     openPost(convertTask2Post(data))
                 }}
             >
