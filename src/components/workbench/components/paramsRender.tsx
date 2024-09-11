@@ -54,7 +54,7 @@ export type IParams = {
     name: string,
     type: 'slider' | 'select' | 'radios' | 'switch' | 'buttons' | 'input',
     subItem?: boolean,
-    visible?: boolean,
+    hide?: boolean,
     settings?: ISliderSetting | IInputSetting | ISelectSetting | IRadioGroupSetting | IButtonGroupSetting | ISwitchSetting,
     [key: string]: any
 }
@@ -67,13 +67,14 @@ export type IParamsRenderProps = {
 
 const ParamsRender = (props: IParamsRenderProps) => {
 
-
     return (
         <Space
             direction={'vertical'}
             style={{width: '100%'}}
         >
             {props.params.map(param => {
+                if (param.hide)
+                    return null
                 switch (param.type) {
                     case 'slider':
                         const sliderSettings = param.settings as ISliderSetting;

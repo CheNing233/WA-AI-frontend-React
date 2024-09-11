@@ -1,8 +1,8 @@
-import {IconClose, IconMoreVertical} from "@arco-design/web-react/icon";
+import {IconClose, IconDelete, IconMoreVertical, IconSwap} from "@arco-design/web-react/icon";
 import {Button, Collapse, Grid, Message, Space} from "@arco-design/web-react";
-import ModelCard from "@/components/workbench/components/modelCard";
+import InfoCard from "@/components/workbench/components/infoCard";
 import {AddIcon} from "tdesign-icons-react";
-import {IWorkbenchModel, useWorkbenchModels} from "@/store/workbench";
+import {IWorkbenchModel} from "@/store/workbench";
 import {getModelBannerUrl} from "@/services/utils/models";
 import {useEffect, useState} from "react";
 import {IModel} from "@/services/modules/models";
@@ -17,19 +17,26 @@ import useWorkbench from "@/components/workbench/useWorkbench";
 const ModelPanel = (
     props: {
         name: string,
-        target: 'txt2img' | 'img2img',
+        setModel: (model: any) => void,
+        deleteModel: (modelId: string | number) => void,
+        changeModel: (model: any, key: string, value: any) => void,
         checkpoint: IWorkbenchModel,
         vae: IWorkbenchModel,
         extraModels: IWorkbenchModel[]
     }
 ) => {
-    const [
-        setModel, deleteModel, changeModel
-    ] = useWorkbenchModels((state) => {
-        return [
-            state.setModel, state.deleteModel, state.changeModel
-        ]
-    })
+    // const [
+    //     setModel, deleteModel, changeModel
+    // ] = useWorkbenchModels((state) => {
+    //     return [
+    //         state.setModel, state.deleteModel, state.changeModel
+    //     ]
+    // })
+
+    const setModel = props.setModel
+    const deleteModel = props.deleteModel
+    const changeModel = props.changeModel
+
     const [modelSelectableBoxVisible, setModelSelectableBoxVisible] = useState(false)
     const [modelSelectableBoxSearchValue, setModelSelectableBoxSearchValue] = useState([])
     const {authWorkbench} = useWorkbench()
@@ -42,19 +49,19 @@ const ModelPanel = (
 
         if (!checkpoint.bannerUrl) {
             getModelBannerUrl(checkpoint as IModel).then(newModel => {
-                setModel(newModel, props.target)
+                setModel(newModel)
             })
         }
         if (!vae.bannerUrl) {
             getModelBannerUrl(vae as IModel).then(newModel => {
-                setModel(newModel, props.target)
+                setModel(newModel)
             })
         }
 
         extraModels.forEach((model) => {
             if (!model.bannerUrl) {
                 getModelBannerUrl(model as IModel).then(newModel => {
-                    setModel(newModel, props.target)
+                    setModel(newModel)
                 })
             }
         })
@@ -101,7 +108,7 @@ const ModelPanel = (
                 )}
                 onImageClick={() => {
                     authWorkbench(() => {
-                        setModel(data, props.target)
+                        setModel(data)
                         Message.success(`已添加 ${data.type} 「${data.title}」`)
                     })
                 }}
@@ -123,45 +130,57 @@ const ModelPanel = (
                 style={{width: '100%', padding: '12px 0 16px 0', transform: 'translateX(-12px)'}}
                 size={16}
             >
-                <ModelCard
-                    id={props.checkpoint.id}
-                    name={props.checkpoint.title}
+                <InfoCard
+                    id={`${props.checkpoint.id}`}
+                    title={props.checkpoint.title}
                     imageSrc={props.checkpoint.bannerUrl}
                     type={props.checkpoint.type}
-                    allowSwitch={true}
-                    onSwitch={() => {
-                        setModelSelectableBoxSearchValue(['filter:Checkpoint'])
-                        setModelSelectableBoxVisible(true)
-                    }}
-                    allowDelete={false}
+                    extra={
+                        <Button type={'primary'} size={'mini'} icon={<IconSwap/>}
+                                onClick={() => {
+                                    setModelSelectableBoxSearchValue(['filter:Checkpoint'])
+                                    setModelSelectableBoxVisible(true)
+                                }}
+                        >
+                            切换主模型
+                        </Button>
+                    }
                 />
-                <ModelCard
-                    id={props.vae.id}
-                    name={props.vae.title}
+                <InfoCard
+                    id={`${props.vae.id}`}
+                    title={props.vae.title}
                     imageSrc={props.vae.bannerUrl}
                     type={props.vae.type}
-                    allowSwitch={true}
-                    onSwitch={() => {
-                        setModelSelectableBoxSearchValue(['filter:VAE'])
-                        setModelSelectableBoxVisible(true)
-                    }}
-                    allowDelete={false}
+                    extra={
+                        <Button type={'primary'} size={'mini'} icon={<IconSwap/>}
+                                onClick={() => {
+                                    setModelSelectableBoxSearchValue(['filter:VAE'])
+                                    setModelSelectableBoxVisible(true)
+                                }}
+                        >
+                            切换VAE
+                        </Button>
+                    }
                 />
 
                 {props.extraModels.map((model) => {
                     return (
-                        <ModelCard
-                            id={model.id}
+                        <InfoCard
+                            id={`${model.id}`}
                             key={model.id}
-                            name={model.title}
+                            title={model.title}
                             imageSrc={model.bannerUrl}
                             type={model.type}
-                            allowSwitch={false}
-                            allowDelete={true}
-                            onDelete={(id) => {
-                                deleteModel(id, props.target)
-                                Message.success(`已删除「${model.title}」`)
-                            }}
+                            extra={
+                                <Button status={'danger'} size={'mini'} icon={<IconDelete/>}
+                                        onClick={() => {
+                                            deleteModel(model.id)
+                                            Message.success(`已删除「${model.title}」`)
+                                        }}
+                                >
+                                    删除模型
+                                </Button>
+                            }
                         >
                             <ParamsRender params={[
                                 {
@@ -170,7 +189,7 @@ const ModelPanel = (
                                     settings: {
                                         checked: model.asNegative || false,
                                         onChange: () => {
-                                            changeModel(model.id, props.target,
+                                            changeModel(model.id,
                                                 'asNegative', !model.asNegative)
                                         }
                                     }
@@ -184,19 +203,19 @@ const ModelPanel = (
                                         step: 0.01,
                                         value: model.weight || 1,
                                         onChange: (newValue: number) => {
-                                            changeModel(model.id, props.target,
+                                            changeModel(model.id,
                                                 'weight', newValue)
                                         }
                                     }
                                 }
                             ]}
                             />
-                        </ModelCard>
+                        </InfoCard>
                     )
                 })}
 
                 <Grid.Row gutter={[8, 8]}>
-                    <Grid.Col flex={'1'}>
+                    <Grid.Col flex={'shrink'}>
                         <Button type={'primary'} icon={<AddIcon/>} long
                                 onClick={() => {
                                     setModelSelectableBoxSearchValue(['filter:LoRA'])
@@ -206,7 +225,7 @@ const ModelPanel = (
                             添加LoRa
                         </Button>
                     </Grid.Col>
-                    <Grid.Col flex={'1'}>
+                    <Grid.Col flex={'shrink'}>
                         <Button type={'primary'} icon={<AddIcon/>} long
                                 onClick={() => {
                                     setModelSelectableBoxSearchValue(['filter:Embedding'])

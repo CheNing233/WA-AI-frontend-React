@@ -29,8 +29,10 @@ export interface ITask {
  * 获取个人任务
  * @param {string} page
  * @param {string} pageSize
+ * @param forceUpdate
  * @returns
  */
-export function getTaskByUser(page: number, pageSize: number): Promise<AxiosResponse> {
-    return request.get(`/task/getTaskByUser?page=${page}&pageSize=${pageSize}`);
+export function getTaskByUser(page: number, pageSize: number, forceUpdate?: boolean): Promise<AxiosResponse> {
+    // @ts-ignore
+    return request.get(`/task/getTaskByUser?page=${page}&pageSize=${pageSize}`, {cache: {forceUpdate: forceUpdate}});
 }

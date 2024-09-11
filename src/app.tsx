@@ -21,6 +21,7 @@ import ImagePreviewer from "@/components/imagePreviewer";
 import LoginManagement from "@/utils/loginManagement";
 import {IUser, useUser} from "@/store/user";
 import lazyload from "@/utils/lazyload";
+import Websocket from "@/websocket";
 
 function App() {
     const [lang, setLang] = useStorage('arco-lang', 'zh-CN');
@@ -129,6 +130,7 @@ function App() {
                                 </Switch>
                                 <Footer/>
                                 <ImagePreviewer/>
+                                <Websocket/>
                             </div>,
                             <>
                                 <Workbench/>

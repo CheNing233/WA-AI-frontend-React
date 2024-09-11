@@ -1,12 +1,17 @@
 import {IconMoreVertical} from "@arco-design/web-react/icon";
 import {Collapse, Space} from "@arco-design/web-react";
 import ParamsRender from "@/components/workbench/components/paramsRender";
-import {IWorkbenchParams, useWorkbenchParams} from "@/store/workbench";
+import {SdHiresUpScalers} from "@/constants/sd";
 
-const HiresPanel = (props: { name: string }) => {
-    const [txt2imgParams, setTxt2imgParams] = useWorkbenchParams(
-        (state: IWorkbenchParams) => [state.txt2imgParams, state.setTxt2imgParams]
-    )
+export interface IHiresPanelProps {
+    name: string
+    params: any,
+    setParams: (params: any) => void
+}
+
+const HiresPanel = (props: IHiresPanelProps) => {
+    const params = props.params
+    const setParams = props.setParams
 
     return (
         <Collapse.Item
@@ -28,27 +33,27 @@ const HiresPanel = (props: { name: string }) => {
                             buttons: [
                                 {
                                     name: '1x', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, hr_scale: 1})
+                                        setParams({...params, hr_scale: 1})
                                     }
                                 },
                                 {
                                     name: '1.5x', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, hr_scale: 1.5})
+                                        setParams({...params, hr_scale: 1.5})
                                     }
                                 },
                                 {
                                     name: '2x', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, hr_scale: 2})
+                                        setParams({...params, hr_scale: 2})
                                     }
                                 },
                                 {
                                     name: '3x', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, hr_scale: 3})
+                                        setParams({...params, hr_scale: 3})
                                     }
                                 },
                                 {
                                     name: '4x', onClick: () => {
-                                        setTxt2imgParams({...txt2imgParams, hr_scale: 4})
+                                        setParams({...params, hr_scale: 4})
                                     }
                                 },
                             ]
@@ -62,9 +67,9 @@ const HiresPanel = (props: { name: string }) => {
                             min: 0,
                             max: 4,
                             step: 0.1,
-                            value: txt2imgParams.hr_scale,
+                            value: params.hr_scale,
                             onChange: (value: number) => {
-                                setTxt2imgParams({...txt2imgParams, hr_scale: value})
+                                setParams({...params, hr_scale: value})
                             }
                         }
                     },
@@ -73,26 +78,11 @@ const HiresPanel = (props: { name: string }) => {
                         type: 'select',
                         settings: {
                             selectOptions: [
-                                {label: 'Latent', value: 'Latent'},
-                                {label: 'Latent (antialiased)', value: 'Latent (antialiased)'},
-                                {label: 'Latent (bicubic)', value: 'Latent (bicubic)'},
-                                {label: 'Latent (bicubic antialiased)', value: 'Latent (bicubic antialiased)'},
-                                {label: 'Latent (nearest)', value: 'Latent (nearest)'},
-                                {label: 'Latent (nearest-exact)', value: 'Latent (nearest-exact)'},
-                                {label: 'None', value: 'None'},
-                                {label: 'Lanczos', value: 'Lanczos'},
-                                {label: 'Nearest', value: 'Nearest'},
-                                {label: 'ESRGAN_4x', value: 'ESRGAN_4x'},
-                                {label: 'LDSR', value: 'LDSR'},
-                                {label: 'R-ESRGAN 4x+', value: 'R-ESRGAN 4x+'},
-                                {label: 'R-ESRGAN 4x+ Anime6B', value: 'R-ESRGAN 4x+ Anime6B'},
-                                {label: 'ScuNET GAN', value: 'ScuNET GAN'},
-                                {label: 'ScuNET PSNR', value: 'ScuNET PSNR'},
-                                {label: 'SwinIR 4x', value: 'SwinIR 4x'},
+                                ...SdHiresUpScalers
                             ],
-                            value: txt2imgParams.hr_upscaler,
+                            value: params.hr_upscaler,
                             onChange: (value: string) => {
-                                setTxt2imgParams({...txt2imgParams, hr_upscaler: value})
+                                setParams({...params, hr_upscaler: value})
                             }
                         },
 
@@ -104,9 +94,9 @@ const HiresPanel = (props: { name: string }) => {
                             min: 1,
                             max: 150,
                             step: 1,
-                            value: txt2imgParams.hr_second_pass_steps,
+                            value: params.hr_second_pass_steps,
                             onChange: (value: number) => {
-                                setTxt2imgParams({...txt2imgParams, hr_second_pass_steps: value})
+                                setParams({...params, hr_second_pass_steps: value})
                             }
                         }
                     },
@@ -117,9 +107,9 @@ const HiresPanel = (props: { name: string }) => {
                             min: 0,
                             max: 1,
                             step: 0.01,
-                            value: txt2imgParams.denoising_strength,
+                            value: params.denoising_strength,
                             onChange: (value: number) => {
-                                setTxt2imgParams({...txt2imgParams, denoising_strength: value})
+                                setParams({...params, denoising_strength: value})
                             }
                         }
                     },

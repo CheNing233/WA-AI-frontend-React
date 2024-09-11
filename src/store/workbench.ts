@@ -9,8 +9,8 @@ export type IWorkbenchSetting = {
     setWrapperInDrawer?: (wrapperInDrawer: boolean) => void,
     activeTab?: string,
     setActiveTab?: (activeTab: string) => void,
-    txt2imgActivePanel?: string[],
-    setTxt2imgActivePanel?: (txt2imgActivePanel: string[]) => void,
+    activePanel?: string[],
+    setActivePanel?: (activePanel: string[]) => void,
 }
 
 
@@ -21,15 +21,24 @@ export const useWorkbenchSetting = create<IWorkbenchSetting>((set) => ({
     setWrapperInDrawer: (wrapperInDrawer: boolean) => set(() => ({wrapperInDrawer})),
     activeTab: 'txt2img',
     setActiveTab: (activeTab: string) => set(() => ({activeTab})),
-    txt2imgActivePanel: [
+    activePanel: [
         'txt2img-model',
         'txt2img-prompt',
         'txt2img-settings',
-        'txt2img-hires'
+        'txt2img-hires',
+
+        'img2img-image',
+        'img2img-model',
+        'img2img-prompt',
+        'img2img-settings',
+        'img2img-hires',
+
+        'extra-image',
+        'extra-setting'
     ],
-    setTxt2imgActivePanel: (txt2imgActivePanel: string[]) => set(() => (
-        {txt2imgActivePanel: Array.from(new Set(txt2imgActivePanel))}
-    ))
+    setActivePanel: (activePanel: string[]) => set(() => (
+        {activePanel: Array.from(new Set(activePanel))}
+    )),
 }))
 
 export type IWorkbenchModel = {
@@ -64,7 +73,7 @@ export type IWorkbenchModels = {
         target: 'txt2img' | 'img2img',
         key: string,
         value: any
-    ) => void
+    ) => void,
 }
 
 const initialCheckpoint: IWorkbenchModel = {
@@ -138,7 +147,7 @@ export const useWorkbenchModels = create<IWorkbenchModels>((set) => ({
             return {txt2imgExtraModel: updateObjectInArray(state.txt2imgExtraModel, modelId, key, value)}
         else if (target === 'img2img')
             return {img2imgExtraModel: updateObjectInArray(state.img2imgExtraModel, modelId, key, value)}
-    })
+    }),
 }))
 
 
@@ -185,13 +194,18 @@ type IImg2ImgParams = {
     restore_faces: boolean;
     tiling: boolean;
     resize_mode: number;
-    mask: string;
+    mask: string | null;
     mask_blur: number;
     inpainting_fill: number;
     inpaint_full_res: boolean;
     inpaint_full_res_padding: number;
     inpainting_mask_invert: number;
-    init_images: string;
+    initial_noise_multiplier: 1 | number;
+    init_images: string | string[];
+
+    scaleByOriginal?: boolean;
+    scaleNumber?: number;
+    allowMask?: boolean;
 };
 
 type IExtraParams = {
@@ -218,6 +232,8 @@ export type IWorkbenchParams = {
     setImg2imgParams: (img2imgParams: IImg2ImgParams) => void;
     extraParams: IExtraParams;
     setExtraParams: (extraParams: IExtraParams) => void;
+    generateCount: number,
+    setGenerateCount: (generateCount: number) => void,
 };
 
 
@@ -265,13 +281,18 @@ export const useWorkbenchParams = create<IWorkbenchParams>((set) => ({
         restore_faces: false,
         tiling: false,
         resize_mode: 0,
-        mask: "",
+        mask: null,
         mask_blur: 4,
         inpainting_fill: 1,
         inpaint_full_res: false,
         inpaint_full_res_padding: 32,
         inpainting_mask_invert: 0,
-        init_images: "",
+        initial_noise_multiplier: 1,
+        init_images: [],
+
+        scaleByOriginal: true,
+        scaleNumber: 1,
+        allowMask: false,
     },
     setImg2imgParams: (img2imgParams: IImg2ImgParams) => set(() => ({img2imgParams})),
     extraParams: {
@@ -291,6 +312,8 @@ export const useWorkbenchParams = create<IWorkbenchParams>((set) => ({
         image: ''
     },
     setExtraParams: (extraParams: IExtraParams) => set(() => ({extraParams})),
+    generateCount: 1,
+    setGenerateCount: (generateCount) => set(() => ({generateCount}))
 }))
 
 

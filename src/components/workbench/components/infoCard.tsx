@@ -1,31 +1,54 @@
 import {Button, Collapse, Grid, Space, Tag, Typography} from "@arco-design/web-react";
-import {IconDelete, IconInfoCircle, IconSwap} from "@arco-design/web-react/icon";
+import {IconInfoCircle} from "@arco-design/web-react/icon";
 import {getQiniuImageWithParams} from "@/utils/qiniuImage";
+import {useEffect, useState} from "react";
 
-export type IModelCardProps = {
-    id: string | number,
-    name: string,
+export type IInfoCard = {
+    id: string,
+    title: string,
     imageSrc: string,
+    useRawImageSrc?: boolean,
     type: string,
     children?: any,
-    allowSwitch?: boolean,
-    allowDelete?: boolean,
-    onSwitch?: (id: string | number) => void,
-    onDelete?: (id: string | number) => void,
+    extra?: any
+    disabled?: boolean
 }
 
-const ModelCard = (props: IModelCardProps) => {
+const InfoCard = (props: IInfoCard) => {
+    const [imageSrc, setImageSrc] = useState(require('@/assets/placeholder/noPreview.png'));
+    const [active, setActive] = useState(
+        [props.disabled
+            ? ''
+            : props.children ? props.id : '']
+    );
+
+    useEffect(() => {
+        const src = props.useRawImageSrc
+            ? props.imageSrc
+            : getQiniuImageWithParams({
+                imageUrl: props.imageSrc,
+                width: 128,
+                height: 128,
+                quality: 50,
+            })
+
+        if (src && props.imageSrc) {
+            setImageSrc(src)
+        }
+    }, [props.imageSrc])
+
+    useEffect(() => {
+        if (props.disabled)
+            setActive([])
+        else
+            setActive([props.children ? props.id : ''])
+    }, [props.disabled])
 
     return (
         <Grid.Row style={{width: '100%'}} gutter={[0, 8]} align={'center'}>
             <Grid.Col flex={'shrink'}>
                 <img
-                    src={getQiniuImageWithParams({
-                        imageUrl: props.imageSrc,
-                        width: 128,
-                        height: 128,
-                        quality: 50,
-                    }) || require('@/assets/placeholder/noPreview.png')}
+                    src={imageSrc}
                     alt={''}
                     style={{
                         objectFit: 'cover', width: '72px', height: '72px', borderRadius: '4px',
@@ -42,31 +65,25 @@ const ModelCard = (props: IModelCardProps) => {
                                 {props.type}
                             </Tag>
                         </Grid.Col>
-                        <Grid.Col flex={'shrink'}>
-                            <Button type={'dashed'} size={'mini'} icon={<IconInfoCircle/>}/>
-                        </Grid.Col>
+                        {/*<Grid.Col flex={'shrink'}>*/}
+                        {/*    <Button type={'dashed'} size={'mini'} icon={<IconInfoCircle/>}/>*/}
+                        {/*</Grid.Col>*/}
                         <Grid.Col flex={'1'}/>
-                        {props.allowDelete && <Grid.Col flex={'shrink'}>
-                            <Button status={'danger'} size={'mini'} icon={<IconDelete/>}
-                                    onClick={() => props.onDelete(props.id)}
-                            >
-                                删除模型
-                            </Button>
-                        </Grid.Col>}
-                        {props.allowSwitch && <Grid.Col flex={'shrink'}>
-                            <Button type={'primary'} size={'mini'} icon={<IconSwap/>}
-                                    onClick={() => props.onSwitch(props.id)}
-                            >
-                                切换模型
-                            </Button>
-                        </Grid.Col>}
+                        <Grid.Col flex={'shrink'}>
+                            {props.extra}
+                        </Grid.Col>
                     </Grid.Row>
 
                     <Collapse
-                        defaultActiveKey={props.children ? props.name : ''}
+                        defaultActiveKey={active}
+                        activeKey={active}
+                        onChange={(activeKey, activeKeyList) => {
+                            setActive(activeKeyList)
+                        }}
                     >
                         <Collapse.Item
-                            name={props.name}
+                            name={props.id}
+                            disabled={props.disabled}
                             header={
                                 <div style={{height: '24px', userSelect: 'none'}}>
                                     <Typography.Ellipsis
@@ -82,7 +99,7 @@ const ModelCard = (props: IModelCardProps) => {
                                         rows={1}
                                         expandable={false}
                                     >
-                                        {props.name}
+                                        {props.title}
                                     </Typography.Ellipsis>
                                 </div>
                             }
@@ -97,4 +114,4 @@ const ModelCard = (props: IModelCardProps) => {
     )
 }
 
-export default ModelCard
+export default InfoCard

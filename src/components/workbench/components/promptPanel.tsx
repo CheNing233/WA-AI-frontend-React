@@ -12,7 +12,15 @@ import 'ace-builds/src-noconflict/mode-plain_text';
 
 import './styles/promptPanel.css'
 
-const PromptPanel = (props: { name: string }) => {
+export interface IPromptPanelProps {
+    name: string,
+    prompt: string,
+    setPromptFunction: (value: string) => void,
+    negativePrompt: string,
+    setNegativePromptFunction: (value: string) => void,
+}
+
+const PromptPanel = (props: IPromptPanelProps) => {
 
     const {theme} = useContext(GlobalContext);
 
@@ -31,9 +39,6 @@ const PromptPanel = (props: { name: string }) => {
         showInvisibles: false,
     }
 
-    const handlePromptChange = (value: string) => {
-        console.log("prompt", value)
-    }
 
     return (
         <Collapse.Item
@@ -70,7 +75,8 @@ const PromptPanel = (props: { name: string }) => {
                 <AceEditor
                     mode="plain_text"
                     theme={theme === 'light' ? 'chrome' : 'monokai'}
-                    onChange={handlePromptChange}
+                    value={props.prompt}
+                    onChange={props.setPromptFunction}
                     name="PromptInput"
                     setOptions={editorOptions}
                     className="prompt-box"
@@ -88,7 +94,8 @@ const PromptPanel = (props: { name: string }) => {
                 <AceEditor
                     mode="plain_text"
                     theme={theme === 'light' ? 'chrome' : 'monokai'}
-                    onChange={handlePromptChange}
+                    value={props.negativePrompt}
+                    onChange={props.setNegativePromptFunction}
                     name="NegativePromptInput"
                     setOptions={editorOptions}
                     className="ngt-prompt-box"

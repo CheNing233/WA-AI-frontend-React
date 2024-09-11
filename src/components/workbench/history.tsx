@@ -1,6 +1,6 @@
-import {Card, Link, Space, Tag} from "@arco-design/web-react";
+import {Button, Card, Message, Space, Tag} from "@arco-design/web-react";
 import ImageWaterfall from "@/components/imageWaterfall";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import ImageCard from "@/components/imageCard";
 import api from "@/services/export";
 import {convertUTCTime} from "@/utils/time";
@@ -8,6 +8,9 @@ import {convertTask2Post, getTasksExtraInfo} from "@/services/utils/tasks";
 import useWorkbench from "@/components/workbench/useWorkbench";
 import {TaskStatus} from "@/services/modules/tasks";
 import useImagePreviewerTools from "@/components/imagePreviewer/useImagePreviewerTools";
+import {require} from "ace-builds";
+import eventbus from "@/eventbus";
+import {IconRefresh} from "@arco-design/web-react/icon";
 
 const History = () => {
     const {workbenchShow} = useWorkbench();
@@ -49,12 +52,17 @@ const History = () => {
             <ImageCard
                 width={'100%'}
                 id={data.id}
-                // author={'data.userNickName'}
-                // authorAvatar={data.userAvatarUrl}
                 title={data.id}
                 time={convertUTCTime(data.updateTime)}
-                src={data.bannerUrl}
+                src={data.status !== TaskStatus.success
+                    ? require('@/assets/placeholder/noPreview.png')
+                    : data.bannerUrl
+                }
                 onImageClick={() => {
+                    if (data.status !== TaskStatus.success) {
+                        Message.warning('打不开喵')
+                        return
+                    }
                     openPost(convertTask2Post(data))
                 }}
             >
@@ -76,6 +84,7 @@ const History = () => {
         api.tasks.getTaskByUser(
             nextGroupKey,
             count,
+            true
         )
             .then(tasksRes => {
                 const list = tasksRes.data.data.list;
@@ -122,6 +131,17 @@ const History = () => {
         resolve();
     }
 
+    useEffect(() => {
+        const handleHistoryRefresh = () => {
+            setData([])
+            setDataFinished(false)
+        }
+        eventbus.on('workbench.history.refresh', handleHistoryRefresh)
+        return () => {
+            eventbus.off('workbench.history.refresh', handleHistoryRefresh)
+        }
+    }, []);
+
     return (
         <Space
             style={{top: '0', width: '100%'}}
@@ -131,7 +151,21 @@ const History = () => {
                 title={<span style={{fontSize: '14px'}}>任务记录</span>}
                 bordered={false}
                 size={'small'}
-                extra={<Link>&nbsp;多选&nbsp;</Link>}
+                extra={
+                    <Space>
+                        {/*<Button size={'mini'} shape={'round'} icon={<IconList/>} type={'dashed'}*/}
+                        {/*>*/}
+                        {/*    多选*/}
+                        {/*</Button>*/}
+                        <Button size={'mini'} shape={'round'} icon={<IconRefresh/>} type={'dashed'}
+                                onClick={() => {
+                                    eventbus.emit('workbench.history.refresh')
+                                }}
+                        >
+                            刷新
+                        </Button>
+                    </Space>
+                }
                 style={{width: '100%',}}
             >
                 <div
