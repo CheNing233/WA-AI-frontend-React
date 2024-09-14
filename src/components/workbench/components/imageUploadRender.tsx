@@ -1,7 +1,8 @@
 import {Button, Space, Switch} from "@arco-design/web-react";
 import InfoCard from "@/components/workbench/components/infoCard";
-import {UploadIcon} from "tdesign-icons-react";
+import {EditIcon, UploadIcon} from "tdesign-icons-react";
 import {ReactNode, useEffect, useRef, useState} from "react";
+import ImageEditor from "@/components/imageEditor";
 
 export interface IImageUploadRenderProps {
     imageChildren?: ReactNode,
@@ -75,6 +76,7 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
         }
     }
     const [imageTitle, setImageTitle] = useState(getImageTitle())
+    const [imageEditorVisible, setImageEditorVisible] = useState(false)
 
 
     const [mask, setMask] = useState<ImageInfo>({
@@ -117,6 +119,10 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
         fileRef.current.dispatchEvent(new MouseEvent('click'))
     }
 
+    const handleEditImage = (target: string) => {
+        setImageEditorVisible(true)
+    }
+
     return (
         <Space direction={'vertical'} size={props.useMask ? 16 : 0} style={{width: '100%'}}>
             <InfoCard id={'image-card'}
@@ -130,7 +136,16 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
                                       onClick={() => {
                                           handleOpenLocalFile('image')
                                       }}
-                              >上传</Button>
+                              >
+                                  上传
+                              </Button>
+                              <Button size={'mini'} type={'primary'} icon={<EditIcon/>}
+                                      onClick={() => {
+                                          handleEditImage('')
+                                      }}
+                              >
+                                  编辑
+                              </Button>
                               {/*<Button size={'mini'} type={'primary'} icon={<ImageSearchIcon/>}>我的图片</Button>*/}
                           </Space>
                       }
@@ -176,6 +191,12 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
                 ref={fileRef}
                 type={'file'}
                 onChange={handleLocalFileInput}
+            />
+
+            <ImageEditor
+                visible={imageEditorVisible}
+                setVisible={setImageEditorVisible}
+                imageInf={image}
             />
         </Space>
     )
