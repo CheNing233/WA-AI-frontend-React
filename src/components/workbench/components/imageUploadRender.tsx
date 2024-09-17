@@ -1,4 +1,4 @@
-import {Button, Space, Switch} from "@arco-design/web-react";
+import {Button, Message, Space, Switch} from "@arco-design/web-react";
 import InfoCard from "@/components/workbench/components/infoCard";
 import {EditIcon, UploadIcon} from "tdesign-icons-react";
 import {ReactNode, useEffect, useRef, useState} from "react";
@@ -64,6 +64,11 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
         width: 0,
         height: 0,
     })
+    const [imageBackup, setImageBackup] = useState<ImageInfo>({
+        base64: '',
+        width: 0,
+        height: 0,
+    })
     const getImageTitle = (): string => {
         if (image.base64) {
             if (props.imageTitleTargetWidth && props.imageTitleTargetHeight) {
@@ -76,8 +81,8 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
         }
     }
     const [imageTitle, setImageTitle] = useState(getImageTitle())
+    const imageEditorRef = useRef(null)
     const [imageEditorVisible, setImageEditorVisible] = useState(false)
-
 
     const [mask, setMask] = useState<ImageInfo>({
         base64: '',
@@ -85,18 +90,49 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
         height: 0,
     })
 
-
+    // 处理标题
     useEffect(() => {
         setImageTitle(getImageTitle())
     }, [image.width, image.height, props.imageTitleTargetWidth, props.imageTitleTargetHeight])
 
+    // 处理图片变更
     useEffect(() => {
         props.onImageChange && props.onImageChange(image)
     }, [image.base64]);
 
+    // 处理蒙版变更
     useEffect(() => {
         props.onMaskChange && props.onMaskChange(mask)
     }, [mask.base64]);
+
+    // 处理图片编辑器保存
+    useEffect(() => {
+        if (imageEditorVisible === false) {
+            const getImagePromise = imageEditorRef.current?.getCurrentImageBase64()
+            if (getImagePromise) {
+                getImagePromise
+                    .then((newImage: string) => {
+                        if (newImage && newImage !== image.base64) {
+                            setImage({
+                                ...image,
+                                base64: newImage
+                            })
+                            Message.success('图片已更新')
+                        }
+                    })
+                    .catch(() => {
+                    })
+            }
+            // const newImage = imageEditorRef.current?.getCurrentImageBase64()
+            // if (newImage && newImage !== image.base64) {
+            //     setImage({
+            //         ...image,
+            //         base64: newImage
+            //     })
+            //     Message.success('图片已更新')
+            // }
+        }
+    }, [imageEditorVisible]);
 
     const handleLocalFileInput = () => {
         const file = fileRef.current.files[0]
@@ -105,6 +141,7 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
                 switch (loadImageTo) {
                     case 'image':
                         setImage(imageInfo)
+                        setImageBackup(imageInfo)
                         return
                     case 'mask':
                         setMask(imageInfo)
@@ -132,19 +169,20 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
                       type={'图片'}
                       extra={
                           <Space>
+                              <Button size={'mini'} type={'primary'} icon={<EditIcon/>}
+                                      disabled={image.base64 === ''}
+                                      onClick={() => {
+                                          handleEditImage('')
+                                      }}
+                              >
+                                  编辑
+                              </Button>
                               <Button size={'mini'} type={'primary'} icon={<UploadIcon/>}
                                       onClick={() => {
                                           handleOpenLocalFile('image')
                                       }}
                               >
                                   上传
-                              </Button>
-                              <Button size={'mini'} type={'primary'} icon={<EditIcon/>}
-                                      onClick={() => {
-                                          handleEditImage('')
-                                      }}
-                              >
-                                  编辑
                               </Button>
                               {/*<Button size={'mini'} type={'primary'} icon={<ImageSearchIcon/>}>我的图片</Button>*/}
                           </Space>
@@ -194,9 +232,10 @@ const ImageUploadRender = (props: IImageUploadRenderProps) => {
             />
 
             <ImageEditor
+                ref={imageEditorRef}
                 visible={imageEditorVisible}
                 setVisible={setImageEditorVisible}
-                imageInf={image}
+                imageInf={imageBackup}
             />
         </Space>
     )
