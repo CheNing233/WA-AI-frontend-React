@@ -5,7 +5,7 @@ import {
     Fullscreen1Icon,
     ImageIcon,
     LayersIcon,
-    TextboxIcon
+    TextboxIcon, UpscaleIcon
 } from "tdesign-icons-react";
 import {IconToTop} from "@arco-design/web-react/icon";
 import SidebarWrapper from "@/components/workbench/components/sidebarWrapper";
@@ -218,7 +218,7 @@ const Work = () => {
                                 {
                                     key: 'hires',
                                     title: '高清修复',
-                                    icon: <Fullscreen1Icon/>
+                                    icon: <UpscaleIcon />
                                 }
                             ]}
                             onMenuClick={handleMenuClick}
