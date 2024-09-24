@@ -10,15 +10,22 @@ import eventbus from "@/eventbus";
 const LoginIndex = () => {
 
     const [loading, setLoading] = useState(false)
+    const [tab, setTab] = useState('1')
 
     useEffect(() => {
         const handleLoading = (isLoading: boolean) => {
             setLoading(isLoading)
         }
 
+        const handleTab = (newTab: string) => {
+            setTab(newTab)
+        }
+
         eventbus.on('login.index.loading', handleLoading)
+        eventbus.on('login.index.tab', handleTab)
         return () => {
             eventbus.off('login.index.loading', handleLoading)
+            eventbus.off('login.index.tab', handleTab)
         }
     }, []);
 
@@ -54,7 +61,12 @@ const LoginIndex = () => {
                     //     <div>123</div>
                     // }
                 >
-                    <Tabs defaultActiveTab='1'>
+                    <Tabs
+                        activeTab={tab}
+                        onChange={(key: string) => {
+                            setTab(key)
+                        }}
+                    >
                         <Tabs.TabPane key='1' title='登录'>
                             <Login/>
                         </Tabs.TabPane>
