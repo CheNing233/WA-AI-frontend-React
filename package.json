@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "WA",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -60,7 +60,6 @@
     "react-echarts": "^0.1.1",
     "react-refresh": "^0.11.0",
     "react-router-dom": "^5.3.4",
-    "react-sketch-canvas": "^6.2.0",
     "resolve": "^1.20.0",
     "resolve-url-loader": "^4.0.0",
     "sass-loader": "^12.3.0",
