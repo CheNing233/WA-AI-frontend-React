@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Grid } from '@arco-design/web-react';
 import { IconUser, IconFile, IconCommon, IconImage } from '@arco-design/web-react/icon';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 interface SystemPanelData {
     userCount: number;
@@ -33,9 +34,8 @@ const SystemPanel: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://***REMOVED***:5050/dashboard/systemPanel');
-                const result = await response.json();
-                setData(result.data);
+                const response = await axios.get('http://***REMOVED***:5050/dashboard/systemPanel');
+                setData(response.data.data);
             } catch (error) {
                 console.error('获取数据出错:', error);
             } finally {
