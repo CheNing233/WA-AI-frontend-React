@@ -27,6 +27,7 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
 
     const [form] = Form.useForm();
     const [emailCodeCooldown, setEmailCodeCoolDown] = useState(0)
+    const [loading, setLoading] = useState(false);
 
     const twoPwdValidator = (val, cb) => {
         if (form.getFieldValue('password') === val) {
@@ -46,6 +47,8 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
     };
 
     const handleSubmit = (values: ForgetPasswordForm) => {
+        setLoading(true)
+
         let params: ForgetPasswordForm = {
             email: values.email,
             emailCode: values.emailCode,
@@ -57,25 +60,22 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
             'msg.resetPassword',
             '重置密码中...',
             (resolve) => {
-                // 调用API进行登录
                 api.account.resetPassword(params)
                     .then((loginRes) => {
-                        // 处理登录响应
                         if (loginRes.data.code === 200) {
-                            // 登录成功提示并跳转至首页
                             resolve(true, '重置成功喵, 请使用新账号密码进行登录')
+                            props.onOk()
                         } else {
-                            // 登录失败提示错误信息
                             resolve(false, `重置失败：${loginRes.data.errorMsg}`)
                         }
                     })
                     .catch((error) => {
-                        // 登录失败提示错误信息
                         resolve(false, `重置失败：${error.message}`)
                     })
                     .finally(() => {
-                        // 触发获取用户登录状态事件
                         eventbus.emit('user.getLoginState')
+                        setLoading(false)
+                        form.setFieldValue('emailCode', '')
                     })
             }
         )
@@ -85,6 +85,9 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
         <Modal
             title={loc['forgetPassword.title']}
             visible={props.visible}
+            onCancel={() => {
+                props.onCancel()
+            }}
             footer={
                 <Space>
                     <Button onClick={() => {
@@ -94,6 +97,7 @@ const ForgetPassword = (props: ForgetPasswordProps) => {
                     </Button>
                     <Button type={"primary"}
                             icon={<LockOffIcon/>}
+                            loading={loading}
                             onClick={() => {
                                 form.submit()
                             }}

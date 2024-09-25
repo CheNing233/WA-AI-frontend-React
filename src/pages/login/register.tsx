@@ -62,25 +62,26 @@ const Register = () => {
                 // 调用API进行登录
                 api.account.register(params)
                     .then((loginRes) => {
-                        // 处理登录响应
+                        // 处理注册响应
                         if (loginRes.data.data === '注册成功') {
-                            // 登录成功提示并跳转至首页
+                            // 注册成功提示并跳转至首页
                             resolve(true, '注册成功喵, 请使用新账号进行登陆')
                             eventbus.emit('login.index.tab', '1')
                         } else {
-                            // 登录失败提示错误信息
+                            // 注册失败提示错误信息
                             resolve(false, `注册失败：${loginRes.data.errorMsg}`)
                         }
                     })
                     .catch((error) => {
-                        // 登录失败提示错误信息
+                        // 注册失败提示错误信息
                         resolve(false, `注册失败：${error.message}`)
                     })
                     .finally(() => {
                         // 停止登录加载动画
                         eventbus.emit('login.index.loading', false)
-                        // 触发获取用户登录状态事件
+                        // 触发获取用户获取登录状态事件
                         eventbus.emit('user.getLoginState')
+                        form.setFieldValue('validateCode', '')
                     })
             }
         )
