@@ -17,7 +17,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
     const {params, data, headers, method, url} = config;
     console.debug(
-        `${method} ${url}\n`,
+        `发起请求 ${method} ${url}\n`,
         ">> params", params, "data", data, "headers", headers,
     )
     return config;

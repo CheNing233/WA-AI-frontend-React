@@ -50,12 +50,13 @@ export const cacheRequestInterceptor = (config: AxiosRequestConfig | any) => {
             config.adapter = (config: AxiosRequestConfig | any) => {
                 const cacheResponse = {
                     status: 200,
-                    statusText: 'Response from cache',
+                    statusText: '已命中缓存，该请求响应自[缓存拦截器]',
+                    // cacheReq.cachedResponse === response.data
                     data: cacheReq.cachedResponse,
                     headers: {'content-type': 'application/json'},
                     config: config
                 }
-                console.log(`命中缓存 ${config.method} ${config.url}`);
+                // console.log(`命中缓存 ${config.method} ${config.url}`);
 
                 return Promise.resolve(cacheResponse);
             }
@@ -83,14 +84,17 @@ export const cacheResponseInterceptor = (response: any) => {
     const cacheReq = cachePool.get(reqId);
 
     // 如果缓存中不存在该请求的记录
-    if (!cacheReq
-        || Date.now() - cacheReq.timestamp > config.cacheSettings.expire
-    ) {
-        // 创建新的缓存记录，包括当前时间和响应数据
-        cachePool.set(reqId, {
-            timestamp: Date.now(),
-            cachedResponse: response.data
-        });
+    if (config.cacheSettings.enable) {
+        if (!cacheReq
+            || (cacheReq && (Date.now() - cacheReq.timestamp > config.cacheSettings.expire))
+        ) {
+            // 创建新的缓存记录，包括当前时间和响应数据
+            cachePool.set(reqId, {
+                timestamp: Date.now(),
+                // 缓存响应数据 response.data
+                cachedResponse: response.data
+            });
+        }
     }
 
     // 返回原始响应
