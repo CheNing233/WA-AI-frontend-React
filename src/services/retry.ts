@@ -1,48 +1,93 @@
 import {generateReqKey} from "@/services/utils/generateReqKey";
 import axiosInstance from "@/services/index";
+import {AxiosRequestConfig} from "axios";
 
-const retryRequests = new Map();
-const maxRetries = 3;
+const defaultRetryConfig = {
+    retry: 3,
+    retryDelay: 1000,
+}
+
+declare module "axios" {
+    interface AxiosRequestConfig {
+        retryConfig?: {
+            retry?: number;
+            retryDelay?: number;
+        }
+    }
+}
+
+type retryReq_t = {
+    currentRetry: number;
+}
+
+const retryPool: Map<string, retryReq_t> = new Map();
 
 /**
- * 错误请求重试拦截器
+ * 创建一个拦截器，用于在请求失败时尝试重新请求
+ * 该拦截器会根据配置信息判断是否需要重试请求，以及重试的次数
  *
- * 当请求发生错误时，此函数用作拦截器，以处理重试逻辑确保某些请求在失败时可以被重试，以提高健壮性
- *
- * @param error 错误对象，包含请求失败的信息
- * @returns 返回一个Promise，用于处理重试后的请求结果或再次拒绝
+ * @returns {Promise} 返回一个Promise对象，表示处理结果
+ * @param error
  */
-export const retryInterceptor = (error: any) => {
+export const retryResponseInterceptor = (error: any): Promise<any> => {
     // 提取错误中的请求配置
     const {config} = error;
 
-    // 生成请求的唯一键，用于在重试请求集合中进行唯一标识
-    const key = generateReqKey(config);
-
-    // 如果该请求已经重试过 maxRetries，则不再重试，直接拒绝
-    if (retryRequests.has(key) && retryRequests.get(key) > maxRetries) {
-        retryRequests.delete(key);
-        return Promise.reject(error);
+    // 检查并合并默认的重试配置到请求配置中
+    if (!config.retryConfig) {
+        config.retryConfig = defaultRetryConfig;
     } else {
-        // 将当前请求标记
-        if (!retryRequests.has(key)) {
-            retryRequests.set(key, 1);
+        // 确保请求配置中的retryConfig是默认配置与自定义配置的合并
+        config.retryConfig = {
+            ...defaultRetryConfig,
+            ...config.retryConfig
+        }
+    }
+
+    // 如果请求配置中设置了重试次数
+    if (config.retryConfig.retry) {
+        // 生成请求的唯一标识
+        const reqId = generateReqKey(config);
+        // 从重试请求池中获取当前请求的重试状态
+        let retryReq = retryPool.get(reqId);
+
+        // 如果请求已经在重试请求池中存在，则重试计数加1；否则初始化重试计数为1
+        if (retryReq) {
+            retryReq.currentRetry += 1;
         } else {
-            retryRequests.set(key, retryRequests.get(key) + 1);
+            retryPool.set(reqId, {currentRetry: 1});
+            // 重定向引用
+            retryReq = retryPool.get(reqId);
         }
 
-        // 警告日志：提示正在重试请求，并记录请求的方法和URL
-        console.warn(`重试${retryRequests.get(key)}次 ${config.method} ${config.url}`);
+        // 如果当前重试次数未超过配置的最大重试次数，则重新发送请求
+        if (retryReq.currentRetry <= config.retryConfig.retry) {
+            // 重试请求，且重试次数未到
+            console.warn(`重试${retryReq.currentRetry}次 ${config.method} ${config.url}`);
 
-        // 如果config中不存在cache属性，则创建它，用于后续存储重试标记
-        if (!config['cache']) {
-            config['cache'] = {};
+            // 关闭缓存和消抖，打通重试通道
+            const newConfig: AxiosRequestConfig = {
+                ...config,
+                debounceSettings: {
+                    ...config.debounceSettings,
+                    disable: true
+                },
+                cacheSettings: {
+                    ...config.cacheSettings,
+                    enable: false
+                }
+            }
+
+            // 使用更新后的配置重新发送请求
+            return axiosInstance(newConfig);
+        } else {
+            // 重试请求，且重试次数已到
+            // 删除重试记录
+            retryPool.delete(reqId);
+            console.error(`重试失败 ${config.method} ${config.url}`);
+
+            // 返回异常
+            return Promise.reject(error);
         }
-
-        // 标记此请求需要强制更新，即进行重试
-        config['cache']['forceUpdate'] = true
-
-        // 使用更新后的配置重新发送请求
-        return axiosInstance(config)
     }
 }

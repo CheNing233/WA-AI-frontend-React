@@ -8,5 +8,13 @@ import {AxiosResponse} from "axios";
  * @returns
  */
 export function getById(id: string): Promise<AxiosResponse> {
-    return request.get(`/sdImage/${id}`);
+    return request.get(
+        `/sdImage/${id}`,
+        {
+            cacheSettings: {
+                enable: true,
+                expire: 60 * 60 * 24 * 7,
+            },
+        }
+    );
 }

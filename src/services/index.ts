@@ -1,7 +1,8 @@
 import axios from "axios";
 import {backendApiUrl} from "@/config/serviceUrl";
+import {debounceRequestInterceptor, debounceResponseInterceptor} from "@/services/debounce";
 import {cacheRequestInterceptor, cacheResponseInterceptor} from "@/services/cache";
-import {retryInterceptor} from "@/services/retry";
+import {retryResponseInterceptor} from "@/services/retry";
 
 
 const axiosInstance = axios.create({
@@ -9,13 +10,14 @@ const axiosInstance = axios.create({
     withCredentials: true
 });
 
+
 /*
-* Debug INTERCEPTOR
+* Debug interceptor
 */
 axiosInstance.interceptors.request.use((config) => {
     const {params, data, headers, method, url} = config;
     console.debug(
-        `${method} ${url}\n`,
+        `发起请求 ${method} ${url}\n`,
         ">> params", params, "data", data, "headers", headers,
     )
     return config;
@@ -31,18 +33,18 @@ axiosInstance.interceptors.response.use((response) => {
     return response;
 })
 
-/*
-* Retry INTERCEPTOR
-*/
+// Debounce interceptor
+axiosInstance.interceptors.request.use(debounceRequestInterceptor);
+axiosInstance.interceptors.response.use(debounceResponseInterceptor);
+
+// Cache interceptor
+axiosInstance.interceptors.request.use(cacheRequestInterceptor);
+axiosInstance.interceptors.response.use(cacheResponseInterceptor);
+
+// Retry interceptor
 axiosInstance.interceptors.response.use(
     (response) => response,
-    retryInterceptor
+    retryResponseInterceptor
 )
-
-/*
-* Cache & Intercept duplicate INTERCEPTOR
-*/
-axiosInstance.interceptors.request.use(cacheRequestInterceptor)
-axiosInstance.interceptors.response.use(cacheResponseInterceptor)
 
 export default axiosInstance;

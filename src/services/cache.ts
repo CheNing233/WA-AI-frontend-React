@@ -1,112 +1,102 @@
 import {generateReqKey} from "@/services/utils/generateReqKey";
+import {AxiosRequestConfig} from "axios";
 
-const cacheBuffer: any = {}
-const cacheTimeout = 60000;
+const defaultCacheSettings = {
+    enable: false,
+    expire: 60 * 1000,
+}
 
-const pendingRequests: any = new Map();
+// 拓展 AxiosRequestConfig
+declare module "axios" {
+    export interface AxiosRequestConfig {
+        cacheSettings?: {
+            enable?: boolean;
+            // 单位ms
+            expire?: number;
+        };
+    }
+}
 
+// 缓存记录
+type cacheReq_t = {
+    timestamp: number;
+    cachedResponse: any;
+}
 
-// 定义一个请求拦截器，用于缓存 GET 请求，并拒绝所有重复请求
-export const cacheRequestInterceptor = (config: any) => {
-    // 仅当请求方法为 GET 时进行缓存处理
-    if (config.method === 'get') {
-        // 生成当前请求的唯一键值
-        const key = generateReqKey(config);
+// 缓存池
+const cachePool: Map<string, cacheReq_t> = new Map();
 
-        // 检查请求重复
-        if (pendingRequests.has(key) && !config.cache?.forceUpdate) {
-            // 重复请求
-            console.log(`重复命中 ${config.method} ${config.url}`);
+export const cacheRequestInterceptor = (config: AxiosRequestConfig | any) => {
+    // 合并默认配置
+    if (!config.cacheSettings) {
+        config.cacheSettings = defaultCacheSettings;
+    } else {
+        config.cacheSettings = {
+            ...defaultCacheSettings,
+            ...config.cacheSettings
+        }
+    }
 
-            // 使用适配器，将重复请求的结果变更为第一个请求的结果
-            config.adapter = (config: any) => {
-                return new Promise((resolve) => {
-                    const check = () => {
-                        // 第一个请求结束，将第一个请求的数据同步到该重复请求中
-                        if (cacheBuffer[key]
-                            && Date.now() - cacheBuffer[key].timestamp < cacheTimeout
-                        ) {
-                            const responseData = {
-                                status: 200,
-                                data: cacheBuffer[key].data,
-                                headers: {'content-type': 'application/json'},
-                                config: config
-                            };
+    if (config.cacheSettings.enable) {
+        // 生成请求唯一键
+        const reqId = generateReqKey(config);
+        const cacheReq = cachePool.get(reqId);
 
-                            // 声明该请求已被第一个请求的数据同步
-                            console.log(`同步重复 ${config.method} ${config.url}`);
-                            resolve(responseData);
-                        } else {
-                            // 第一个请求仍然进行，轮询检查第一个请求是否完成
-                            setTimeout(check, 100);
-                        }
-                    }
-                    check();
-                })
-            };
-        } else {
-            // 这里是第一个请求，在 pendingRequests 声明
-            pendingRequests.set(key, true);
-
-            // 检查是否存在有效缓存，如果存在，则直接返回缓存数据
-            if (cacheBuffer[key]
-                && Date.now() - cacheBuffer[key].timestamp < cacheTimeout
-                && !config?.cache?.forceUpdate
-            ) {
-                // 从 pendingRequests 中移除该请求
-                pendingRequests.delete(key, true);
-
-                // 修改请求的适配器，以返回缓存中的数据
-                config.adapter = () => {
-                    // 记录缓存命中日志
-                    console.log(`缓存命中 ${config.method} ${config.url}`, cacheBuffer[key]);
-
-                    const responseData = {
-                        status: 200,
-                        data: cacheBuffer[key].data,
-                        headers: {'content-type': 'application/json'},
-                        config: config
-                    };
-
-                    // 返回包含缓存数据的 Promise 对象
-                    return Promise.resolve(responseData);
+        if (cacheReq
+            && Date.now() - cacheReq.timestamp < config.cacheSettings.expire
+        ) {
+            // 存在缓存记录，且时间未到
+            // 使用适配器，将缓存结果作为响应
+            config.adapter = (config: AxiosRequestConfig | any) => {
+                const cacheResponse = {
+                    status: 200,
+                    statusText: '已命中缓存，该请求响应自[缓存拦截器]',
+                    // cacheReq.cachedResponse === response.data
+                    data: cacheReq.cachedResponse,
+                    headers: {'content-type': 'application/json'},
+                    config: config
                 }
+                // console.log(`命中缓存 ${config.method} ${config.url}`);
+
+                return Promise.resolve(cacheResponse);
             }
         }
     }
 
-    // 继续发送请求
+    // 返回配置
     return config;
 }
 
 
 /**
  * 缓存响应拦截器
- * 该函数用作 Axios 请求的响应拦截器，主要用于将成功的 GET 请求结果进行缓存
+ * 该函数用于拦截API响应，并将响应数据缓存到本地存储中
  *
- * @param response Axios 请求的响应对象
- * @returns 返回原始的响应对象，如果适用，则对其进行缓存
+ * @param response API响应对象
+ * @returns 返回经过处理后的响应对象
  */
 export const cacheResponseInterceptor = (response: any) => {
-    // 只对 GET 请求进行缓存
-    if (response.config.method === 'get') {
-        // 生成当前请求的唯一键值，用于标识和缓存此请求
-        const key = generateReqKey(response.config);
+    // 提取响应配置
+    const {config} = response;
+    // 生成请求的唯一标识
+    const reqId = generateReqKey(config);
+    // 尝试从缓存中获取该请求的记录
+    const cacheReq = cachePool.get(reqId);
 
-        // 如果当前请求正在等待中，移除它，因为我们已经获得了响应
-        if (pendingRequests.has(key)) {
-            pendingRequests.delete(key);
-        }
-
-        // 如果响应数据存在，将其缓存
-        if (response.data) {
-            cacheBuffer[key] = {
-                data: response.data, // 缓存的响应数据
-                timestamp: Date.now() // 缓存的时间戳，用于后续的缓存失效策略
-            };
+    // 如果缓存中不存在该请求的记录
+    if (config.cacheSettings.enable) {
+        if (!cacheReq
+            || (cacheReq && (Date.now() - cacheReq.timestamp > config.cacheSettings.expire))
+        ) {
+            // 创建新的缓存记录，包括当前时间和响应数据
+            cachePool.set(reqId, {
+                timestamp: Date.now(),
+                // 缓存响应数据 response.data
+                cachedResponse: response.data
+            });
         }
     }
 
-    // 返回原始响应对象
+    // 返回原始响应
     return response;
 }

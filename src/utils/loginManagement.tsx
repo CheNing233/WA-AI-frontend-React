@@ -61,6 +61,10 @@ const LoginManagement = () => {
                         setUserInfo({...initialUserInfo})
                     }
                 })
+                .catch((Error) => {
+                    console.log(Error)
+                    Message.error(`获取登录状态 ${Error.message}，请检查网络喵~`)
+                })
         }
         getLoginState()
         eventbus.on('user.getLoginState', getLoginState)

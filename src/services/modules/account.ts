@@ -50,11 +50,7 @@ export function logout(): Promise<AxiosResponse> {
  * @returns
  */
 export function isLogin(): Promise<AxiosResponse> {
-    return request.get(`/account/isLogin`, {
-        cache: {
-            forceUpdate: true
-        }
-    } as any);
+    return request.get(`/account/isLogin`);
 }
 
 /**

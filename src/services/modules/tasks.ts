@@ -33,6 +33,5 @@ export interface ITask {
  * @returns
  */
 export function getTaskByUser(page: number, pageSize: number, forceUpdate?: boolean): Promise<AxiosResponse> {
-    // @ts-ignore
-    return request.get(`/task/getTaskByUser?page=${page}&pageSize=${pageSize}`, {cache: {forceUpdate: forceUpdate}});
+    return request.get(`/task/getTaskByUser?page=${page}&pageSize=${pageSize}`);
 }
