@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import 'echarts-wordcloud';
 import { Spin, Select, Message } from '@arco-design/web-react';
+import axios from 'axios';
 
 const Option = Select.Option;
 
@@ -30,10 +31,15 @@ const WordCloudChart = ({ timeRange, setTimeRange }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://***REMOVED***:5050/dashboard/wordFrequency?startTime=${timeRange.startTime}&endTime=${timeRange.endTime}&limit=${timeRange.limit}`);
-                const data = await response.json();
+                const response = await axios.get(`http://***REMOVED***:5050/dashboard/wordFrequency`, {
+                    params: {
+                        startTime: timeRange.startTime,
+                        endTime: timeRange.endTime,
+                        limit: timeRange.limit,
+                    },
+                });
 
-                const wordCloudData = data.data.map(item => ({
+                const wordCloudData = response.data.data.map(item => ({
                     name: item.word,
                     value: item.frequency,
                 }));
