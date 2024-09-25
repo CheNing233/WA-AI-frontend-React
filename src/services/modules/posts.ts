@@ -1,5 +1,5 @@
 import request from "@/services";
-import {AxiosResponse} from "axios";
+import {AxiosResponse, AxiosRequestConfig} from "axios";
 
 export interface IPost {
     id?: number | string;
@@ -27,7 +27,15 @@ export interface IPost {
  * @returns
  */
 export function getPostLiteByLike(page: number, pageSize: number): Promise<AxiosResponse> {
-    return request.get(`/post/getPostLite/like?page=${page}&pageSize=${pageSize}`);
+    return request.get(
+        `/post/getPostLite/like?page=${page}&pageSize=${pageSize}`,
+        {
+            cacheSettings: {
+                enable: true,
+                expire: 300000
+            }
+        }
+    );
 }
 
 /**
@@ -37,7 +45,15 @@ export function getPostLiteByLike(page: number, pageSize: number): Promise<Axios
  * @returns
  */
 export function getPostLiteByTime(page: number, pageSize: number): Promise<AxiosResponse> {
-    return request.get(`/post/getPostLite/time?page=${page}&pageSize=${pageSize}`);
+    return request.get(
+        `/post/getPostLite/time?page=${page}&pageSize=${pageSize}`,
+        {
+            cacheSettings: {
+                enable: true,
+                expire: 300000
+            }
+        }
+    );
 }
 
 

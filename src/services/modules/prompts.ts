@@ -38,5 +38,14 @@ export interface GetSdTags4TextRes {
  */
 export function getSdTags(searchQuery: string, page: number, pageSize: number)
     : Promise<AxiosResponse<GetSdTags4TextRes>> {
-    return request.get(`/tag/getSdTagsList?searchQuery=${searchQuery}&page=${page}&pageSize=${pageSize}`);
+    return request.get(
+        `/tag/getSdTagsList?searchQuery=${searchQuery}&page=${page}&pageSize=${pageSize}`,
+        {
+            // 缓存配置
+            cacheSettings: {
+                enable: true,
+                expire: 60 * 60 * 1000,
+            },
+        }
+    );
 }

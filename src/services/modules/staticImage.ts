@@ -25,5 +25,14 @@ export interface GetUrlByStaticImageIdRes {
  * @returns
  */
 export function getUrlByStaticImageId(id: string): Promise<AxiosResponse<GetUrlByStaticImageIdRes>> {
-    return request.get(`/staticImage/url?id=${id}`);
+    return request.get(
+        `/staticImage/url?id=${id}`,
+        {
+            // 请求缓存配置
+            cacheSettings: {
+                enable: true,
+                expire: 60 * 60 * 24 * 7,
+            },
+        }
+    );
 }
