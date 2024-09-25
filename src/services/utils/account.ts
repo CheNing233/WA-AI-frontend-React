@@ -26,7 +26,7 @@ export const getEmailCode = (email: string, type: 'register' | 'forgetPassword',
         '正在发送...',
         (resolve) => {
             // 调用API进行登录
-            api.account.sendEmailCode(email, 'register')
+            api.account.sendEmailCode(email, type)
                 .then((result) => {
                     if (result.data.code === 200) {
                         resolve(true, '验证码发送成功')
