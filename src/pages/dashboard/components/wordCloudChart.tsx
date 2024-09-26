@@ -3,6 +3,7 @@ import * as echarts from 'echarts';
 import 'echarts-wordcloud';
 import { Spin, Select, Message } from '@arco-design/web-react';
 import axios from 'axios';
+import Backend_URL from "@/pages/dashboard/config";
 
 const Option = Select.Option;
 
@@ -31,7 +32,7 @@ const WordCloudChart = ({ timeRange, setTimeRange }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://***REMOVED***:5050/dashboard/wordFrequency`, {
+                const response = await axios.get(`${Backend_URL}/dashboard/wordFrequency`, {
                     params: {
                         startTime: timeRange.startTime,
                         endTime: timeRange.endTime,

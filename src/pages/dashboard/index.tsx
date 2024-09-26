@@ -15,7 +15,6 @@ import dashboard from "@/pages/dashboard/dashboard";
 import data from "@/pages/dashboard/components/data"
 
 import userManagement from "@/pages/dashboard/user/userManagement";
-import userPermissions from "@/pages/dashboard/user/userPermissions";
 
 import postPublish from "@/pages/dashboard/post/postPublish";
 import postReview from "@/pages/dashboard/post/postReview";
@@ -37,6 +36,7 @@ import staticResource from "@/pages/dashboard/system/staticResource";
 import clusterManagement from "@/pages/dashboard/system/clusterManagement";
 
 import './styles/index.css'
+import characterManagement from "@/pages/dashboard/character/characterManagement";
 
 const { Sider, Content } = Layout;
 
@@ -73,32 +73,27 @@ const DashboardIndex = () => {
                             首页统计面板
                         </Link>
                     </Menu.Item>
+
                     <Menu.Item key="/dashboard/data">
                         <Link to="/dashboard/data" className={"menu-link"}>
                             <IconTags />
                             数据中心
                         </Link>
                     </Menu.Item>
-                    <Menu.SubMenu
-                        key="userManagement"
-                        title={
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+
+                    <Menu.Item key="/dashboard/userManagement">
+                        <Link to="/dashboard/userManagement" className={"menu-link"}>
                             <IconUser />
-                            <span>用户管理</span>
-                        </div>
-                        }
-                    >
-                        <Menu.Item key="/dashboard/userManagement">
-                            <Link to="/dashboard/userManagement">
-                                用户查询与更新
-                            </Link>
-                        </Menu.Item>
-                        <Menu.Item key="/dashboard/userPermissions">
-                            <Link to="/dashboard/userPermissions">
-                                用户身份
-                            </Link>
-                        </Menu.Item>
-                    </Menu.SubMenu>
+                            用户管理
+                        </Link>
+                    </Menu.Item>
+
+                    <Menu.Item key="/dashboard/characterManagement">
+                        <Link to="/dashboard/characterManagement" className={"menu-link"}>
+                            <IconApps />
+                            角色管理
+                        </Link>
+                    </Menu.Item>
 
                     <Menu.SubMenu key="postManagement" title={
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -155,6 +150,7 @@ const DashboardIndex = () => {
                             </Link>
                         </Menu.Item>
                     </Menu.SubMenu>
+
                     <Menu.SubMenu key="imageManagement" title={
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <IconFileImage />
@@ -182,6 +178,7 @@ const DashboardIndex = () => {
                             </Link>
                         </Menu.Item>
                     </Menu.SubMenu>
+
                     <Menu.SubMenu key="systemSettings" title={
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <IconSettings />
@@ -210,21 +207,28 @@ const DashboardIndex = () => {
                 <Content style={{ padding: '20px' }}>
                     <Switch>
                         <Route exact path="/dashboard" component={dashboard} />
+
                         <Route exact path="/dashboard/data" component={data} />
+
                         <Route path="/dashboard/userManagement" component={userManagement} />
-                        <Route path="/dashboard/userPermissions" component={userPermissions} />
+
+                        <Route path="/dashboard/characterManagement" component={characterManagement} />
+
                         <Route path="/dashboard/postPublish" component={postPublish} />
                         <Route path="/dashboard/postReview" component={postReview} />
                         <Route path="/dashboard/postCategory" component={postCategory} />
                         <Route path="/dashboard/postStats" component={postStats} />
+
                         <Route path="/dashboard/modelPublish" component={modelPublish} />
                         <Route path="/dashboard/modelReview" component={modelReview} />
                         <Route path="/dashboard/modelCategory" component={modelCategory} />
                         <Route path="/dashboard/modelStats" component={modelStats} />
+
                         <Route path="/dashboard/imagePublish" component={imagePublish} />
                         <Route path="/dashboard/imageReview" component={imageReview} />
                         <Route path="/dashboard/imageCategory" component={imageCategory} />
                         <Route path="/dashboard/imageStats" component={imageStats} />
+
                         <Route path="/dashboard/configManagement" component={configManagement} />
                         <Route path="/dashboard/staticResource" component={staticResource} />
                         <Route path="/dashboard/clusterManagement" component={clusterManagement} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Table,
     Pagination,
@@ -12,6 +12,8 @@ import {
     Input,
 } from '@arco-design/web-react';
 import axios from 'axios';
+import Backend_URL from "@/pages/dashboard/config";
+
 import CryptoJS from 'crypto-js';
 import {IconDelete, IconPlus, IconSync} from "@arco-design/web-react/icon";
 
@@ -39,7 +41,7 @@ const UserManagement: React.FC = () => {
     const fetchData = async (pageNum: number, pageSize: number) => {
         setLoading(true);
         try {
-            const response = await axios.get('http://***REMOVED***:5050/user/getList', {
+            const response = await axios.get(`${Backend_URL}/user/getList`, {
                 params: { pageNum, pageSize },
                 withCredentials: true,
             });
@@ -167,10 +169,10 @@ const UserManagement: React.FC = () => {
     };
 
     const columns = [
-        { title: '序号', dataIndex: 'ordinal', key: 'ordinal' },
         { title: 'ID', dataIndex: 'id', key: 'id' },
         { title: '用户名', dataIndex: 'userName', key: 'userName' },
         { title: '邮箱', dataIndex: 'email', key: 'email' },
+        { title: '角色(1用户、2管理员)', dataIndex: 'role', key: 'role'},
         {
             title: '注册时间', dataIndex: 'createTime', key: 'createTime',
             render: (text: string) => {
@@ -271,7 +273,7 @@ const UserManagement: React.FC = () => {
                             label='用户ID'
                             field='id'
                             rules={[{ required: true, message: '请输入用户ID' }]}>
-                            <Input placeholder='请输入用户ID' />
+                            <Input placeholder='请输入要更新用户的ID' />
                         </Form.Item>
                         <Form.Item
                             label='用户名'
@@ -294,8 +296,8 @@ const UserManagement: React.FC = () => {
                         <Form.Item
                             label='角色'
                             field='role'
-                            rules={[{ required: true, message: '请输入角色' }]}>
-                            <Input placeholder='请输入角色' />
+                            rules={[{ required: true, message: '请输入角色(1或2)' }]}>
+                            <Input placeholder='请输入角色(1或2)' />
                         </Form.Item>
                         <Form.Item
                             label='密码'

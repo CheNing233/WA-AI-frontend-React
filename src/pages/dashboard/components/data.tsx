@@ -5,6 +5,7 @@ import { CSSProperties } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import Backend_URL from "@/pages/dashboard/config";
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -58,7 +59,7 @@ const Data: React.FC = () => {
             const startDateString = startDate.toISOString().split('T')[0];
 
             try {
-                const response = await axios.get('http://***REMOVED***:5050/dashboard', {
+                const response = await axios.get(`${Backend_URL}/dashboard`, {
                     params: {
                         startDate: startDateString,
                         endDate: endDate,

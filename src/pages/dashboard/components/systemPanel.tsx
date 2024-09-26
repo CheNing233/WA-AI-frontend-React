@@ -3,6 +3,7 @@ import { Card, Grid } from '@arco-design/web-react';
 import { IconUser, IconFile, IconCommon, IconImage } from '@arco-design/web-react/icon';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import Backend_URL from "@/pages/dashboard/config";
 
 interface SystemPanelData {
     userCount: number;
@@ -34,7 +35,7 @@ const SystemPanel: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://***REMOVED***:5050/dashboard/systemPanel');
+                const response = await axios.get(`${Backend_URL}/dashboard/systemPanel`);
                 setData(response.data.data);
             } catch (error) {
                 console.error('获取数据出错:', error);
