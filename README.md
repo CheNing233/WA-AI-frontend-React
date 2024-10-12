@@ -24,16 +24,19 @@
 ## TODO
 
 - [x] 文生图
-- [x] 个人中心>我的图片
-- [x] 个人中心>我的帖子
-- [x] 主界面
+- [x] 图生图
+- [x] 超分放大
+- [x] 个人中心
+- [x] 帖子流
+- [ ] ControlNet
 - [ ] ...
 
 ## Join us
 
 在此界面加入交流群讨论
 
-https://wa.glcn.top/portal/about
+https://wa.xcning.top/about
+https://wa.glcn.top/about
 
 ## License
 
@@ -42,6 +45,7 @@ https://wa.glcn.top/portal/about
 **THANKS**
 
 - https://github.com/AUTOMATIC1111/stable-diffusion-webui (stable-diffusion-webui)
+- https://arco.design/ (Arco Design)
 - https://github.com/Tencent/tdesign-vue (TDesign)
 - https://github.com/1328411791/Wa-Ai-backend (backend)
 
